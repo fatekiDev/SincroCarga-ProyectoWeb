@@ -12,7 +12,7 @@
 
 **SincroChiloé** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.
 
-La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, peajes y tiempo de operación, especialmente en rutas que involucran el tramo **Pargua–Chacao**.
+La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, peajes y tiempo.
 
 Actualmente, gran parte de la coordinación de estos servicios se realiza mediante **WhatsApp, llamadas telefónicas y contactos directos**, lo que dificulta encontrar rápidamente una carga compatible.
 
@@ -47,9 +47,9 @@ Una vez encontrado un match, los usuarios podrán establecer contacto directamen
 
 ### Elevator Pitch
 
-> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroChiloé** es una plataforma de matching operativo que conecta camiones con capacidad ociosa con cargas disponibles según ruta y tipo de vehículo.
+> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroChiloé** es una plataforma de matching operativo que conecta la capacidad de transporte disponible con la demanda de carga existente.
 >
-> A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por cada kilómetro recorrido.
+> A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por cada viaje realizado.
 
 ---
 
@@ -298,6 +298,12 @@ Estas herramientas permiten definir y validar progresivamente el producto antes 
 ## 🎯 Visión
 
 > **Reducir los viajes vacíos en Chiloé, aumentar la eficiencia del transporte y generar nuevas oportunidades de ingresos mediante un sistema de matching logístico en tiempo real.**
+
+---
+
+## 🔗 Enlaces del Proyecto
+
+* 📊 [Tablero de Miro](https://miro.com/welcomeonboard/eUUzSWhWTHAyMmJTY1oyMDYxcHFUZUhYdjRmOWFKc1FHalV4TnIxNUhrRHgvS0U3MW41MkdkMHBTRDNqSWFZMFZ6dnBGTlhadVpsRmJsTnpqRzlwbWFPOVo3UmExcS9qTmIrWkRXdDBDODdBTzhVVXRNckZFdzJvUjVIeFJjaGFBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=47142022412)
 
 ---
 
