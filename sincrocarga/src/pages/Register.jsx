@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../assets/logoprincipal.png";
 import "./Register.css";
 
 const TruckIcon = () => (
@@ -15,14 +17,6 @@ const PersonIcon = () => (
     <circle cx="24" cy="15" r="7" />
     <path d="M10 38c1.5-8 7-12 14-12s12.5 4 14 12" />
     <rect x="30" y="24" width="9" height="9" rx="1.5" fill="#2b6cb0" stroke="none" />
-  </svg>
-);
-
-const LogoBadge = () => (
-  <svg viewBox="0 0 40 40" width="40" height="40">
-    <circle cx="20" cy="20" r="20" fill="#EAF2FB" />
-    <path d="M8 27 16 15l5 7 4-5 7 10Z" fill="#2B6CB0" />
-    <circle cx="14" cy="12" r="2.4" fill="#68B04A" />
   </svg>
 );
 
@@ -115,7 +109,7 @@ function RoleSelector({ onSelect }) {
       </div>
 
       <p className="reg-switch">
-        ¿Ya tienes cuenta? <a href="/login">Iniciar Sesión</a>
+        ¿Ya tienes cuenta? <Link to="/login">Iniciar Sesión</Link>
       </p>
     </>
   );
@@ -219,13 +213,13 @@ export default function Register({ onSubmit }) {
 
   return (
     <div className="reg-page">
-      <header className="reg-brand">
-        <LogoBadge />
+      <Link to="/" className="reg-brand" aria-label="Volver a SincroCarga">
+        <img src={logo} alt="Sincro Chiloé" className="reg-brand-logo" />
         <div className="reg-brand-text">
           <span className="reg-brand-name">Sincro Chiloé</span>
           <span className="reg-brand-tag">MATCHING OPERATIVO</span>
         </div>
-      </header>
+      </Link>
 
       <main className={`reg-card ${role ? "reg-card-form" : ""}`}>
         {role ? (

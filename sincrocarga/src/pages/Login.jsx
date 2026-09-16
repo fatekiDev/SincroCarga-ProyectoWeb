@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import logo from "../assets/logoprincipal.png";
 import "./Login.css";
 
 // Iconos simples en SVG (sin dependencias externas)
@@ -37,16 +39,9 @@ const LinkedInIcon = () => (
   </svg>
 );
 
-const LogoBadge = () => (
-  <svg viewBox="0 0 40 40" width="40" height="40">
-    <circle cx="20" cy="20" r="20" fill="#EAF2FB" />
-    <path d="M8 27 16 15l5 7 4-5 7 10Z" fill="#2B6CB0" />
-    <circle cx="14" cy="12" r="2.4" fill="#68B04A" />
-  </svg>
-);
-
 export default function Login({ onSubmit }) {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [role, setRole] = useState("cliente");
   const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
@@ -58,6 +53,7 @@ export default function Login({ onSubmit }) {
     const next = {};
     if (!form.email.trim()) next.email = "Ingresa tu correo electrónico.";
     if (!form.password) next.password = "Ingresa tu contraseña.";
+    if (!role) next.role = "Selecciona el tipo de cuenta.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
@@ -65,18 +61,18 @@ export default function Login({ onSubmit }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!validate()) return;
-    if (onSubmit) onSubmit(form);
+    if (onSubmit) onSubmit({ ...form, role });
   };
 
   return (
     <div className="auth-page">
-      <header className="auth-brand">
-        <LogoBadge />
+      <Link to="/" className="auth-brand" aria-label="Volver a SincroCarga">
+        <img src={logo} alt="Sincro Chiloé" className="auth-brand-logo" />
         <div className="auth-brand-text">
           <span className="auth-brand-name">Sincro Chiloé</span>
           <span className="auth-brand-tag">MATCHING OPERATIVO</span>
         </div>
-      </header>
+      </Link>
 
       <main className="auth-card">
         <h1 className="auth-title">Bienvenido de nuevo a Sincro Chiloé</h1>
@@ -100,6 +96,21 @@ export default function Login({ onSubmit }) {
           </div>
           {errors.email && <p className="auth-error">{errors.email}</p>}
 
+          <label className="auth-label" htmlFor="role">
+            Tipo de cuenta
+          </label>
+          <select
+            id="role"
+            name="role"
+            className={`auth-select ${errors.role ? "has-error" : ""}`}
+            value={role}
+            onChange={(e) => setRole(e.target.value)}
+          >
+            <option value="cliente">Cliente / Generador de carga</option>
+            <option value="camionero">Camionero / Transportista</option>
+          </select>
+          {errors.role && <p className="auth-error">{errors.role}</p>}
+
           <label className="auth-label" htmlFor="password">
             Contraseña
           </label>
@@ -119,7 +130,7 @@ export default function Login({ onSubmit }) {
           {errors.password && <p className="auth-error">{errors.password}</p>}
 
           <div className="auth-forgot">
-            <a href="/recuperar-contrasena">¿Contraseña olvidada?</a>
+            <Link to="/login">¿Contraseña olvidada?</Link>
           </div>
 
           <button type="submit" className="auth-btn-primary">
@@ -129,7 +140,7 @@ export default function Login({ onSubmit }) {
         </form>
 
         <p className="auth-switch">
-          ¿No tienes cuenta? <a href="/registro">Registrarse</a>
+          ¿No tienes cuenta? <Link to="/registro">Registrarse</Link>
         </p>
 
         <div className="auth-divider">

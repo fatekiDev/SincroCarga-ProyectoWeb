@@ -26,6 +26,12 @@
   line-height: 1.15;
 }
 
+.auth-brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 .auth-brand-name {
   font-size: 17px;
   font-weight: 700;
@@ -86,6 +92,26 @@
 }
 
 .auth-input-wrap.has-error {
+  border-color: #d64545;
+}
+
+.auth-select {
+  border: 1px solid #d9e2ec;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 11px 14px;
+  margin-bottom: 4px;
+  font-size: 14.5px;
+  color: #16324f;
+  outline: none;
+}
+
+.auth-select:focus {
+  border-color: #2b6cb0;
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+}
+
+.auth-select.has-error {
   border-color: #d64545;
 }
 

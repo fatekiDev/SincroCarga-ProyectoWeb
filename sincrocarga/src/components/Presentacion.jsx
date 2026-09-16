@@ -32,7 +32,7 @@ function Presentacion() {
             </div>
             <div className="hero__cta-card">
               <p>¿Eres camionero?</p>
-              <Button variant="primary" onClick={() => navigate('/dashboard')}>Registrarme</Button>
+              <Button variant="primary" onClick={() => navigate('/registro')}>Registrarme</Button>
             </div>
           </div>
 

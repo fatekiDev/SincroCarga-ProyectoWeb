@@ -34,7 +34,7 @@ body {
 }
 
 .header-logo { display: flex; align-items: center; gap: 10px; }
-.logo-img { width: 46px; height: 46px; border-radius: 50%; background: var(--sc-avatar); flex-shrink: 0; }
+.logo-img { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; }
 .logo-text .logo-name { font-weight: 700; font-size: 16px; color: var(--sc-title); }
 .logo-text .logo-tagline { font-size: 11px; letter-spacing: 0.5px; color: var(--sc-text-secondary); }
 

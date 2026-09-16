@@ -1,4 +1,5 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
+import logo from "../assets/logoprincipal.png";
 import "../styles/dashboard_camionero.css";
 
 // Datos de ejemplo — más adelante vendrán de tu API/backend
@@ -15,18 +16,19 @@ const testimonios = [
 ];
 
 function DashboardCamionero() {
+  const navigate = useNavigate();
+
   return (
     <div className="dashboard">
       {/* HEADER */}
       <header className="header">
-        <div className="header-logo">
-          {/* <img src="/logo.png" alt="SincroCarga" className="logo-img" /> */}
-          <div className="logo-img" />
+        <Link to="/dashboard" className="header-logo" aria-label="Ir al dashboard de camionero">
+          <img src={logo} alt="" className="logo-img" aria-hidden="true" />
           <div className="logo-text">
             <div className="logo-name">SincroCarga</div>
             <div className="logo-tagline">MATCHING OPERATIVO</div>
           </div>
-        </div>
+        </Link>
 
         <nav className="nav-desktop">
           <Link to="/publicar">Publicar</Link>
@@ -68,7 +70,7 @@ function DashboardCamionero() {
           <div className="stat-card-value">
             {stats.matchesNuevos} <span className="unit">(nuevas)</span>
           </div>
-          <button className="btn-primary" onClick={() => {}}>Ver Solicitudes</button>
+          <button className="btn-primary" onClick={() => navigate("/matching")}>Ver Solicitudes</button>
         </div>
 
         <div className="stat-card">
@@ -115,13 +117,10 @@ function DashboardCamionero() {
             Optimiza tus fletes vacíos en Chiloé con SincroCarga.
           </div>
         </div>
-        <button className="btn-cta-final">Revisar Matches de Hoy</button>
+        <button className="btn-cta-final" onClick={() => navigate("/matching")}>Revisar Matches de Hoy</button>
       </section>
     </div>
   );
-}
-
-export default DashboardCamionero
 }
 
 export default DashboardCamionero

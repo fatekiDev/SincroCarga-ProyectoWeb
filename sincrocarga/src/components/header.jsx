@@ -1,19 +1,23 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Link } from 'react-router-dom'
 import Button from './Button'
+import { getHomePath } from '../auth/session'
+import logo from '../assets/logoprincipal.png'
 import './header.css'
 
-function Header() {
+function Header({ session }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
+  const homePath = getHomePath(session)
 
   return (
     <header className="site-header">
       <div className="container site-header__inner">
-        <a href="#top" className="site-header__brand" aria-label="SincroCarga, inicio">
-          <span className="site-header__logo" aria-hidden="true"></span>
+        <Link to={homePath} className="site-header__brand" aria-label="SincroCarga, inicio">
+          <img src={logo} alt="" className="site-header__logo" aria-hidden="true" />
           <span className="site-header__brand-name">SincroCarga</span>
-        </a>
+        </Link>
 
         <nav
           className={`site-header__nav ${menuOpen ? 'site-header__nav--open' : ''}`}
@@ -25,7 +29,9 @@ function Header() {
         </nav>
 
         <div className="site-header__actions">
-          <Button variant="primary" onClick={() => navigate('/dashboard')}>Enviar al panel</Button>
+          <Button variant="primary" onClick={() => navigate(session ? homePath : '/login')}>
+            {session ? 'Ir a mi panel' : 'Iniciar sesión'}
+          </Button>
 
           <button
             type="button"

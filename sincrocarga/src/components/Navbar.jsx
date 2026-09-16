@@ -1,5 +1,5 @@
-import { ArrowLeftRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
+import logo from '../assets/logoprincipal.png';
 import './Navbar.css';
 
 const NAV_ITEMS = [
@@ -12,15 +12,15 @@ export default function Navbar({ activeSection, user }) {
   return (
     <header className="navbar">
       <div className="navbar__inner">
-        <div className="navbar__brand">
+        <Link to="/publicar" className="navbar__brand" aria-label="Ir a publicar carga">
           <div className="navbar__logo">
-            <ArrowLeftRight size={18} strokeWidth={2.5} />
+            <img src={logo} alt="" aria-hidden="true" />
           </div>
           <div>
             <p className="navbar__brand-title">SincroCarga</p>
             <p className="navbar__brand-subtitle">Carga y transporte, sin viajes vacíos</p>
           </div>
-        </div>
+        </Link>
 
         <nav className="navbar__links">
           {NAV_ITEMS.map((item) => {

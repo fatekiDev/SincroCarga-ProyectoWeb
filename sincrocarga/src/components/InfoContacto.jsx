@@ -1,3 +1,4 @@
+import logo from '../assets/logoprincipal.png'
 import './InfoContacto.css'
 
 function InfoContacto() {
@@ -5,7 +6,10 @@ function InfoContacto() {
     <footer id="contacto" className="site-footer">
       <div className="container site-footer__grid">
         <div>
-          <p className="site-footer__brand">SincroCarga</p>
+          <div className="site-footer__brand-row">
+            <img src={logo} alt="" className="site-footer__logo" aria-hidden="true" />
+            <p className="site-footer__brand">SincroCarga</p>
+          </div>
           <p className="site-footer__tagline">
             Conectamos espacio disponible con carga real en Chiloé.
           </p>

@@ -29,11 +29,16 @@
   width: 32px;
   height: 32px;
   border-radius: 8px;
-  background-color: var(--sc-white-translucent);
-  color: var(--sc-text-on-dark);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.footer__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .footer__title {

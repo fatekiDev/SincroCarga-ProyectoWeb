@@ -22,11 +22,16 @@
   width: 36px;
   height: 36px;
   border-radius: 8px;
-  background-color: var(--sc-primary);
-  color: var(--sc-text-on-dark);
+  overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.navbar__logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .navbar__brand-title {

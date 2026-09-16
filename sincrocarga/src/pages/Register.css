@@ -26,6 +26,12 @@
   line-height: 1.15;
 }
 
+.reg-brand-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
 .reg-brand-name {
   font-size: 17px;
   font-weight: 700;

@@ -1,4 +1,4 @@
-import { ArrowLeftRight } from 'lucide-react';
+import logo from '../assets/logoprincipal.png';
 import './Footer.css';
 
 export default function Footer({ tagline = 'Carga y transporte en Chiloé' }) {
@@ -7,7 +7,7 @@ export default function Footer({ tagline = 'Carga y transporte en Chiloé' }) {
       <div className="footer__inner">
         <div className="footer__brand">
           <div className="footer__logo">
-            <ArrowLeftRight size={16} strokeWidth={2.5} />
+            <img src={logo} alt="" aria-hidden="true" />
           </div>
           <div>
             <p className="footer__title">SincroCarga</p>
