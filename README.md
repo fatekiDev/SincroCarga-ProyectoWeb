@@ -12,9 +12,9 @@
 
 **SincroChiloé** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.
 
-La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, peajes y tiempo.
+La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, tiempo y peajes.
 
-Actualmente, gran parte de la coordinación de estos servicios se realiza mediante **WhatsApp, llamadas telefónicas y contactos directos**, lo que dificulta encontrar rápidamente una carga compatible.
+Actualmente, gran parte de la coordinación de estos servicios se realiza mediante **WhatsApp, llamadas telefónicas y contactos directos**, lo que dificulta encontrar rápidamente una carga compatible y reduce la eficiencia operativa.
 
 SincroChiloé busca centralizar y automatizar este proceso.
 
@@ -47,9 +47,9 @@ Una vez encontrado un match, los usuarios podrán establecer contacto directamen
 
 ### Elevator Pitch
 
-> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroChiloé** es una plataforma de matching operativo que conecta la capacidad de transporte disponible con la demanda de carga existente.
+> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroChiloé** es una plataforma de matching operativo que conecta capacidad con demanda en tiempo real.
 >
-> A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por cada viaje realizado.
+> A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por todos.
 
 ---
 
@@ -268,6 +268,40 @@ Contendrá el desarrollo de la aplicación móvil.
 
 ---
 
+## 🚀 Instalación
+
+Sigue estos pasos para levantar el proyecto localmente:
+
+1. Clonar el repositorio:
+
+```bash
+git clone https://github.com/fatekiDev/SincroCarga-ProyectoWeb.git
+```
+
+2. Entrar a la carpeta del proyecto:
+
+```bash
+cd sincrocarga
+```
+
+3. Instalar dependencias (si el proyecto usa Node/npm):
+
+```bash
+npm install
+```
+
+4. Levantar el servidor local:
+
+```bash
+npm run dev
+```
+
+> Si el proyecto es HTML/CSS estático y no usa build, también puedes abrir `index.html` directamente.
+
+5. Abrir en el navegador la URL indicada en la consola (normalmente `http://localhost:3000` o similar).
+
+---
+
 ## 👨‍💻 Equipo
 
 | Rol                    | Integrante       |
@@ -303,7 +337,7 @@ Estas herramientas permiten definir y validar progresivamente el producto antes 
 
 ## 🔗 Enlaces del Proyecto
 
-* 📊 [Tablero de Miro](https://miro.com/welcomeonboard/eUUzSWhWTHAyMmJTY1oyMDYxcHFUZUhYdjRmOWFKc1FHalV4TnIxNUhrRHgvS0U3MW41MkdkMHBTRDNqSWFZMFZ6dnBGTlhadVpsRmJsTnpqRzlwbWFPOVo3UmExcS9qTmIrWkRXdDBDODdBTzhVVXRNckZFdzJvUjVIeFJjaGFBd044SHFHaVlWYWk0d3NxeHNmeG9BPT0hdjE=?share_link_id=47142022412)
+* 📊 [Tablero de Miro](https://miro.com/welcomeonboard/eUUzSWhWTHAyMmJTY1oyMDYxcHFUZUhYdjRmOWFKc1FHalV4TnIxNUhrRHgvS0U3MW41MkdkMHBTRDNqSWFZMFZ6dnBGTlhadVpsRmJsTnpqRzlwbWFPOVo3UmExcS9qTmIrWkRXdDBDODd...)
 
 ---
 
