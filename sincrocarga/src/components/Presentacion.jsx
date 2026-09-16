@@ -1,9 +1,12 @@
-import Button from './button'
+import Button from './Button'
 import StatCard from './statcard'
+import { useNavigate } from 'react-router-dom'
 import heroBg from '../assets/hero-bg.jpg'
 import './Presentacion.css'
 
 function Presentacion() {
+  const navigate = useNavigate()
+
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
       <img src={heroBg} alt="" className="hero__bg" aria-hidden="true" />
@@ -25,11 +28,11 @@ function Presentacion() {
           <div className="hero__ctas">
             <div className="hero__cta-card">
               <p>¿Necesitas enviar un pedido?</p>
-              <Button variant="primary">Publicar carga</Button>
+              <Button variant="primary" onClick={() => navigate('/publicar')}>Publicar carga</Button>
             </div>
             <div className="hero__cta-card">
               <p>¿Eres camionero?</p>
-              <Button variant="primary">Registrarme</Button>
+              <Button variant="primary" onClick={() => navigate('/dashboard')}>Registrarme</Button>
             </div>
           </div>
 

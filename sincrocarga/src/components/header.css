@@ -2,8 +2,8 @@
   position: sticky;
   top: 0;
   z-index: 100;
-  background: var(--color-header-bg);
-  border-bottom: 1px solid #E2E8F0;
+  background: var(--sc-header-bg);
+  border-bottom: 1px solid var(--sc-border);
 }
 
 .site-header__inner {
@@ -26,14 +26,14 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: var(--color-primary);
+  background: var(--sc-primary);
   display: inline-block;
 }
 
 .site-header__brand-name {
   font-size: 0.95rem;
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--sc-title);
 }
 
 .site-header__nav {
@@ -43,11 +43,11 @@
 
 .site-header__nav a {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--sc-text-secondary);
 }
 
 .site-header__nav a:hover {
-  color: var(--color-primary);
+  color: var(--sc-primary);
 }
 
 .site-header__actions {
@@ -70,7 +70,7 @@
 .site-header__toggle span {
   display: block;
   height: 2px;
-  background: var(--color-heading);
+  background: var(--sc-title);
   border-radius: 2px;
 }
 
@@ -81,11 +81,11 @@
     left: 0;
     right: 0;
     flex-direction: column;
-    background: var(--color-header-bg);
+    background: var(--sc-header-bg);
     padding: 16px 24px;
     gap: 14px;
     display: none;
-    border-bottom: 1px solid #E2E8F0;
+    border-bottom: 1px solid var(--sc-border);
   }
 
   .site-header__nav--open {

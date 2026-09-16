@@ -1,9 +1,11 @@
 import { useState } from 'react'
-import Button from './button'
+import { useNavigate } from 'react-router-dom'
+import Button from './Button'
 import './header.css'
 
 function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <header className="site-header">
@@ -23,7 +25,7 @@ function Header() {
         </nav>
 
         <div className="site-header__actions">
-          <Button variant="primary">Enviar al panel</Button>
+          <Button variant="primary" onClick={() => navigate('/dashboard')}>Enviar al panel</Button>
 
           <button
             type="button"

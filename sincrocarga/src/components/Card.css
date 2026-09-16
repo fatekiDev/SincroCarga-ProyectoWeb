@@ -1,0 +1,6 @@
+.card {
+  border-radius: 12px;
+  border: 1px solid var(--sc-border);
+  background-color: var(--sc-card-bg);
+  padding: 24px;
+}

@@ -1,20 +1,24 @@
-import './button.css'
+import './Button.css';
 
-/**
- * Botón reutilizable de SincroCarga.
- * variant: "primary" (azul, fondo sólido) | "ghost" (borde, para header)
- */
-function Button({ children, onClick, variant = 'primary', disabled = false, type = 'button' }) {
+export default function Button({
+  variant = 'primary',
+  fullWidth = false,
+  className = '',
+  children,
+  ...rest
+}) {
+  const classes = [
+    'btn',
+    `btn--${variant}`,
+    fullWidth ? 'btn--full' : '',
+    className,
+  ]
+    .filter(Boolean)
+    .join(' ');
+
   return (
-    <button
-      type={type}
-      className={`btn btn--${variant}`}
-      onClick={onClick}
-      disabled={disabled}
-    >
+    <button className={classes} {...rest}>
       {children}
     </button>
-  )
+  );
 }
-
-export default Button
