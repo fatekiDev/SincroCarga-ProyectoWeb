@@ -1,20 +1,127 @@
 :root {
-  --bg-body: #FFFFFF;
-  --bg-header: #F4F7FB;
-  --bg-card: #FFFFFF;
-  --border-card: #E5E9F0;
-  --bg-testimonial: #E3F6EA;
-  --bg-cta: #131C31;
+  --sc-bg: #ffffff;
+  --sc-header-bg: #f4f7fb;
+  --sc-card-bg: #ffffff;
+  --sc-title: #14213d;
+  --sc-text-secondary: #6b7280;
+  --sc-text-muted: #94a3b8;
+  --sc-text-on-dark: #ffffff;
+  --sc-primary: #2f6feb;
+  --sc-primary-text: #ffffff;
+  --sc-primary-hover: #2558c4;
+  --sc-primary-soft: #e6f1fb;
+  --sc-success-hover: #16a34a;
+  --sc-disabled: #a9b8d6;
+  --sc-footer-bg: #131c31;
+  --sc-success: #22c55e;
+  --sc-success-soft: rgba(34, 197, 94, 0.1);
+  --sc-warning: #f59e0b;
+  --sc-star: #f5b942;
+  --sc-badge-text: #0c447c;
+  --sc-border: #e2e8f0;
+  --sc-border-strong: #cbd5e1;
+  --sc-surface-muted: #f8fafc;
+  --sc-surface-testimonial: #e3f6ea;
+  --sc-avatar: #cfd8e3;
+  --sc-overlay: rgba(10, 14, 20, 0.4);
+  --sc-white-soft: rgba(255, 255, 255, 0.6);
+  --sc-white-translucent: rgba(255, 255, 255, 0.1);
+  --sc-shadow: rgba(0, 0, 0, 0.08);
+  --sc-shadow-strong: rgba(0, 0, 0, 0.2);
+  --sc-focus-shadow: rgba(47, 111, 235, 0.15);
 
-  --text-heading: #14213D;
-  --text-secondary: #6B7280;
-  --text-on-dark: #FFFFFF;
-  --text-status: #22C55E;
+  --sc-font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+  --sc-fs-h1: clamp(1.5rem, 1.1rem + 2vw, 2rem);
+  --sc-fs-h2: 1.375rem;
+  --sc-fs-h3: 1rem;
+  --sc-radius-sm: 6px;
+  --sc-radius-md: 10px;
+  --sc-radius-pill: 20px;
+  --sc-container-max: 1180px;
+  --sc-space-section: clamp(2rem, 1.5rem + 2vw, 4rem);
+}
 
-  --btn-primary-bg: #2F6FEB;
-  --btn-primary-text: #FFFFFF;
-  --btn-cta-final-text: #131C31;
+* {
+  box-sizing: border-box;
+}
 
-  --accent-star: #F5B942;
-  --accent-medal: #EAB308;
+body {
+  margin: 0;
+  font-family: var(--sc-font-family);
+  background-color: var(--sc-bg);
+  color: var(--sc-title);
+}
+
+/* Clases compartidas entre varias páginas — se dejan aquí para que
+   cada página funcione sin depender del CSS de las demás */
+
+.divider {
+  margin: 16px 0;
+  border-top: 1px solid var(--sc-border);
+}
+
+.star {
+  color: var(--sc-border-strong);
+}
+
+.star--filled {
+  color: var(--sc-star);
+  fill: var(--sc-star);
+}
+
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 12px;
+  color: var(--sc-text-secondary);
+}
+
+.rating-row__text {
+  margin-left: 4px;
+}
+
+.status-banner {
+  margin-top: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  border-radius: 12px;
+  background-color: var(--sc-footer-bg);
+  padding: 20px;
+}
+
+@media (min-width: 640px) {
+  .status-banner {
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+.status-banner__left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-banner__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: var(--sc-success);
+}
+
+.status-banner__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--sc-text-on-dark);
+}
+
+.status-banner__meta {
+  margin: 0;
+  font-size: 12px;
+  color: var(--sc-text-muted);
 }

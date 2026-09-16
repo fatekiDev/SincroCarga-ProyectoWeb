@@ -1,6 +1,6 @@
 .stat-card {
-  background: var(--color-card-bg);
-  border-radius: var(--radius-sm);
+  background: var(--sc-card-bg);
+  border-radius: var(--sc-radius-sm);
   padding: 10px 14px;
   text-align: center;
   min-width: 80px;
@@ -10,12 +10,12 @@
 .stat-card__value {
   font-size: 1rem;
   font-weight: 700;
-  color: var(--color-heading);
+  color: var(--sc-title);
   margin: 0 0 2px;
 }
 
 .stat-card__label {
   font-size: 0.65rem;
-  color: var(--color-text-secondary);
+  color: var(--sc-text-secondary);
   margin: 0;
 }

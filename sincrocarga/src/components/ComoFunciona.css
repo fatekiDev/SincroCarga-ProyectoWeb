@@ -1,6 +1,6 @@
 .how {
-  background: var(--color-bg);
-  padding: var(--space-section) 0;
+  background: var(--sc-bg);
+  padding: var(--sc-space-section) 0;
 }
 
 .how__inner {
@@ -8,15 +8,15 @@
 }
 
 .how h2 {
-  font-size: var(--fs-h2);
+  font-size: var(--sc-fs-h2);
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--sc-title);
   margin: 0 0 6px;
 }
 
 .how__subtitle {
   font-size: 0.8rem;
-  color: var(--color-text-secondary);
+  color: var(--sc-text-secondary);
   margin: 0 0 28px;
 }
 
@@ -28,46 +28,46 @@
 }
 
 .how__card {
-  background: var(--color-header-bg);
-  border-radius: var(--radius-md);
+  background: var(--sc-header-bg);
+  border-radius: var(--sc-radius-md);
   padding: 20px;
 }
 
 .how__eyebrow {
   font-size: 0.7rem;
   font-weight: 600;
-  color: var(--color-primary);
+  color: var(--sc-primary);
   margin: 0 0 8px;
 }
 
 .how__card h3 {
-  font-size: var(--fs-h3);
+  font-size: var(--sc-fs-h3);
   font-weight: 600;
-  color: var(--color-heading);
+  color: var(--sc-title);
   margin: 0 0 14px;
 }
 
 .how__field {
-  background: var(--color-card-bg);
-  border-radius: var(--radius-sm);
+  background: var(--sc-card-bg);
+  border-radius: var(--sc-radius-sm);
   padding: 8px 12px;
   margin: 0 0 8px;
 }
 
 .how__field dt {
   font-size: 0.65rem;
-  color: var(--color-text-secondary);
+  color: var(--sc-text-secondary);
 }
 
 .how__field dd {
   font-size: 0.8rem;
-  color: var(--color-heading);
+  color: var(--sc-title);
   margin: 0;
 }
 
 .how__match {
-  background: var(--color-card-bg);
-  border-radius: var(--radius-sm);
+  background: var(--sc-card-bg);
+  border-radius: var(--sc-radius-sm);
   padding: 14px;
 }
 
@@ -79,8 +79,8 @@
 }
 
 .how__match-badge {
-  background: #E6F1FB;
-  color: #0C447C;
+  background: var(--sc-primary-soft);
+  color: var(--sc-badge-text);
   font-size: 0.65rem;
   font-weight: 600;
   padding: 3px 10px;
@@ -90,18 +90,18 @@
 .how__match-price {
   font-size: 0.9rem;
   font-weight: 700;
-  color: var(--color-heading);
+  color: var(--sc-title);
 }
 
 .how__match-route {
   font-size: 0.8rem;
-  color: var(--color-heading);
+  color: var(--sc-title);
   margin: 0 0 2px;
 }
 
 .how__match-detail {
   font-size: 0.65rem;
-  color: var(--color-text-secondary);
+  color: var(--sc-text-secondary);
   margin: 0 0 12px;
 }
 

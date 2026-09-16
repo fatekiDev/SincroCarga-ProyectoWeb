@@ -40,7 +40,7 @@ function Dashboard() {
           {/* <img src="/avatar.jpg" alt="José P." className="profile-avatar" /> */}
           <div className="profile-avatar" />
           <div className="profile-name">
-            José P. - <Link to="/perfil">Mi Perfil</Link>
+            José P. - <Link to="/dashboard">Mi Perfil</Link>
           </div>
         </div>
       </header>

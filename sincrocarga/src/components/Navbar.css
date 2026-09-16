@@ -1,0 +1,126 @@
+.navbar {
+  background-color: var(--sc-header-bg);
+  border-bottom: 1px solid var(--sc-border);
+}
+
+.navbar__inner {
+  max-width: 1152px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.navbar__brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background-color: var(--sc-primary);
+  color: var(--sc-text-on-dark);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.navbar__brand-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.2;
+  color: var(--sc-title);
+}
+
+.navbar__brand-subtitle {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--sc-text-secondary);
+}
+
+.navbar__links {
+  display: none;
+  align-items: center;
+  gap: 24px;
+}
+
+@media (min-width: 768px) {
+  .navbar__links {
+    display: flex;
+  }
+}
+
+.navbar__link {
+  position: relative;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-size: 14px;
+  color: var(--sc-title);
+  transition: color 0.2s ease;
+  padding: 0;
+}
+
+.navbar__link:hover {
+  color: var(--sc-primary);
+}
+
+.navbar__link--active {
+  font-weight: 500;
+  color: var(--sc-primary);
+}
+
+.navbar__dot {
+  position: absolute;
+  left: -12px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--sc-primary);
+}
+
+.navbar__user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.navbar__user-text {
+  text-align: right;
+}
+
+.navbar__user-name {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  line-height: 1.2;
+  color: var(--sc-title);
+}
+
+.navbar__user-role {
+  margin: 0;
+  font-size: 12px;
+  line-height: 1.2;
+  color: var(--sc-text-secondary);
+}
+
+.navbar__avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background-color: var(--sc-title);
+  color: var(--sc-text-on-dark);
+  font-size: 12px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}

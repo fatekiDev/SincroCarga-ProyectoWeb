@@ -1,38 +1,58 @@
 .btn {
+  border-radius: 8px;
+  padding: 10px 20px;
+  font-size: 14px;
+  font-weight: 500;
   border: none;
-  border-radius: var(--radius-pill);
-  padding: 10px 22px;
-  font-size: 0.8rem;
-  font-weight: 600;
-  transition: background-color 0.15s ease, transform 0.05s ease;
+  cursor: pointer;
+  transition: all 0.2s ease;
 }
 
-.btn--primary {
-  background: var(--color-primary);
-  color: #FFFFFF;
-}
-
-.btn--primary:hover:not(:disabled) {
-  background: var(--color-primary-hover);
-}
-
-.btn--primary:active:not(:disabled) {
-  transform: scale(0.98);
-}
-
-.btn--primary:disabled {
-  background: var(--color-primary-disabled);
+.btn:disabled {
   cursor: not-allowed;
 }
 
-.btn--ghost {
-  background: transparent;
-  color: var(--color-primary);
-  border: 1.5px solid var(--color-primary);
-  padding: 8px 18px;
+.btn--full {
+  width: 100%;
 }
 
-.btn--ghost:hover:not(:disabled) {
-  background: var(--color-primary);
-  color: #FFFFFF;
+.btn--primary {
+  background-color: var(--sc-primary);
+  color: var(--sc-primary-text);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background-color: var(--sc-primary-hover);
+}
+
+.btn--primary:disabled {
+  background-color: var(--sc-disabled);
+}
+
+.btn--secondary {
+  background-color: var(--sc-card-bg);
+  color: var(--sc-title);
+  border: 1px solid var(--sc-border-strong);
+}
+
+.btn--secondary:hover:not(:disabled) {
+  background-color: var(--sc-surface-muted);
+}
+
+.btn--success {
+  background-color: var(--sc-success);
+  color: var(--sc-text-on-dark);
+}
+
+.btn--success:hover:not(:disabled) {
+  background-color: var(--sc-success-hover);
+}
+
+.btn--dark {
+  background-color: var(--sc-text-on-dark);
+  color: var(--sc-footer-bg);
+}
+
+.btn--dark:hover:not(:disabled) {
+  background-color: var(--sc-surface-muted);
 }
