@@ -1,0 +1,20 @@
+:root {
+  --bg-body: #FFFFFF;
+  --bg-header: #F4F7FB;
+  --bg-card: #FFFFFF;
+  --border-card: #E5E9F0;
+  --bg-testimonial: #E3F6EA;
+  --bg-cta: #131C31;
+
+  --text-heading: #14213D;
+  --text-secondary: #6B7280;
+  --text-on-dark: #FFFFFF;
+  --text-status: #22C55E;
+
+  --btn-primary-bg: #2F6FEB;
+  --btn-primary-text: #FFFFFF;
+  --btn-cta-final-text: #131C31;
+
+  --accent-star: #F5B942;
+  --accent-medal: #EAB308;
+}
