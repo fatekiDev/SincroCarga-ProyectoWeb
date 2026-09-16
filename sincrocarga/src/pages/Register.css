@@ -1,0 +1,269 @@
+.reg-page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 32px 16px 60px;
+  background-color: #eef4fb;
+  background-image:
+    radial-gradient(circle at 15% 25%, rgba(43, 108, 176, 0.06) 0, transparent 40%),
+    radial-gradient(circle at 85% 75%, rgba(43, 108, 176, 0.08) 0, transparent 45%);
+  font-family: "Inter", "Segoe UI", Arial, sans-serif;
+}
+
+.reg-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  max-width: 520px;
+  margin-bottom: 24px;
+}
+
+.reg-brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+}
+
+.reg-brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  color: #16324f;
+}
+
+.reg-brand-tag {
+  font-size: 10.5px;
+  letter-spacing: 0.06em;
+  color: #7c93ab;
+  font-weight: 600;
+}
+
+.reg-card {
+  width: 100%;
+  max-width: 520px;
+  background: #ffffff;
+  border-radius: 18px;
+  padding: 36px 32px;
+  box-shadow: 0 18px 40px rgba(21, 55, 92, 0.1);
+}
+
+.reg-card-form {
+  max-width: 460px;
+}
+
+.reg-title {
+  font-size: 21px;
+  font-weight: 700;
+  color: #16324f;
+  margin: 0 0 22px;
+  line-height: 1.3;
+}
+
+.reg-title-form {
+  margin-bottom: 6px;
+}
+
+.reg-subtitle {
+  font-size: 13.5px;
+  color: #5c7086;
+  margin: 0 0 22px;
+  line-height: 1.5;
+}
+
+/* --- Selección de rol --- */
+
+.reg-role-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+
+@media (max-width: 520px) {
+  .reg-role-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.reg-role-card {
+  border: 1.5px solid #dde7f1;
+  border-radius: 14px;
+  padding: 20px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reg-role-card:hover {
+  border-color: #2b6cb0;
+  box-shadow: 0 8px 20px rgba(43, 108, 176, 0.12);
+}
+
+.reg-role-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #eaf2fb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+.reg-role-name {
+  font-size: 14.5px;
+  font-weight: 700;
+  color: #16324f;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+.reg-role-desc {
+  font-size: 12.5px;
+  color: #7086a0;
+  line-height: 1.5;
+  margin: 0 0 16px;
+  flex-grow: 1;
+}
+
+.reg-role-btn {
+  width: 100%;
+  background: #ffffff;
+  border: 1.5px solid #2b6cb0;
+  color: #2b6cb0;
+  font-weight: 700;
+  font-size: 13.5px;
+  border-radius: 9px;
+  padding: 10px 14px;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.reg-role-btn:hover {
+  background: #2b6cb0;
+  color: #ffffff;
+}
+
+.reg-switch {
+  text-align: center;
+  font-size: 13.5px;
+  color: #5c7086;
+  margin: 24px 0 0;
+}
+
+.reg-switch a {
+  color: #2b6cb0;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.reg-switch a:hover {
+  text-decoration: underline;
+}
+
+/* --- Formulario según rol --- */
+
+.reg-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: none;
+  border: none;
+  color: #2b6cb0;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 0;
+  margin-bottom: 16px;
+}
+
+.reg-back:hover {
+  text-decoration: underline;
+}
+
+.reg-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reg-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.reg-label {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: #33475b;
+  margin-bottom: 6px;
+}
+
+.reg-input,
+.reg-select {
+  border: 1px solid #d9e2ec;
+  background: #f8fafc;
+  border-radius: 10px;
+  padding: 11px 14px;
+  font-size: 14.5px;
+  color: #16324f;
+  outline: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.reg-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238fa3b8' stroke-width='2'><path d='M6 9l6 6 6-6'/></svg>");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-size: 16px;
+}
+
+.reg-input:focus,
+.reg-select:focus {
+  border-color: #2b6cb0;
+  box-shadow: 0 0 0 3px rgba(43, 108, 176, 0.15);
+}
+
+.reg-input.has-error,
+.reg-select.has-error {
+  border-color: #d64545;
+}
+
+.reg-error {
+  color: #d64545;
+  font-size: 12.5px;
+  margin: 5px 0 0;
+}
+
+.reg-submit-btn {
+  margin-top: 8px;
+  background: #0f1b26;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  padding: 13px 18px;
+  font-size: 14.5px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition: background 0.15s ease, transform 0.05s ease;
+}
+
+.reg-submit-btn:hover {
+  background: #1c2b3a;
+}
+
+.reg-submit-btn:active {
+  transform: translateY(1px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .reg-role-card,
+  .reg-role-btn,
+  .reg-submit-btn {
+    transition: none;
+  }
+}
