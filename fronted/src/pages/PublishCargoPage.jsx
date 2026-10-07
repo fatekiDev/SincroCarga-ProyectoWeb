@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react';
 import { Package, Weight, Calendar, MapPin, Flag, Zap } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import Button from '../components/Button';
+import Button from '../components/button';
 import Card from '../components/Card';
 import '../styles/PublishCargoPage.css';
 

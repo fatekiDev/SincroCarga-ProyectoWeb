@@ -248,6 +248,11 @@ Actualmente el proyecto cuenta con:
 * ⏳ Algoritmo de matching.
 * ⏳ Pruebas con usuarios.
 
+### Estructura de desarrollo
+
+* `sincrocarga/`: aplicación frontend hecha con React y Vite.
+* `backend/`: API REST hecha con Node.js y Express.
+
 ---
 
 ## 📂 Repositorios
@@ -270,7 +275,7 @@ Contendrá el desarrollo de la aplicación móvil.
 
 ## 🚀 Instalación
 
-Sigue estos pasos para levantar el proyecto localmente:
+El frontend y el backend se ejecutan de forma independiente, cada uno en su propia terminal.
 
 1. Clonar el repositorio:
 
@@ -278,27 +283,25 @@ Sigue estos pasos para levantar el proyecto localmente:
 git clone https://github.com/fatekiDev/SincroCarga-ProyectoWeb.git
 ```
 
-2. Entrar a la carpeta del proyecto:
+2. Iniciar el backend:
 
 ```bash
-cd sincrocarga
-```
-
-3. Instalar dependencias (si el proyecto usa Node/npm):
-
-```bash
+cd backend
 npm install
-```
-
-4. Levantar el servidor local:
-
-```bash
 npm run dev
 ```
 
-> Si el proyecto es HTML/CSS estático y no usa build, también puedes abrir `index.html` directamente.
+La terminal mostrará `API escuchando en http://localhost:3000` y debe permanecer abierta. Puedes probar la API desde Thunder Client enviando una solicitud `GET` a `http://localhost:3000/api/health`; la respuesta será `{"status":"ok"}`.
 
-5. Abrir en el navegador la URL indicada en la consola (normalmente `http://localhost:3000` o similar).
+3. En otra terminal, iniciar el frontend:
+
+```bash
+cd sincrocarga
+npm install
+npm run dev
+```
+
+Abre en el navegador la URL indicada por Vite en la terminal del frontend.
 
 ---
 

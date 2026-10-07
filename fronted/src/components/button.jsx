@@ -1,4 +1,4 @@
-import './Button.css';
+import './button.css';
 
 export default function Button({
   variant = 'primary',

@@ -1,7 +1,7 @@
 import { Truck, ShieldCheck, Star, MapPin, Flag } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import Button from '../components/Button';
+import Button from '../components/button';
 import Card from '../components/Card';
 import '../styles/TrackingPage.css';
 

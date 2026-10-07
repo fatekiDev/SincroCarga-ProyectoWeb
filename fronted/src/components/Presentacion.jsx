@@ -1,4 +1,4 @@
-import Button from './Button'
+import Button from './button'
 import StatCard from './statcard'
 import { useNavigate } from 'react-router-dom'
 import heroBg from '../assets/hero-bg.jpg'

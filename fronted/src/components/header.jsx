@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
-import Button from './Button'
+import Button from './button'
 import { getHomePath } from '../auth/session'
 import logo from '../assets/logoprincipal.png'
 import './header.css'
