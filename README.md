@@ -250,7 +250,7 @@ Actualmente el proyecto cuenta con:
 
 ### Estructura de desarrollo
 
-* `sincrocarga/`: aplicación frontend hecha con React y Vite.
+* `frontend/`: aplicación frontend hecha con React y Vite.
 * `backend/`: API REST hecha con Node.js y Express.
 
 ---
@@ -283,7 +283,7 @@ El frontend y el backend se ejecutan de forma independiente, cada uno en su prop
 git clone https://github.com/fatekiDev/SincroCarga-ProyectoWeb.git
 ```
 
-2. Iniciar el backend:
+2. Desde la carpeta raíz del repositorio, iniciar el backend en una terminal:
 
 ```bash
 cd backend
@@ -293,10 +293,10 @@ npm run dev
 
 La terminal mostrará `API escuchando en http://localhost:3000` y debe permanecer abierta. Puedes probar la API desde Thunder Client enviando una solicitud `GET` a `http://localhost:3000/api/health`; la respuesta será `{"status":"ok"}`.
 
-3. En otra terminal, iniciar el frontend:
+3. Desde la carpeta raíz del repositorio, abrir otra terminal e iniciar el frontend:
 
 ```bash
-cd sincrocarga
+cd frontend
 npm install
 npm run dev
 ```
