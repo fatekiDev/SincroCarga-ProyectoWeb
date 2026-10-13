@@ -67,15 +67,15 @@ export default function Login({ onSubmit }) {
   return (
     <div className="auth-page">
       <Link to="/" className="auth-brand" aria-label="Volver a SincroCarga">
-        <img src={logo} alt="Sincro Chiloé" className="auth-brand-logo" />
+        <img src={logo} alt="Logotipo de SincroCarga" className="auth-brand-logo" />
         <div className="auth-brand-text">
-          <span className="auth-brand-name">Sincro Chiloé</span>
+          <span className="auth-brand-name">SincroCarga</span>
           <span className="auth-brand-tag">MATCHING OPERATIVO</span>
         </div>
       </Link>
 
       <main className="auth-card">
-        <h1 className="auth-title">Bienvenido de nuevo a Sincro Chiloé</h1>
+        <h1 className="auth-title">Bienvenido de nuevo a SincroCarga</h1>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <label className="auth-label" htmlFor="email">

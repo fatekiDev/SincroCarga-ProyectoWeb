@@ -40,12 +40,12 @@
 }
 
 .btn--success {
-  background-color: var(--sc-success);
+  background-color: var(--sc-success-text);
   color: var(--sc-text-on-dark);
 }
 
 .btn--success:hover:not(:disabled) {
-  background-color: var(--sc-success-hover);
+  background-color: #166534;
 }
 
 .btn--dark {

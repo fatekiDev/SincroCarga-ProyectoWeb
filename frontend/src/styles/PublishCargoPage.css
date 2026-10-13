@@ -196,7 +196,7 @@
   height: 20px;
   border-radius: 50%;
   background-color: var(--sc-success-soft);
-  color: var(--sc-success);
+  color: var(--sc-success-text);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -206,7 +206,7 @@
   margin: 0;
   font-size: 14px;
   font-weight: 500;
-  color: var(--sc-success);
+  color: var(--sc-success-text);
 }
 
 .price-card__note-text {

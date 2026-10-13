@@ -9,7 +9,11 @@ function Presentacion() {
 
   return (
     <section id="top" className="hero" aria-labelledby="hero-title">
-      <img src={heroBg} alt="" className="hero__bg" aria-hidden="true" />
+      <img
+        src={heroBg}
+        alt="Palafitos de Castro, Chiloé, junto al mar"
+        className="hero__bg"
+      />
       <div className="hero__overlay" aria-hidden="true"></div>
 
       <div className="container hero__content">

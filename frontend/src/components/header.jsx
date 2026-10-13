@@ -15,7 +15,7 @@ function Header({ session }) {
     <header className="site-header">
       <div className="container site-header__inner">
         <Link to={homePath} className="site-header__brand" aria-label="SincroCarga, inicio">
-          <img src={logo} alt="" className="site-header__logo" aria-hidden="true" />
+          <img src={logo} alt="Logotipo de SincroCarga" className="site-header__logo" />
           <span className="site-header__brand-name">SincroCarga</span>
         </Link>
 

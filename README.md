@@ -1,6 +1,6 @@
-# SyncroChiloe-ProyectoWeb
+# SincroCarga-ProyectoWeb
 
-# 🚛 SincroChiloé
+# 🚛 SincroCarga
 
 ### Plataforma de Matching Logístico para Chiloé
 
@@ -10,13 +10,13 @@
 
 ## 📌 Descripción
 
-**SincroChiloé** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.
+**SincroCarga** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.
 
 La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, tiempo y peajes.
 
 Actualmente, gran parte de la coordinación de estos servicios se realiza mediante **WhatsApp, llamadas telefónicas y contactos directos**, lo que dificulta encontrar rápidamente una carga compatible y reduce la eficiencia operativa.
 
-SincroChiloé busca centralizar y automatizar este proceso.
+SincroCarga busca centralizar y automatizar este proceso.
 
 ---
 
@@ -34,7 +34,7 @@ Esto genera una oportunidad para conectar la **capacidad disponible de los trans
 
 ## 💡 Solución
 
-SincroChiloé permitirá que transportistas y empresas publiquen sus necesidades de transporte y encuentren coincidencias de manera rápida.
+SincroCarga permitirá que transportistas y empresas publiquen sus necesidades de transporte y encuentren coincidencias de manera rápida.
 
 El sistema buscará realizar un **matching automático** considerando principalmente:
 
@@ -47,7 +47,7 @@ Una vez encontrado un match, los usuarios podrán establecer contacto directamen
 
 ### Elevator Pitch
 
-> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroChiloé** es una plataforma de matching operativo que conecta capacidad con demanda en tiempo real.
+> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroCarga** es una plataforma de matching operativo que conecta capacidad con demanda en tiempo real.
 >
 > A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por todos.
 
@@ -179,7 +179,7 @@ La principal alternativa actualmente son:
 
 ### Diferenciación
 
-SincroChiloé busca diferenciarse mediante:
+SincroCarga busca diferenciarse mediante:
 
 **Automatización + seguridad + eficiencia + reputación**
 
@@ -228,7 +228,7 @@ Objetivo:
 
 ## 🏗️ Arquitectura del Proyecto
 
-Este repositorio corresponde al **desarrollo de la plataforma web de SincroChiloé**.
+Este repositorio corresponde al **desarrollo de la plataforma web de SincroCarga**.
 
 La arquitectura y tecnologías definitivas serán definidas durante la etapa de desarrollo.
 
@@ -259,13 +259,13 @@ Actualmente el proyecto cuenta con:
 
 El proyecto será dividido por plataforma para mantener una arquitectura y ciclo de desarrollo independientes.
 
-### 🌐 SincroChiloé Web
+### 🌐 SincroCarga Web
 
 **Este repositorio**
 
 Contendrá el desarrollo de la plataforma web.
 
-### 📱 SincroChiloé Mobile
+### 📱 SincroCarga Mobile
 
 **Repositorio futuro**
 
@@ -346,12 +346,12 @@ Estas herramientas permiten definir y validar progresivamente el producto antes 
 
 ## 🚧 Estado del proyecto
 
-**SincroChiloé se encuentra actualmente en etapa de planificación y desarrollo inicial.**
+**SincroCarga se encuentra actualmente en etapa de planificación y desarrollo inicial.**
 
 Este repositorio evolucionará progresivamente desde la arquitectura y configuración inicial hasta convertirse en la plataforma web funcional del proyecto.
 
 ---
 
-### SincroChiloé
+### SincroCarga
 
 **Conectando rutas. Optimizando viajes. Sincronizando Chiloé.** 🚛🌊

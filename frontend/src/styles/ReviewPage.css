@@ -3,7 +3,7 @@
   height: 36px;
   border-radius: 50%;
   background-color: var(--sc-success-soft);
-  color: var(--sc-success);
+  color: var(--sc-success-text);
   display: flex;
   align-items: center;
   justify-content: center;

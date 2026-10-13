@@ -214,9 +214,9 @@ export default function Register({ onSubmit }) {
   return (
     <div className="reg-page">
       <Link to="/" className="reg-brand" aria-label="Volver a SincroCarga">
-        <img src={logo} alt="Sincro Chiloé" className="reg-brand-logo" />
+        <img src={logo} alt="Logotipo de SincroCarga" className="reg-brand-logo" />
         <div className="reg-brand-text">
-          <span className="reg-brand-name">Sincro Chiloé</span>
+          <span className="reg-brand-name">SincroCarga</span>
           <span className="reg-brand-tag">MATCHING OPERATIVO</span>
         </div>
       </Link>

@@ -7,7 +7,7 @@ function InfoContacto() {
       <div className="container site-footer__grid">
         <div>
           <div className="site-footer__brand-row">
-            <img src={logo} alt="" className="site-footer__logo" aria-hidden="true" />
+            <img src={logo} alt="Logotipo de SincroCarga" className="site-footer__logo" />
             <p className="site-footer__brand">SincroCarga</p>
           </div>
           <p className="site-footer__tagline">

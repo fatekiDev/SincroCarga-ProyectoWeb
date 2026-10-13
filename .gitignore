@@ -1,0 +1,40 @@
+# Dependencies
+**/node_modules/
+
+# Build output and coverage
+**/dist/
+**/build/
+**/coverage/
+
+# Environment files and secrets
+.env
+.env.*
+!.env.example
+!.env.*.example
+!**/.env.example
+!**/.env.*.example
+
+# Logs and local caches
+*.log
+npm-debug.log*
+.npm/
+.vite/
+
+# Local databases and runtime files
+*.sqlite
+*.sqlite3
+*.db
+*.pid
+
+# Private keys and certificates
+*.key
+*.pem
+*.p12
+*.pfx
+
+# Operating system and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
