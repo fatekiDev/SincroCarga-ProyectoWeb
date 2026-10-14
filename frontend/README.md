@@ -34,3 +34,11 @@ Inicia primero el backend y aplica la migración descrita en
 antes de desplegarla hay que configurar el dominio permitido, HTTPS, CORS y
 cookies para el hosting, y revisar las obligaciones de protección de los datos
 personales recopilados.
+
+## Despliegue en Vercel
+
+Configura `VITE_API_URL` como el origen público del backend de Render, por
+ejemplo `https://tu-api.onrender.com` (sin `/api` ni `/` final), antes de
+construir el frontend. Añade el origen exacto de Vercel a `FRONTEND_ORIGINS` en
+Render. El backend usa cookies `HttpOnly`, `Secure` y `SameSite=None` en
+producción para permitir la sesión entre dominios.

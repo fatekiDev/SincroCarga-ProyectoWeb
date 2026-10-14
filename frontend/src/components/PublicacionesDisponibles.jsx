@@ -8,6 +8,7 @@ const CURRENCY_FORMAT = new Intl.NumberFormat('es-CL', {
 })
 
 const NUMBER_FORMAT = new Intl.NumberFormat('es-CL')
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
 function formatDate(value) {
   if (!value) return 'Sin fecha límite'
@@ -34,7 +35,7 @@ export default function PublicacionesDisponibles() {
       setStatus('loading')
 
       try {
-        const response = await fetch('/api/publicaciones', {
+        const response = await fetch(`${API_BASE_URL}/api/publicaciones`, {
           signal: controller.signal,
         })
 

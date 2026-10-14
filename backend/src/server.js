@@ -1,13 +1,36 @@
 import 'dotenv/config'
 import express from 'express'
 import cookieParser from 'cookie-parser'
+import cors from 'cors'
 import { pool } from './db/pool.js'
 import authRouter from './routes/auth.routes.js'
 import publicacionesRouter from './routes/publicaciones.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
+const allowedOrigins = (process.env.FRONTEND_ORIGINS
+  ?? 'http://localhost:5173,http://127.0.0.1:5173')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean)
 
+if (process.env.NODE_ENV === 'production' && allowedOrigins.length === 0) {
+  throw new Error('FRONTEND_ORIGINS must contain the deployed frontend origin in production')
+}
+
+app.use((req, res, next) => {
+  const origin = req.get('Origin')
+  if (process.env.NODE_ENV === 'production' && origin && !allowedOrigins.includes(origin)) {
+    return res.status(403).json({ error: 'Origen no permitido' })
+  }
+  next()
+})
+app.use(cors({
+  origin(origin, callback) {
+    callback(null, Boolean(origin && allowedOrigins.includes(origin)))
+  },
+  credentials: true,
+}))
 app.use(express.json({ limit: '32kb' }))
 app.use(cookieParser())
 

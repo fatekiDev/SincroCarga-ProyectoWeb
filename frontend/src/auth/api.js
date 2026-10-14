@@ -1,6 +1,8 @@
+const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
+
 export async function authRequest(endpoint, options = {}) {
-  const response = await fetch(`/api/auth/${endpoint}`, {
-    credentials: 'same-origin',
+  const response = await fetch(`${API_BASE_URL}/api/auth/${endpoint}`, {
+    credentials: 'include',
     ...options,
     headers: {
       ...(options.body ? { 'Content-Type': 'application/json' } : {}),

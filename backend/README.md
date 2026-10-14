@@ -83,3 +83,29 @@ despliegue sigue siendo solo local. Antes de producción configura HTTPS, origen
 permitido y cookies para los dominios de frontend/backend; añade verificación
 de correo y recuperación de contraseña, y confirma las medidas de privacidad
 para RUT, teléfonos y licencias.
+
+## Despliegue del backend en Render
+
+Crear un Web Service conectado al repositorio con:
+
+- **Root Directory:** `backend`
+- **Build Command:** `npm ci`
+- **Start Command:** `npm start`
+
+Configurar estas variables en Render (no guardarlas en el repositorio):
+
+- `NODE_ENV`: `production`
+- `DATABASE_URL`: cadena de conexión **pooled** de Neon para
+  `bd_grupo2_sincrochiloe` (incluir SSL tal como la entrega Neon)
+- `FRONTEND_ORIGINS`: origen exacto del frontend publicado, por ejemplo
+  `https://tu-sitio.vercel.app`; separar con comas los dominios adicionales
+  autorizados, sin rutas ni `/` final
+
+Render proporciona `PORT` automáticamente. No hace falta configurar `PGHOST`,
+`PGUSER` ni `PGPASSWORD` cuando se usa `DATABASE_URL`. No ejecutar
+`npm run db:migrate` en Render: la migración se aplica una sola vez a Neon desde
+el SQL Editor.
+
+La API exige HTTPS para cookies seguras y solo permite los orígenes indicados en
+`FRONTEND_ORIGINS`. La URL del backend debe usarse en `VITE_API_URL` al compilar
+el frontend en Vercel.
