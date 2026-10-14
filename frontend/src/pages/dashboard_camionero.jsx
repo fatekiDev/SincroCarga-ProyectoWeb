@@ -1,5 +1,6 @@
 import { Link, useNavigate } from "react-router-dom";
 import logo from "../assets/logoprincipal.png";
+import LogoutButton from "../components/LogoutButton";
 import "../styles/dashboard_camionero.css";
 
 // Datos de ejemplo — más adelante vendrán de tu API/backend
@@ -15,7 +16,7 @@ const testimonios = [
   { nombre: "Ana P.", texto: "Carga impecable, muy recomendado." },
 ];
 
-function DashboardCamionero() {
+function DashboardCamionero({ session, onLogout }) {
   const navigate = useNavigate();
 
   return (
@@ -37,19 +38,19 @@ function DashboardCamionero() {
         </nav>
 
         <button className="hamburger">☰</button>
+        <LogoutButton className="dashboard-logout" onLogout={onLogout} />
 
         <div className="profile">
-          {/* <img src="/avatar.jpg" alt="José P." className="profile-avatar" /> */}
           <div className="profile-avatar" />
           <div className="profile-name">
-            José P. - <Link to="/dashboard">Mi Perfil</Link>
+            {session.email} - <Link to="/dashboard">Mi Perfil</Link>
           </div>
         </div>
       </header>
 
       {/* BIENVENIDA */}
       <section>
-        <h1 className="welcome-title">¡Bienvenido de vuelta, José!</h1>
+        <h1 className="welcome-title">¡Bienvenido a tu panel de camionero!</h1>
         <p className="welcome-subtitle">
           Tu panel de control para optimizar tus rutas y ganar más.
         </p>

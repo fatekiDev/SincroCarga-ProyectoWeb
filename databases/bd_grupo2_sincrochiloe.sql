@@ -49,6 +49,8 @@
 -- ----------------------------------------------------------------------------
 -- 0. LIMPIEZA DE ENTORNO (Orden inverso de dependencias para CASCADE)
 -- ----------------------------------------------------------------------------
+DROP TABLE IF EXISTS usuario_sesion CASCADE;
+DROP TABLE IF EXISTS usuario CASCADE;
 DROP TABLE IF EXISTS notificacion CASCADE;
 DROP TABLE IF EXISTS historial_cumplimiento CASCADE;
 DROP TABLE IF EXISTS calificacion CASCADE;

@@ -77,6 +77,17 @@
   line-height: 1.5;
 }
 
+.reg-demo-notice {
+  margin: 0 0 22px;
+  padding: 12px;
+  border: 1px solid #fdba74;
+  border-radius: 8px;
+  background: #fff7ed;
+  color: #7c2d12;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
 /* --- Selección de rol --- */
 
 .reg-role-grid {

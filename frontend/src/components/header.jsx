@@ -2,11 +2,12 @@ import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Link } from 'react-router-dom'
 import Button from './button'
+import LogoutButton from './LogoutButton'
 import { getHomePath } from '../auth/session'
 import logo from '../assets/logoprincipal.png'
 import './header.css'
 
-function Header({ session }) {
+function Header({ session, onLogout }) {
   const [menuOpen, setMenuOpen] = useState(false)
   const navigate = useNavigate()
   const homePath = getHomePath(session)
@@ -32,6 +33,7 @@ function Header({ session }) {
           <Button variant="primary" onClick={() => navigate(session ? homePath : '/login')}>
             {session ? 'Ir a mi panel' : 'Iniciar sesión'}
           </Button>
+          {session && <LogoutButton className="site-header__logout" onLogout={onLogout} />}
 
           <button
             type="button"

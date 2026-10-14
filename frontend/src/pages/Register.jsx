@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { authRequest } from "../auth/api";
 import logo from "../assets/logoprincipal.png";
 import "./Register.css";
 
@@ -26,47 +27,62 @@ const BackIcon = () => (
   </svg>
 );
 
-// Campos comunes a ambos perfiles
-const BASE_FIELDS = [
-  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name" },
+const CLIENTE_FIELDS = [
+  {
+    name: "tipoClienteId",
+    label: "Tipo de cliente",
+    type: "select",
+    defaultValue: "2",
+    options: [
+      { value: "2", label: "Persona natural" },
+      { value: "1", label: "Empresa" },
+    ],
+  },
+  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", showWhen: ["tipoClienteId", "2"] },
+  { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", showWhen: ["tipoClienteId", "1"] },
   { name: "rut", label: "RUT", type: "text", autoComplete: "off", placeholder: "12.345.678-9" },
   { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel" },
   { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email" },
-  { name: "password", label: "Contraseña", type: "password", autoComplete: "new-password" },
+  { name: "direccion", label: "Dirección (opcional)", type: "text", required: false },
+  { name: "comuna", label: "Comuna (opcional)", type: "text", required: false },
+  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password" },
   { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password" },
 ];
 
-// Datos propios del Camionero: solo información básica del vehículo,
-// la verificación de documentos/licencia se hace después en otra pantalla.
-const CAMIONERO_FIELDS = [
-  ...BASE_FIELDS,
+const PASSWORD_FIELDS = [
+  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password" },
+  { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password" },
+];
+
+const DRIVER_FIELDS = [
+  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email" },
+  ...PASSWORD_FIELDS,
+  { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", placeholder: "76.111.222-3" },
+  { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text" },
+  { name: "rut", label: "RUT del conductor", type: "text", placeholder: "12.345.678-9" },
+  { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name" },
+  { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel" },
+  { name: "licencia", label: "Número de licencia de conducir", type: "text" },
+  { name: "licenciaVencimiento", label: "Vencimiento de licencia", type: "date" },
   {
     name: "tipoVehiculo",
     label: "Tipo de vehículo",
     type: "select",
     options: ["Camión 3/4", "Camión simple", "Rampla", "Camioneta de carga", "Otro"],
   },
-  { name: "patente", label: "Patente", type: "text", autoComplete: "off", placeholder: "AB-CD-12" },
-  { name: "capacidadCarga", label: "Capacidad de carga aprox. (kg)", type: "number" },
-];
-
-// Datos propios del Cliente / Generador de carga
-const CLIENTE_FIELDS = [
-  ...BASE_FIELDS,
-  { name: "empresa", label: "Empresa (opcional)", type: "text", autoComplete: "organization" },
-  {
-    name: "tipoCarga",
-    label: "Tipo de carga habitual",
-    type: "select",
-    options: ["Alimentos", "Materiales de construcción", "Insumos agrícolas", "Carga general", "Otro"],
-  },
+  { name: "patente", label: "Patente", type: "text", placeholder: "AB-CD-12" },
+  { name: "marca", label: "Marca del vehículo", type: "text" },
+  { name: "modelo", label: "Modelo del vehículo", type: "text" },
+  { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1 },
+  { name: "capacidadCargaKg", label: "Capacidad de carga (kg)", type: "number", min: 0, step: "any" },
+  { name: "capacidadCargaM3", label: "Capacidad de carga (m³)", type: "number", min: 0, step: "any" },
 ];
 
 const ROLE_CONFIG = {
   camionero: {
     title: "Regístrate como Camionero / Transportista",
     subtitle: "Estos son tus datos básicos. La verificación de licencia y documentos se realiza más adelante.",
-    fields: CAMIONERO_FIELDS,
+    fields: DRIVER_FIELDS,
   },
   cliente: {
     title: "Regístrate como Cliente / Generador de Carga",
@@ -115,11 +131,18 @@ function RoleSelector({ onSelect }) {
   );
 }
 
-function RoleForm({ role, onBack, onSubmit }) {
+function RoleForm({ role, onBack, onAuthenticated }) {
   const config = ROLE_CONFIG[role];
-  const initialState = Object.fromEntries(config.fields.map((f) => [f.name, ""]));
+  const initialState = Object.fromEntries(
+    config.fields.map((field) => [field.name, field.defaultValue || ""]),
+  );
   const [form, setForm] = useState(initialState);
   const [errors, setErrors] = useState({});
+  const [requestError, setRequestError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const fields = config.fields.filter(
+    (field) => !field.showWhen || form[field.showWhen[0]] === field.showWhen[1],
+  );
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -128,11 +151,17 @@ function RoleForm({ role, onBack, onSubmit }) {
 
   const validate = () => {
     const next = {};
-    config.fields.forEach((f) => {
-      if (!form[f.name] || !form[f.name].toString().trim()) {
-        next[f.name] = "Este campo es obligatorio.";
+    fields.forEach((field) => {
+      if (field.required !== false && !form[field.name]?.toString().trim()) {
+        next[field.name] = "Este campo es obligatorio.";
       }
     });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email?.trim() || "")) {
+      next.email = "Ingresa un correo electrónico válido.";
+    }
+    if ((form.password || "").length < 12) {
+      next.password = "La contraseña debe tener al menos 12 caracteres.";
+    }
     if (
       form.password &&
       form.confirmPassword &&
@@ -144,10 +173,70 @@ function RoleForm({ role, onBack, onSubmit }) {
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const toRegistrationPayload = () => {
+    if (role === "cliente") {
+      return {
+        role,
+        email: form.email,
+        password: form.password,
+        profile: {
+          tipoClienteId: Number(form.tipoClienteId),
+          rut: form.rut,
+          nombreRazonSocial: form.tipoClienteId === "1" ? form.razonSocial : form.nombre,
+          telefono: form.telefono,
+          direccion: form.direccion || null,
+          comuna: form.comuna || null,
+        },
+      };
+    }
+
+    return {
+      role,
+      email: form.email,
+      password: form.password,
+      profile: {
+        empresa: {
+          rut: form.empresaRut,
+          razonSocial: form.empresaRazonSocial,
+        },
+        conductor: {
+          rut: form.rut,
+          nombre: form.nombre,
+          telefono: form.telefono,
+          licencia: form.licencia,
+          licenciaVencimiento: form.licenciaVencimiento,
+        },
+        camion: {
+          tipo: form.tipoVehiculo,
+          patente: form.patente,
+          marca: form.marca,
+          modelo: form.modelo,
+          anio: Number(form.anio),
+          capacidadKg: Number(form.capacidadCargaKg),
+          capacidadM3: Number(form.capacidadCargaM3),
+        },
+      },
+    };
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    if (onSubmit) onSubmit({ role, ...form });
+    setRequestError("");
+    setIsSubmitting(true);
+
+    try {
+      const user = await authRequest("register", {
+        method: "POST",
+        body: toRegistrationPayload(),
+      });
+      setForm((current) => ({ ...current, password: "", confirmPassword: "" }));
+      onAuthenticated(user);
+    } catch (error) {
+      setRequestError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -160,7 +249,7 @@ function RoleForm({ role, onBack, onSubmit }) {
       <p className="reg-subtitle">{config.subtitle}</p>
 
       <form className="reg-form" onSubmit={handleSubmit} noValidate>
-        {config.fields.map((field) => (
+        {fields.map((field) => (
           <div className="reg-field" key={field.name}>
             <label className="reg-label" htmlFor={field.name}>
               {field.label}
@@ -177,17 +266,20 @@ function RoleForm({ role, onBack, onSubmit }) {
                 <option value="" disabled>
                   Selecciona una opción
                 </option>
-                {field.options.map((opt) => (
-                  <option key={opt} value={opt}>
-                    {opt}
-                  </option>
-                ))}
+                {field.options.map((option) => {
+                  const value = typeof option === "string" ? option : option.value;
+                  const label = typeof option === "string" ? option : option.label;
+                  return <option key={value} value={value}>{label}</option>;
+                })}
               </select>
             ) : (
               <input
                 id={field.name}
                 name={field.name}
                 type={field.type}
+                min={field.min}
+                max={field.max}
+                step={field.step}
                 placeholder={field.placeholder || ""}
                 autoComplete={field.autoComplete || "off"}
                 className={`reg-input ${errors[field.name] ? "has-error" : ""}`}
@@ -200,15 +292,16 @@ function RoleForm({ role, onBack, onSubmit }) {
           </div>
         ))}
 
-        <button type="submit" className="reg-submit-btn">
-          Crear cuenta
+        {requestError && <p className="reg-error" role="alert">{requestError}</p>}
+        <button type="submit" className="reg-submit-btn" disabled={isSubmitting}>
+          {isSubmitting ? "Creando cuenta…" : "Crear cuenta"}
         </button>
       </form>
     </>
   );
 }
 
-export default function Register({ onSubmit }) {
+export default function Register({ onAuthenticated }) {
   const [role, setRole] = useState(null); // null | "camionero" | "cliente"
 
   return (
@@ -222,8 +315,16 @@ export default function Register({ onSubmit }) {
       </Link>
 
       <main className={`reg-card ${role ? "reg-card-form" : ""}`}>
+        <p className="reg-demo-notice" role="note">
+          Registro conectado a la base local de desarrollo. Usa datos de prueba;
+          el servicio todavía no está preparado para producción.
+        </p>
         {role ? (
-          <RoleForm role={role} onBack={() => setRole(null)} onSubmit={onSubmit} />
+          <RoleForm
+            role={role}
+            onBack={() => setRole(null)}
+            onAuthenticated={onAuthenticated}
+          />
         ) : (
           <RoleSelector onSelect={setRole} />
         )}

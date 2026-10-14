@@ -1,5 +1,6 @@
 import Presentacion from '../components/Presentacion'
 import ComoFunciona from '../components/ComoFunciona'
+import PublicacionesDisponibles from '../components/PublicacionesDisponibles'
 import SeccionConfianza from '../components/SeccionConfianza'
 
 /**
@@ -12,6 +13,7 @@ function MainPage() {
     <>
       <Presentacion />
       <ComoFunciona />
+      <PublicacionesDisponibles />
       <SeccionConfianza />
     </>
   )

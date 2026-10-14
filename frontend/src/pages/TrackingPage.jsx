@@ -5,8 +5,6 @@ import Button from '../components/button';
 import Card from '../components/Card';
 import '../styles/TrackingPage.css';
 
-const MOCK_USER = { initials: 'FM', name: 'Francisco M.', roleLabel: 'Cliente · Ancud' };
-
 const MOCK_DRIVER = {
   initials: 'RS',
   name: 'Raúl Soto',
@@ -26,10 +24,10 @@ const TIMELINE = [
 const PROGRESS_PERCENT = 64;
 const ETA = '18:40';
 
-export default function TrackingPage() {
+export default function TrackingPage({ session, onLogout }) {
   return (
     <div className="page">
-      <Navbar activeSection="matching" user={MOCK_USER} />
+      <Navbar activeSection="matching" session={session} onLogout={onLogout} />
 
       <main className="page__main">
         <div className="tracking-header">

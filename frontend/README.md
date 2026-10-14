@@ -21,3 +21,16 @@ terminal abierta mientras trabajas en el frontend.
 npm run build
 npm run lint
 ```
+
+## Autenticación local
+
+El registro y el inicio de sesión usan la API de Express del directorio
+`../backend`. Las contraseñas se envían al backend por HTTPS en producción y se
+guardan como hash; la sesión usa una cookie `HttpOnly`. En desarrollo, Vite
+reenvía `/api` a `http://localhost:3000`.
+
+Inicia primero el backend y aplica la migración descrita en
+`../backend/README.md`. Esta configuración todavía es para desarrollo local;
+antes de desplegarla hay que configurar el dominio permitido, HTTPS, CORS y
+cookies para el hosting, y revisar las obligaciones de protección de los datos
+personales recopilados.

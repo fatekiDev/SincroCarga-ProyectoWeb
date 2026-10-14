@@ -6,8 +6,6 @@ import Button from '../components/button';
 import Card from '../components/Card';
 import '../styles/PublishCargoPage.css';
 
-const MOCK_USER = { initials: 'FM', name: 'Francisco M.', roleLabel: 'Cliente · Ancud' };
-
 const INITIAL_FORM = {
   objectName: '',
   weightKg: '850',
@@ -21,7 +19,7 @@ const INITIAL_FORM = {
 
 const DIMENSION_OPTIONS = ['60', '90', '100', '120', '150', '180'];
 
-export default function PublishCargoPage() {
+export default function PublishCargoPage({ session, onLogout }) {
   const [step, setStep] = useState(1);
   const [form, setForm] = useState(INITIAL_FORM);
 
@@ -44,7 +42,7 @@ export default function PublishCargoPage() {
 
   return (
     <div className="page">
-      <Navbar activeSection="publicar" user={MOCK_USER} />
+      <Navbar activeSection="publicar" session={session} onLogout={onLogout} />
 
       <main className="page__main">
         <p className="eyebrow">Publicar carga</p>

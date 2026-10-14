@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
 import logo from '../assets/logoprincipal.png';
+import LogoutButton from './LogoutButton';
 import './Navbar.css';
 
 const NAV_ITEMS = [
@@ -8,7 +9,13 @@ const NAV_ITEMS = [
   { key: 'pagos', label: 'Pagos seguros', path: '/pagos' },
 ];
 
-export default function Navbar({ activeSection, user }) {
+export default function Navbar({ activeSection, session, onLogout }) {
+  const user = {
+    name: session.email,
+    roleLabel: session.role === 'camionero' ? 'Camionero · cuenta activa' : 'Cliente · cuenta activa',
+    initials: session.email.slice(0, 2).toUpperCase(),
+  }
+
   return (
     <header className="navbar">
       <div className="navbar__inner">
@@ -44,6 +51,7 @@ export default function Navbar({ activeSection, user }) {
             <p className="navbar__user-role">{user.roleLabel}</p>
           </div>
           <div className="navbar__avatar">{user.initials}</div>
+          {onLogout && <LogoutButton className="navbar__logout" onLogout={onLogout} />}
         </div>
       </div>
     </header>

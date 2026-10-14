@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
+import { authRequest } from "../auth/api";
 import logo from "../assets/logoprincipal.png";
 import "./Login.css";
 
@@ -24,25 +25,11 @@ const ArrowIcon = () => (
   </svg>
 );
 
-const GoogleIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20">
-    <path fill="#4285F4" d="M23.52 12.27c0-.85-.08-1.66-.22-2.45H12v4.63h6.47a5.53 5.53 0 0 1-2.4 3.63v3h3.87c2.27-2.09 3.58-5.17 3.58-8.81Z" />
-    <path fill="#34A853" d="M12 24c3.24 0 5.96-1.07 7.94-2.92l-3.87-3c-1.08.72-2.46 1.15-4.07 1.15-3.13 0-5.78-2.11-6.73-4.96H1.28v3.11A12 12 0 0 0 12 24Z" />
-    <path fill="#FBBC05" d="M5.27 14.27a7.2 7.2 0 0 1 0-4.54v-3.1H1.28a12 12 0 0 0 0 10.75l3.99-3.11Z" />
-    <path fill="#EA4335" d="M12 4.77c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.69 1.28 6.63l3.99 3.1C6.22 6.88 8.87 4.77 12 4.77Z" />
-  </svg>
-);
-
-const LinkedInIcon = () => (
-  <svg viewBox="0 0 24 24" width="20" height="20" fill="#0A66C2">
-    <path d="M20.45 20.45h-3.56v-5.58c0-1.33-.02-3.04-1.85-3.04-1.86 0-2.15 1.45-2.15 2.94v5.68H9.34V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.38-1.85 3.61 0 4.28 2.38 4.28 5.47v6.27ZM5.34 7.43a2.07 2.07 0 1 1 0-4.13 2.07 2.07 0 0 1 0 4.13ZM7.12 20.45H3.56V9h3.56v11.45Z" />
-  </svg>
-);
-
-export default function Login({ onSubmit }) {
+export default function Login({ onAuthenticated }) {
   const [form, setForm] = useState({ email: "", password: "" });
-  const [role, setRole] = useState("cliente");
   const [errors, setErrors] = useState({});
+  const [requestError, setRequestError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,17 +38,32 @@ export default function Login({ onSubmit }) {
 
   const validate = () => {
     const next = {};
-    if (!form.email.trim()) next.email = "Ingresa tu correo electrónico.";
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email.trim())) {
+      next.email = "Ingresa un correo electrónico válido.";
+    }
     if (!form.password) next.password = "Ingresa tu contraseña.";
-    if (!role) next.role = "Selecciona el tipo de cuenta.";
     setErrors(next);
     return Object.keys(next).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    if (onSubmit) onSubmit({ ...form, role });
+    setRequestError("");
+    setIsSubmitting(true);
+
+    try {
+      const user = await authRequest("login", {
+        method: "POST",
+        body: { email: form.email.trim(), password: form.password },
+      });
+      setForm((current) => ({ ...current, password: "" }));
+      onAuthenticated(user);
+    } catch (error) {
+      setRequestError(error.message);
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -76,6 +78,10 @@ export default function Login({ onSubmit }) {
 
       <main className="auth-card">
         <h1 className="auth-title">Bienvenido de nuevo a SincroCarga</h1>
+        <p className="auth-demo-notice" role="note">
+          Autenticación conectada a la base local de desarrollo. Usa datos de prueba;
+          el servicio todavía no está preparado para producción.
+        </p>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>
           <label className="auth-label" htmlFor="email">
@@ -96,21 +102,6 @@ export default function Login({ onSubmit }) {
           </div>
           {errors.email && <p className="auth-error">{errors.email}</p>}
 
-          <label className="auth-label" htmlFor="role">
-            Tipo de cuenta
-          </label>
-          <select
-            id="role"
-            name="role"
-            className={`auth-select ${errors.role ? "has-error" : ""}`}
-            value={role}
-            onChange={(e) => setRole(e.target.value)}
-          >
-            <option value="cliente">Cliente / Generador de carga</option>
-            <option value="camionero">Camionero / Transportista</option>
-          </select>
-          {errors.role && <p className="auth-error">{errors.role}</p>}
-
           <label className="auth-label" htmlFor="password">
             Contraseña
           </label>
@@ -129,12 +120,9 @@ export default function Login({ onSubmit }) {
           </div>
           {errors.password && <p className="auth-error">{errors.password}</p>}
 
-          <div className="auth-forgot">
-            <Link to="/login">¿Contraseña olvidada?</Link>
-          </div>
-
+          {requestError && <p className="auth-error" role="alert">{requestError}</p>}
           <button type="submit" className="auth-btn-primary">
-            ENTRAR
+            {isSubmitting ? "VERIFICANDO…" : "ENTRAR"}
             <ArrowIcon />
           </button>
         </form>
@@ -143,18 +131,6 @@ export default function Login({ onSubmit }) {
           ¿No tienes cuenta? <Link to="/registro">Registrarse</Link>
         </p>
 
-        <div className="auth-divider">
-          <span>O accede con:</span>
-        </div>
-
-        <div className="auth-social">
-          <button type="button" className="auth-social-btn" aria-label="Continuar con Google">
-            <GoogleIcon />
-          </button>
-          <button type="button" className="auth-social-btn" aria-label="Continuar con LinkedIn">
-            <LinkedInIcon />
-          </button>
-        </div>
       </main>
     </div>
   );

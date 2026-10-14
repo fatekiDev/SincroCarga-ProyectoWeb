@@ -6,8 +6,6 @@ import Button from '../components/button';
 import Card from '../components/Card';
 import '../styles/ReviewPage.css';
 
-const MOCK_USER = { initials: 'FM', name: 'Francisco M.', roleLabel: 'Cliente · Ancud' };
-
 const MOCK_DRIVER = {
   initials: 'RS',
   name: 'Raúl Soto',
@@ -25,7 +23,7 @@ const MOCK_CARGO = {
 
 const MAX_REVIEW_LENGTH = 200;
 
-export default function ReviewPage() {
+export default function ReviewPage({ session, onLogout }) {
   const [receptionConfirmed, setReceptionConfirmed] = useState(false);
   const [rating, setRating] = useState(4);
   const [hoverRating, setHoverRating] = useState(null);
@@ -36,7 +34,7 @@ export default function ReviewPage() {
 
   return (
     <div className="page">
-      <Navbar activeSection="matching" user={MOCK_USER} />
+      <Navbar activeSection="matching" session={session} onLogout={onLogout} />
 
       <main className="page__main">
         <span className="success-badge">

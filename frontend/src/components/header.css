@@ -55,6 +55,31 @@
   gap: 12px;
 }
 
+.site-header__logout,
+.navbar__logout,
+.dashboard-logout {
+  border: 0;
+  padding: 8px;
+  background: transparent;
+  color: var(--sc-text-secondary);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.site-header__logout:hover,
+.navbar__logout:hover,
+.dashboard-logout:hover {
+  color: var(--sc-primary);
+}
+
+.site-header__logout:disabled,
+.navbar__logout:disabled,
+.dashboard-logout:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .site-header__toggle {
   display: none;
   flex-direction: column;
