@@ -1,5 +1,9 @@
 import {
+  cancelClientPublication as cancelPublicationRecord,
+  findClientPublications,
   createPublication as insertPublication,
+  findPublicationCatalogs,
+  findPublicationQuote,
   findAvailablePublications,
   findPublication as findPublicationById,
   updatePublication as savePublicationChanges,
@@ -7,6 +11,18 @@ import {
 
 export function listAvailablePublications() {
   return findAvailablePublications()
+}
+
+export function listClientPublications(clienteId) {
+  return findClientPublications(clienteId)
+}
+
+export function getPublicationCatalogs() {
+  return findPublicationCatalogs()
+}
+
+export function getPublicationQuote(criteria) {
+  return findPublicationQuote(criteria)
 }
 
 export function getPublication(id) {
@@ -19,4 +35,8 @@ export function createPublication(publication, clienteId) {
 
 export function updatePublication(id, publication, clienteId) {
   return savePublicationChanges(id, publication, clienteId)
+}
+
+export function cancelPublication(id, clienteId) {
+  return cancelPublicationRecord(id, clienteId)
 }

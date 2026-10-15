@@ -15,10 +15,10 @@ API REST construida con Express y PostgreSQL.
    npm run dev
    ```
 
-La migración `../databases/migrations/001_authentication.sql` es aditiva: añade
-las tablas de usuarios/sesiones y el tipo de vehículo sin eliminar los datos
-existentes. Ejecuta `npm run db:migrate` una vez después de cargar el esquema
-base.
+Las migraciones `001_authentication.sql`, `002_unique_trip_rating.sql` y
+`003_simulated_payments.sql` son aditivas: añaden autenticación, unicidad de
+calificaciones y almacenamiento del pago de demostración. Ejecuta
+`npm run db:migrate` una vez después de cargar el esquema base.
 
 4. Comprueba la conexión con `http://localhost:3000/api/health/db`.
 5. En otra terminal, inicia el frontend desde `../frontend` con `npm run dev`.
@@ -35,30 +35,82 @@ tarifa; no incluye datos identificables de clientes.
 
 - `GET /api/health`: comprueba que la API está activa.
 - `GET /api/health/db`: comprueba la conexión con PostgreSQL.
+- `GET /api/publicaciones/catalogos`: lista tipos de carga y rutas disponibles.
+- `POST /api/publicaciones/cotizacion`: cotiza según la tarifa referencial vigente
+  para ruta/tipo y suma el cruce marítimo solo cuando la ruta lo tiene.
 - `POST /api/auth/register`: registra un perfil cliente o empresa/conductor/
   camión, guarda un hash de contraseña y crea una sesión.
 - `POST /api/auth/login`: valida correo y contraseña y crea una sesión.
 - `GET /api/auth/me`: devuelve la cuenta asociada a la cookie de sesión.
 - `POST /api/auth/logout`: invalida la sesión y elimina la cookie.
 - `GET /api/publicaciones`: lista publicaciones con estado `Disponible`.
+- `GET /api/publicaciones/mine`: lista las publicaciones del cliente autenticado.
 - `GET /api/publicaciones/:id`: obtiene una publicación por id.
 - `POST /api/publicaciones`: crea una carga y su publicación en una transacción.
-- `PUT /api/publicaciones/:id`: reemplaza los datos editables de la carga y
-  publicación asociadas en una transacción.
+- `PUT /api/publicaciones/:id`: reemplaza los datos de una publicación propia que
+  siga `Disponible`, en una transacción.
+- `POST /api/publicaciones/:id/cancelar`: cancela una publicación propia que siga
+  `Disponible` sin eliminar su historial.
+- `GET /api/seguimiento/activo`: obtiene el viaje activo del cliente, conductor,
+  ruta e historial de cumplimiento.
+- `POST /api/seguimiento/:viajeId/incidencias`: registra un problema reportado
+  por el cliente en `historial_cumplimiento`.
+- `GET /api/seguimiento/revision`: obtiene el viaje más reciente del cliente,
+  junto con la calificación ya registrada, si existe.
+- `POST /api/seguimiento/:viajeId/confirmar-recepcion`: marca el viaje como
+  completado y agrega el evento de recepción al historial.
+- `POST /api/seguimiento/:viajeId/calificacion`: guarda una calificación de 1 a
+  5 estrellas y sus etiquetas/comentario; es idempotente por viaje y cliente.
+- `GET /api/pagos/actual`: devuelve el viaje aceptado, la factura y el estado
+  del pago demo del cliente.
+- `POST /api/pagos/:viajeId/simular`: inicia el pago de demostración después de
+  validar la aceptación de términos.
+- `GET /api/pagos/actual`: devuelve tarifa aceptada, costos, facturación y estado
+  del pago simulado del viaje del cliente.
+- `POST /api/pagos/:viajeId/simular`: registra una simulación de pago si el
+  cliente acepta los términos.
 
 El registro de cliente solicita tipo, nombre/razón social, RUT, teléfono,
 correo y contraseña. El de camionero solicita datos de la empresa, conductor,
 licencia y camión. El correo de acceso debe ser único. La contraseña debe tener
 al menos 12 caracteres.
 
-`POST /api/publicaciones` y `PUT /api/publicaciones/:id` requieren una sesión
-activa con rol cliente. La API obtiene el cliente propietario desde la sesión;
-el cliente no puede elegir otro propietario en el cuerpo. `PUT` solo modifica
-publicaciones que pertenecen a esa cuenta.
+`POST /api/publicaciones`, `GET /api/publicaciones/mine`,
+`PUT /api/publicaciones/:id` y `POST /api/publicaciones/:id/cancelar` requieren
+una sesión activa con rol cliente. La API obtiene el cliente propietario desde
+la sesión; el cliente no puede elegir otro propietario en el cuerpo. La edición
+y cancelación solo se permiten mientras la publicación siga `Disponible`.
 
-`POST` requiere `tipoCargaId`, `descripcion`, `pesoKg`, `volumenM3`,
+`POST` y `PUT` requieren `tipoCargaId`, `descripcion`, `pesoKg`, `volumenM3`,
 `valorDeclarado` (número o `null`), `rutaId`, `fechaLimitePostulacion`
-(`YYYY-MM-DD`) y `tarifaOfrecida`. `PUT` requiere esos datos y además `estado`.
+(`YYYY-MM-DD`, actual o futura) y `tarifaOfrecida`. La cotización usa la tarifa
+referencial vigente para la combinación de ruta y tipo de carga; agrega la tarifa
+del cruce si la ruta tiene uno e informa la distancia estimada.
+
+El seguimiento requiere una sesión de cliente y devuelve solo un viaje con estado
+`En Progreso` que pertenezca a esa cuenta. El historial se lee de
+`historial_cumplimiento`. La base actual no almacena coordenadas GPS; por eso la
+posición y las etapas del mapa llevan la etiqueta «Modo demostración». El marcador
+avanza en memoria y la UI consulta el endpoint cada cinco segundos. Cuando la ruta
+tiene cruce, «Esperando barcaza» es una etapa propia y muestra
+`cruce_maritimo.duracion_estimada_min`; esos tiempos se muestran como referencia,
+no como ubicación en vivo.
+
+El cierre y la reseña requieren sesión de cliente y comprueban la propiedad del
+viaje. La confirmación se protege con bloqueo transaccional; la migración añade
+un índice único por viaje/emisor para impedir duplicados incluso tras recargar.
+El importe parte de `postulacion.tarifa_propuesta`; la comisión demo es 10% por
+defecto y se configura con `SINCROCARGA_COMMISSION_PERCENT`. El IVA demo (19%) se
+calcula sobre la comisión. Confirma ambos porcentajes con negocio/contabilidad
+antes de facturar clientes reales.
+
+Los estados de pago demo son `Procesando`, `Retenido` y `Liberado`; el backend
+avanza a `Retenido` tras dos segundos y la confirmación de recepción lo cambia a
+`Liberado`. No existe una pasarela ni movimiento bancario real, y el esquema no
+respalda un reembolso automático del 100%. La UI y el comprobante lo indican.
+La tarifa base se toma de `postulacion.tarifa_propuesta`; la comisión es 10% por
+defecto (`SINCROCARGA_COMMISSION_PERCENT`) y el IVA demo es 19% sobre la comisión.
+Valida ambos criterios con negocio/contabilidad antes de emitir facturas reales.
 
 Ejemplo de cuerpo para `POST`:
 

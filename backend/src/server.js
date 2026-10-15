@@ -5,6 +5,8 @@ import cors from 'cors'
 import { pool } from './db/pool.js'
 import authRouter from './routes/auth.routes.js'
 import publicacionesRouter from './routes/publicaciones.routes.js'
+import seguimientoRouter from './routes/seguimiento.routes.js'
+import pagosRouter from './routes/pagos.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
@@ -54,6 +56,8 @@ app.get('/api/health/db', async (_req, res) => {
 
 app.use('/api/publicaciones', publicacionesRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/seguimiento', seguimientoRouter)
+app.use('/api/pagos', pagosRouter)
 
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: 'Endpoint no encontrado' })

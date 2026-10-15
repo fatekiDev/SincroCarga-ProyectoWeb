@@ -7,6 +7,7 @@ import DashboardCamionero from './pages/dashboard_camionero.jsx'
 import PublishCargoPage from './pages/PublishCargoPage'
 import ReviewPage from './pages/ReviewPage'
 import TrackingPage from './pages/TrackingPage'
+import PaymentPage from './pages/PaymentPage'
 import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -104,7 +105,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/publicar"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
             <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
@@ -112,7 +113,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/matching"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
             <TrackingPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
@@ -121,12 +122,19 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/review"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
             <ReviewPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />
-      <Route path="/pagos" element={<Navigate to="/review" replace />} />
+      <Route
+        path="/pagos"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
+            <PaymentPage session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>

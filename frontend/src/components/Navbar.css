@@ -129,3 +129,55 @@
   align-items: center;
   justify-content: center;
 }
+
+@media (max-width: 480px) {
+  .navbar__inner {
+    gap: 12px;
+    padding: 10px 16px;
+  }
+
+  .navbar__brand {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .navbar__logo {
+    width: 32px;
+    height: 32px;
+    flex: 0 0 32px;
+  }
+
+  .navbar__brand-subtitle,
+  .navbar__user-role {
+    display: none;
+  }
+
+  .navbar__user {
+    min-width: 0;
+    gap: 8px;
+  }
+
+  .navbar__user-text {
+    min-width: 0;
+    max-width: 88px;
+  }
+
+  .navbar__user-name {
+    overflow: hidden;
+    font-size: 11px;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .navbar__avatar {
+    width: 30px;
+    height: 30px;
+    flex: 0 0 30px;
+  }
+
+  .navbar__logout {
+    padding: 4px 6px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+}

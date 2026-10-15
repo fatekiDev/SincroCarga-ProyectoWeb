@@ -11,6 +11,10 @@ function isDate(value) {
     && parsedDate.getUTCDate() === day
 }
 
+function isCurrentOrFutureDate(value) {
+  return isDate(value) && value >= new Date().toISOString().slice(0, 10)
+}
+
 function isPositiveNumber(value) {
   return typeof value === 'number' && Number.isFinite(value) && value > 0
 }
@@ -24,7 +28,7 @@ function isNonNegativeNumber(value) {
     || (typeof value === 'number' && Number.isFinite(value) && value >= 0)
 }
 
-function validateCommonFields(body, { includeState }) {
+function validateCommonFields(body) {
   const errors = []
 
   if (!Number.isSafeInteger(body.tipoCargaId) || body.tipoCargaId < 1) {
@@ -39,19 +43,12 @@ function validateCommonFields(body, { includeState }) {
     errors.push('valorDeclarado debe ser null o un número mayor o igual a cero')
   }
   if (!isPositiveId(body.rutaId)) errors.push('rutaId debe ser un entero positivo')
-  if (!isDate(body.fechaLimitePostulacion)) {
-    errors.push('fechaLimitePostulacion debe ser una fecha válida con formato YYYY-MM-DD')
+  if (!isCurrentOrFutureDate(body.fechaLimitePostulacion)) {
+    errors.push('fechaLimitePostulacion debe ser una fecha válida, actual o futura, con formato YYYY-MM-DD')
   }
   if (!isPositiveNumber(body.tarifaOfrecida)) {
     errors.push('tarifaOfrecida debe ser un número mayor que cero')
   }
-  if (
-    includeState
-    && (typeof body.estado !== 'string' || !body.estado.trim() || body.estado.length > 20)
-  ) {
-    errors.push('estado es obligatorio y debe tener como máximo 20 caracteres')
-  }
-
   return errors
 }
 
@@ -60,7 +57,7 @@ export function validateNewPublication(body) {
     return ['El cuerpo debe ser un objeto JSON']
   }
 
-  const errors = validateCommonFields(body, { includeState: false })
+  const errors = validateCommonFields(body)
 
   return errors
 }
@@ -70,5 +67,5 @@ export function validateUpdatedPublication(body) {
     return ['El cuerpo debe ser un objeto JSON']
   }
 
-  return validateCommonFields(body, { includeState: true })
+  return validateCommonFields(body)
 }

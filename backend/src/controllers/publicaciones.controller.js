@@ -1,6 +1,10 @@
 import {
+  cancelPublication as cancelPublicationRecord,
   createPublication as createPublicationRecord,
+  getPublicationCatalogs as getPublicationCatalogsRecord,
+  getPublicationQuote as getPublicationQuoteRecord,
   getPublication as getPublicationRecord,
+  listClientPublications,
   listAvailablePublications,
   updatePublication as updatePublicationRecord,
 } from '../services/publicaciones.service.js'
@@ -11,6 +15,37 @@ import {
 
 export async function getAvailablePublications(_req, res) {
   const publications = await listAvailablePublications()
+  res.status(200).json({ data: publications })
+}
+
+export async function getPublicationCatalogs(_req, res) {
+  const catalogs = await getPublicationCatalogsRecord()
+  res.status(200).json({ data: catalogs })
+}
+
+export async function getPublicationQuote(req, res) {
+  const tipoCargaId = Number(req.body?.tipoCargaId)
+  const rutaId = Number(req.body?.rutaId)
+  if (!Number.isSafeInteger(tipoCargaId) || tipoCargaId < 1
+    || !Number.isSafeInteger(rutaId) || rutaId < 1) {
+    return res.status(400).json({
+      error: 'Selecciona un tipo de carga y una ruta válidos',
+      details: ['tipoCargaId y rutaId deben ser enteros positivos'],
+    })
+  }
+
+  const quote = await getPublicationQuoteRecord({ tipoCargaId, rutaId })
+  if (!quote) {
+    return res.status(404).json({
+      error: 'No hay una tarifa referencial vigente para esta combinación de ruta y carga',
+    })
+  }
+
+  res.status(200).json({ data: quote })
+}
+
+export async function getMyPublications(req, res) {
+  const publications = await listClientPublications(req.user.cliente_id)
   res.status(200).json({ data: publications })
 }
 
@@ -54,6 +89,22 @@ export async function updatePublication(req, res) {
   const publication = await updatePublicationRecord(id, req.body, req.user.cliente_id)
   if (!publication) {
     return res.status(404).json({ error: 'Publicación no encontrada' })
+  }
+
+  res.status(200).json({ data: publication })
+}
+
+export async function cancelMyPublication(req, res) {
+  const id = Number(req.params.id)
+  if (!Number.isSafeInteger(id) || id < 1) {
+    return res.status(400).json({ error: 'El id debe ser un entero positivo' })
+  }
+
+  const publication = await cancelPublicationRecord(id, req.user.cliente_id)
+  if (!publication) {
+    return res.status(404).json({
+      error: 'Publicación no encontrada o no disponible para cancelar',
+    })
   }
 
   res.status(200).json({ data: publication })
