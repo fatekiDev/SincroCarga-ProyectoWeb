@@ -7,6 +7,7 @@ import DashboardCamionero from './pages/dashboard_camionero.jsx'
 import PublishCargoPage from './pages/PublishCargoPage'
 import ReviewPage from './pages/ReviewPage'
 import TrackingPage from './pages/TrackingPage'
+import DriverVerificationPage from './pages/DriverVerificationPage'
 import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -90,8 +91,16 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         path="/registro"
         element={<Register onAuthenticated={(user) => {
           onAuthenticated(user)
-          navigate(getHomePath(user), { replace: true })
+          navigate(user.role === 'camionero' ? '/verificacion' : getHomePath(user), { replace: true })
         }} />}
+      />
+      <Route
+        path="/verificacion"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
+            <DriverVerificationPage session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/dashboard"
