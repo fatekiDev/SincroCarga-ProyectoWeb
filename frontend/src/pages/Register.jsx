@@ -316,8 +316,7 @@ export default function Register({ onAuthenticated }) {
 
       <main className={`reg-card ${role ? "reg-card-form" : ""}`}>
         <p className="reg-demo-notice" role="note">
-          Registro conectado a la base local de desarrollo. Usa datos de prueba;
-          el servicio todavía no está preparado para producción.
+          Completa tus datos para crear tu cuenta de SincroCarga.
         </p>
         {role ? (
           <RoleForm

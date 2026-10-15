@@ -7,20 +7,14 @@ import DashboardCamionero from './pages/dashboard_camionero.jsx'
 import PublishCargoPage from './pages/PublishCargoPage'
 import ReviewPage from './pages/ReviewPage'
 import TrackingPage from './pages/TrackingPage'
-import PaymentPage from './pages/PaymentPage'
-import AdminPanel from './pages/AdminPanel'
-import AdminSolicitudes from './pages/AdminSolicitudes'
-import AdminTransportistas from './pages/AdminTransportistas'
-import AdminReportes from './pages/AdminReportes'
+import DriverVerificationPage from './pages/DriverVerificationPage'
+import PublishSpacePage from './pages/PublishSpacePage'
+import DriverMatchingPage from './pages/DriverMatchingPage'
 import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import { authRequest } from './auth/api'
 import { getHomePath } from './auth/session'
-
-// Módulo admin: mientras use datos de prueba (VITE_ADMIN_MOCK distinto de 'false') basta con tener sesión.
-// Al integrar la API real, poner VITE_ADMIN_MOCK=false en el .env: desde ahí se exige el rol 'admin'.
-const ADMIN_ROLE = import.meta.env.VITE_ADMIN_MOCK === 'false' ? 'admin' : undefined
 
 function App() {
   const [session, setSession] = useState(null)
@@ -99,8 +93,16 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         path="/registro"
         element={<Register onAuthenticated={(user) => {
           onAuthenticated(user)
-          navigate(getHomePath(user), { replace: true })
+          navigate(user.role === 'camionero' ? '/verificacion' : getHomePath(user), { replace: true })
         }} />}
+      />
+      <Route
+        path="/verificacion"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
+            <DriverVerificationPage session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
       />
       <Route
         path="/dashboard"
@@ -113,16 +115,20 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/publicar"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
-            <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />
+          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+            {session?.role === 'camionero'
+              ? <PublishSpacePage session={session} onLogout={handleLogoutAndNavigate} />
+              : <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />}
           </ProtectedRoute>
         }
       />
       <Route
         path="/matching"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
-            <TrackingPage session={session} onLogout={handleLogoutAndNavigate} />
+          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+            {session?.role === 'camionero'
+              ? <DriverMatchingPage session={session} onLogout={handleLogoutAndNavigate} />
+              : <TrackingPage session={session} onLogout={handleLogoutAndNavigate} />}
           </ProtectedRoute>
         }
       />
@@ -130,51 +136,12 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/review"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
             <ReviewPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />
-      <Route
-        path="/pagos"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
-            <PaymentPage session={session} onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
-            <AdminPanel onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/solicitudes"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
-            <AdminSolicitudes onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/transportistas"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
-            <AdminTransportistas onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/reportes"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
-            <AdminReportes onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
+      <Route path="/pagos" element={<Navigate to="/review" replace />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>
