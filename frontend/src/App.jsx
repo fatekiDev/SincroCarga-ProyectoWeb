@@ -8,6 +8,7 @@ import PublishCargoPage from './pages/PublishCargoPage'
 import ReviewPage from './pages/ReviewPage'
 import TrackingPage from './pages/TrackingPage'
 import DriverVerificationPage from './pages/DriverVerificationPage'
+import PublishSpacePage from './pages/PublishSpacePage'
 import DriverMatchingPage from './pages/DriverMatchingPage'
 import './App.css'
 import Login from './pages/Login'
@@ -115,7 +116,9 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         path="/publicar"
         element={
           <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
-            <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />
+            {session?.role === 'camionero'
+              ? <PublishSpacePage session={session} onLogout={handleLogoutAndNavigate} />
+              : <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />}
           </ProtectedRoute>
         }
       />

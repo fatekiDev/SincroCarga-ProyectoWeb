@@ -1,0 +1,33 @@
+.publish-space__grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 28px;
+}
+
+.publish-space__panel {
+  min-width: 0;
+  border: 1px solid var(--sc-border);
+  border-radius: 10px;
+  padding: 20px;
+}
+
+.publish-space__panel-title {
+  margin: 0 0 16px;
+  color: var(--sc-title);
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.publish-space__placeholder {
+  margin: 0;
+  color: var(--sc-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+@media (max-width: 760px) {
+  .publish-space__grid {
+    grid-template-columns: 1fr;
+  }
+}
