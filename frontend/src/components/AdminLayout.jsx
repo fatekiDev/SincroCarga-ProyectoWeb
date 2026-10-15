@@ -29,8 +29,8 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
         <nav className="adm-nav" aria-label="Principal">
           <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Panel</NavLink>
           <NavLink to="/admin/solicitudes" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Solicitudes</NavLink>
-          <span className="adm-nav-link disabled" aria-disabled="true" title="Próximamente">Transportistas</span>
-          <span className="adm-nav-link disabled" aria-disabled="true" title="Próximamente">Reportes</span>
+          <NavLink to="/admin/transportistas" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Transportistas</NavLink>
+          <NavLink to="/admin/reportes" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Reportes</NavLink>
         </nav>
 
         <div className="adm-user">

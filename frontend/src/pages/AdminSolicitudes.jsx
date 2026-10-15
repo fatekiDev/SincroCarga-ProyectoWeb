@@ -8,8 +8,8 @@ function AdminSolicitudes({ onLogout }) {
   const [error, setError] = useState('');
   const [aviso, setAviso] = useState('');
   const [seleccionadaId, setSeleccionadaId] = useState(null);
-  const [documentos, setDocumentos] = useState([]);
-  const [cargandoDocs, setCargandoDocs] = useState(false);
+  const [documentoActivo, setDocumentoActivo] = useState(null);
+  const [documentosCargados, setDocumentosCargados] = useState({ solicitudId: null, items: [] });
   const [ocupadoId, setOcupadoId] = useState(null);
   const [rechazando, setRechazando] = useState(null); // solicitud que se está rechazando
   const [motivo, setMotivo] = useState('');
@@ -29,13 +29,17 @@ function AdminSolicitudes({ onLogout }) {
   }, []);
 
   useEffect(() => {
-    if (seleccionadaId == null) { setDocumentos([]); return undefined; }
+    if (seleccionadaId == null) return undefined;
     let cancelado = false;
-    setCargandoDocs(true);
     getDocumentos(seleccionadaId)
-      .then((d) => { if (!cancelado) setDocumentos(d); })
-      .catch(() => { if (!cancelado) setDocumentos([]); })
-      .finally(() => { if (!cancelado) setCargandoDocs(false); });
+      .then((items) => {
+        if (!cancelado) setDocumentosCargados({ solicitudId: seleccionadaId, items });
+      })
+      .catch((requestError) => {
+        if (cancelado) return;
+        setDocumentosCargados({ solicitudId: seleccionadaId, items: [] });
+        setError(requestError.message || 'No se pudieron cargar los documentos.');
+      });
     return () => { cancelado = true; };
   }, [seleccionadaId]);
 
@@ -73,6 +77,9 @@ function AdminSolicitudes({ onLogout }) {
   };
 
   const seleccionada = solicitudes.find((s) => s.id === seleccionadaId);
+  const cargandoDocs = seleccionadaId != null && documentosCargados.solicitudId !== seleccionadaId;
+  const documentos = cargandoDocs || seleccionadaId == null ? [] : documentosCargados.items;
+  const cerrarDocumento = () => setDocumentoActivo(null);
 
   return (
     <AdminLayout onLogout={onLogout}>
@@ -136,11 +143,13 @@ function AdminSolicitudes({ onLogout }) {
                   <span className={d.estado === 'cargado' ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-error'}>
                     {d.estado === 'cargado' ? 'Cargado' : 'Falta'}
                   </span>
-                  {d.url ? (
-                    <a className="adm-btn adm-btn-outline adm-btn-sm" href={d.url} target="_blank" rel="noreferrer">Ver documento</a>
-                  ) : (
-                    <button type="button" className="adm-btn adm-btn-outline adm-btn-sm" disabled title="Vista previa no disponible todavía">Ver documento</button>
-                  )}
+                  <button
+                    type="button"
+                    className="adm-btn adm-btn-outline adm-btn-sm"
+                    onClick={() => setDocumentoActivo(d)}
+                  >
+                    Ver documento
+                  </button>
                 </article>
               ))}
             </div>
@@ -160,6 +169,66 @@ function AdminSolicitudes({ onLogout }) {
               <button type="submit" className="adm-btn adm-btn-danger" disabled={ocupadoId === rechazando.id}>Confirmar rechazo</button>
             </div>
           </form>
+        </div>
+      )}
+
+      {documentoActivo && (
+        <div
+          className="adm-overlay"
+          onClick={(event) => event.target === event.currentTarget && cerrarDocumento()}
+          onKeyDown={(event) => event.key === 'Escape' && cerrarDocumento()}
+        >
+          <section
+            className="adm-modal adm-document-modal"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="adm-document-title"
+          >
+            <button
+              type="button"
+              className="adm-modal-close"
+              aria-label="Cerrar vista previa"
+              onClick={cerrarDocumento}
+            >
+              ×
+            </button>
+            <h2 id="adm-document-title">{documentoActivo.tipo}</h2>
+            <p className="adm-muted">
+              {seleccionada?.nombre} · {documentoActivo.numero || 'Documento del transportista'}
+            </p>
+            {documentoActivo.url ? (
+              <>
+                <iframe
+                  className="adm-document-preview"
+                  src={documentoActivo.url}
+                  title={`Vista previa: ${documentoActivo.tipo}`}
+                  sandbox=""
+                  referrerPolicy="no-referrer"
+                />
+                <a
+                  className="adm-btn adm-btn-outline"
+                  href={documentoActivo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  Abrir documento en otra pestaña
+                </a>
+              </>
+            ) : (
+              <div className="adm-document-placeholder" role="status">
+                <strong>Vista previa de demostración</strong>
+                <p>
+                  Esta solicitud no tiene un archivo adjunto almacenado. El documento se muestra
+                  como dato de prueba y no se genera ni descarga un archivo real.
+                </p>
+              </div>
+            )}
+            <div className="adm-modal-actions">
+              <button type="button" className="adm-btn adm-btn-primary" onClick={cerrarDocumento}>
+                Cerrar
+              </button>
+            </div>
+          </section>
         </div>
       )}
     </AdminLayout>

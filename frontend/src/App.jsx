@@ -10,6 +10,8 @@ import TrackingPage from './pages/TrackingPage'
 import PaymentPage from './pages/PaymentPage'
 import AdminPanel from './pages/AdminPanel'
 import AdminSolicitudes from './pages/AdminSolicitudes'
+import AdminTransportistas from './pages/AdminTransportistas'
+import AdminReportes from './pages/AdminReportes'
 import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -154,6 +156,22 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         element={
           <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
             <AdminSolicitudes onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/transportistas"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
+            <AdminTransportistas onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reportes"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role={ADMIN_ROLE} redirectPath="/login">
+            <AdminReportes onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />

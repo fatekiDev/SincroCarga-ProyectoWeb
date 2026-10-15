@@ -35,6 +35,20 @@ antes de desplegarla hay que configurar el dominio permitido, HTTPS, CORS y
 cookies para el hosting, y revisar las obligaciones de protección de los datos
 personales recopilados.
 
+## Panel de administración
+
+Con una sesión iniciada, visita `/admin`. Las pestañas de Solicitudes,
+Transportistas y Reportes incluyen vista previa de documentos, revisión de
+conductores, búsqueda/filtros/paginación, métricas por período y descarga CSV.
+El modo actual es de demostración: los registros de transportistas y solicitudes
+se guardan en el almacenamiento local del navegador, y los documentos y reportes
+son datos de ejemplo; no se escriben en PostgreSQL ni se almacenan archivos.
+
+No configures `VITE_ADMIN_MOCK=false` esperando persistencia real: los endpoints
+administrativos aún no están implementados en el backend. La aplicación deberá
+añadir autorización administrativa y almacenamiento seguro de documentos antes
+de usar estas vistas con datos reales.
+
 ## Despliegue en Vercel
 
 Configura `VITE_API_URL` como el origen público del backend de Render, por

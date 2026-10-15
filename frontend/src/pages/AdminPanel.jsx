@@ -42,17 +42,17 @@ function AdminPanel({ onLogout }) {
             <article className="adm-card">
               <h2 className="adm-card-title">Camioneros verificados</h2>
               <p className="adm-card-value">{data.camionerosVerificados}</p>
-              <button type="button" className="adm-btn adm-btn-primary" disabled title="Próximamente">Ver listado</button>
+              <Link to="/admin/transportistas" className="adm-btn adm-btn-primary">Ver listado</Link>
             </article>
             <article className="adm-card">
               <h2 className="adm-card-title">Fletes activos</h2>
               <p className="adm-card-value">{data.fletesActivos}</p>
-              <button type="button" className="adm-btn adm-btn-primary" disabled title="Próximamente">Ver fletes</button>
+              <Link to="/admin/reportes" className="adm-btn adm-btn-primary">Ver fletes</Link>
             </article>
             <article className="adm-card">
               <h2 className="adm-card-title">Pagos retenidos</h2>
               <p className="adm-card-value">{clp(data.pagosRetenidos)} <span>CLP</span></p>
-              <button type="button" className="adm-btn adm-btn-primary" disabled title="Próximamente">Ver pagos</button>
+              <Link to="/admin/reportes" className="adm-btn adm-btn-primary">Ver pagos</Link>
             </article>
           </section>
 
