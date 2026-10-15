@@ -1,7 +1,16 @@
 import { useState } from 'react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import '../styles/PublishSpacePage.css'
+
+const SUGGESTED_MATCH = {
+  route: 'Puerto Montt → Castro',
+  match: '96% match',
+  cargo: 'Materiales de construcción',
+  load: '6 ton · hoy 15:30',
+  price: 87500,
+}
 
 const INITIAL_FORM = {
   origin: 'Puerto Montt',
@@ -98,8 +107,20 @@ export default function PublishSpacePage({ session, onLogout }) {
             <h2 className="publish-space__panel-title" id="suggestion-title">
               Coincidencia sugerida
             </h2>
-            <p className="publish-space__placeholder">
-              Las cargas compatibles con tu viaje aparecerán aquí.
+            <article className="publish-space__suggestion">
+              <div className="publish-space__suggestion-heading">
+                <h3>{SUGGESTED_MATCH.route}</h3>
+                <strong>${SUGGESTED_MATCH.price.toLocaleString('es-CL')}</strong>
+              </div>
+              <span className="publish-space__match-badge">{SUGGESTED_MATCH.match}</span>
+              <p>{SUGGESTED_MATCH.cargo}</p>
+              <p className="publish-space__suggestion-meta">{SUGGESTED_MATCH.load}</p>
+              <Link className="publish-space__coordinate" to="/matching">
+                Ver solicitudes en Matching
+              </Link>
+            </article>
+            <p className="publish-space__demo-note">
+              Coincidencia de ejemplo; la búsqueda automática todavía no está conectada al servidor.
             </p>
           </section>
         </div>
