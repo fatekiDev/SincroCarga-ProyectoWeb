@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function LogoutButton({ onLogout, className }) {
+export default function LogoutButton({ onLogout, className, label = 'Cerrar sesión' }) {
   const [error, setError] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
 
@@ -25,7 +25,7 @@ export default function LogoutButton({ onLogout, className }) {
         onClick={handleClick}
         disabled={isSubmitting}
       >
-        {isSubmitting ? 'Cerrando sesión…' : 'Cerrar sesión'}
+        {isSubmitting ? 'Cerrando sesión…' : label}
       </button>
       {error && <span role="alert">{error}</span>}
     </>
