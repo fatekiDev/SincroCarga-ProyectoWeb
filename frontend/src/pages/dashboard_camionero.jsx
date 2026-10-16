@@ -73,7 +73,7 @@ export default function DashboardCamionero({ session, onLogout }) {
 
       <main className="page__main dashboard__main">
         <p className="eyebrow">Panel del camionero</p>
-        <h1 className="page__title">Hola, {session.email || 'camionero'}</h1>
+        <h1 className="page__title">Bienvenido a tu panel, {session.name || session.email?.split('@')[0] || 'camionero'}</h1>
         <p className="page__subtitle">
           Gestiona tu capacidad, postulaciones y viajes desde un solo lugar.
         </p>
@@ -110,7 +110,7 @@ export default function DashboardCamionero({ session, onLogout }) {
         </section>
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

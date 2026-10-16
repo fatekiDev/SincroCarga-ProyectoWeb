@@ -1,6 +1,8 @@
 import { useEffect, useMemo } from 'react'
 import L from 'leaflet'
 import { MapContainer, Marker, Polyline, Popup, TileLayer, useMap } from 'react-leaflet'
+import 'leaflet/dist/leaflet.css'
+import '../styles/TrackingMap.css'
 
 const CITY_COORDINATES = {
   'puerto montt': [-41.4693, -72.9424],

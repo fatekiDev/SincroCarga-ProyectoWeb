@@ -339,7 +339,7 @@ export default function TrackingPage({ session, onLogout }) {
         )}
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
 
       {activeDialog === 'profile' && driver && (
         <div className="tracking-dialog-backdrop" onClick={(event) => event.target === event.currentTarget && closeDialog()} role="presentation">

@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { authRequest } from "../auth/api";
+import { getHomePath } from "../auth/session";
 import logo from "../assets/logoprincipal.png";
 import "./Login.css";
 
@@ -25,7 +26,7 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function Login({ onAuthenticated }) {
+export default function Login({ onAuthenticated, session }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [requestError, setRequestError] = useState("");
@@ -88,7 +89,7 @@ export default function Login({ onAuthenticated }) {
 
   return (
     <div className="auth-page">
-      <Link to="/" className="auth-brand" aria-label="Volver a SincroCarga">
+      <Link to={getHomePath(session)} className="auth-brand" aria-label="SincroCarga, ir a mi inicio">
         <img src={logo} alt="Logotipo de SincroCarga" className="auth-brand-logo" />
         <div className="auth-brand-text">
           <span className="auth-brand-name">SincroCarga</span>

@@ -11,6 +11,7 @@ import TrackingPage from './pages/TrackingPage'
 import DriverVerificationPage from './pages/DriverVerificationPage'
 import PublishSpacePage from './pages/PublishSpacePage'
 import DriverMatchingPage from './pages/DriverMatchingPage'
+import PaymentPage from './pages/PaymentPage'
 import './App.css'
 import Login from './pages/Login'
 import Register from './pages/Register'
@@ -85,14 +86,14 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route path="/landing" element={<Navigate to="/" replace />} />
       <Route
         path="/login"
-        element={<Login onAuthenticated={(user) => {
+        element={<Login session={session} onAuthenticated={(user) => {
           onAuthenticated(user)
           navigate(getHomePath(user), { replace: true })
         }} />}
       />
       <Route
         path="/registro"
-        element={<Register onAuthenticated={(user) => {
+        element={<Register session={session} onAuthenticated={(user) => {
           onAuthenticated(user)
           navigate(user.role === 'camionero' ? '/verificacion' : getHomePath(user), { replace: true })
         }} />}
@@ -150,7 +151,14 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
           </ProtectedRoute>
         }
       />
-      <Route path="/pagos" element={<Navigate to="/review" replace />} />
+      <Route
+        path="/pagos"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
+            <PaymentPage session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>
@@ -172,7 +180,7 @@ function LandingPage({ session, onLogout }) {
       <main>
         <MainPage />
       </main>
-      <InfoContacto />
+      <InfoContacto session={session} />
     </>
   )
 }

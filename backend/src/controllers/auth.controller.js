@@ -32,7 +32,12 @@ export function clearSessionCookie(res) {
 }
 
 function publicUser(user) {
-  return { id: user.id_usuario ?? user.id, email: user.email, role: user.rol ?? user.role }
+  return {
+    id: user.id_usuario ?? user.id,
+    email: user.email,
+    role: user.rol ?? user.role,
+    name: user.nombre ?? user.name ?? null,
+  }
 }
 
 function normalizePlate(value) {
@@ -81,7 +86,10 @@ export async function register(req, res) {
 
   const { user, token } = await registerUser(account)
   setSessionCookie(res, token)
-  res.status(201).json({ data: publicUser(user) })
+  const name = account.role === 'cliente'
+    ? account.profile.nombreRazonSocial
+    : account.profile.conductor.nombre
+  res.status(201).json({ data: publicUser({ ...user, nombre: name }) })
 }
 
 export async function login(req, res) {

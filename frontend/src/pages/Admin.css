@@ -111,24 +111,28 @@
 
 .adm-user-name {
   color: #17233c;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 500;
 }
 
 .adm-user-logout {
   display: inline-flex;
   align-items: center;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  color: #17233c;
+  padding: 6px 9px;
+  border: 1px solid #f2c7c3;
+  border-radius: 6px;
+  background: #fff1f0;
+  color: #b42318;
   font: inherit;
-  font-size: 11px;
+  font-size: 12px;
+  font-weight: 600;
   cursor: pointer;
 }
 
 .adm-user-logout:hover:not(:disabled) {
-  color: #2f6feb;
+  border-color: #e6a39d;
+  background: #ffe2df;
+  color: #912018;
 }
 
 .adm-user-logout:disabled {
@@ -138,7 +142,7 @@
 
 .adm-user-separator {
   color: #68758a;
-  font-size: 11px;
+  font-size: 12px;
 }
 
 .adm-main {

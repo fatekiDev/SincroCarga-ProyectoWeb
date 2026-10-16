@@ -1,5 +1,6 @@
 import { useState } from 'react'
-import { Circle, CircleCheck, CircleDot, FileText, Upload } from 'lucide-react'
+import { ArrowLeft, Circle, CircleCheck, CircleDot, FileText, Upload } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import '../styles/PublishCargoPage.css'
@@ -46,6 +47,9 @@ export default function DriverVerificationPage({ session, onLogout }) {
       <Navbar session={session} onLogout={onLogout} />
 
       <main className="page__main driver-verification__main">
+        <Link className="driver-verification__back-link" to="/dashboard">
+          <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
+        </Link>
         <h1 className="driver-verification__title">Prepara tus documentos</h1>
         <p className="driver-verification__subtitle">
           La revisión de tu cuenta todavía no ha comenzado. Puedes revisar y seleccionar los documentos solicitados aquí.
@@ -154,7 +158,7 @@ export default function DriverVerificationPage({ session, onLogout }) {
         </div>
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

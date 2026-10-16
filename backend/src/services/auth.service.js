@@ -26,7 +26,12 @@ export async function loginUser({ email, password }) {
   const token = await createAccountSession(account.id_usuario)
   return {
     token,
-    user: { id: account.id_usuario, email: account.email, role: account.rol },
+    user: {
+      id: account.id_usuario,
+      email: account.email,
+      role: account.rol,
+      nombre: account.nombre,
+    },
   }
 }
 

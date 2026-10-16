@@ -15,7 +15,7 @@
 }
 
 .how__subtitle {
-  font-size: 0.8rem;
+  font-size: 0.9375rem;
   color: var(--sc-text-secondary);
   margin: 0 0 28px;
 }
@@ -34,7 +34,7 @@
 }
 
 .how__eyebrow {
-  font-size: 0.7rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   color: var(--sc-primary);
   margin: 0 0 8px;
@@ -55,12 +55,12 @@
 }
 
 .how__field dt {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   color: var(--sc-text-secondary);
 }
 
 .how__field dd {
-  font-size: 0.8rem;
+  font-size: 0.9375rem;
   color: var(--sc-title);
   margin: 0;
 }
@@ -81,7 +81,7 @@
 .how__match-badge {
   background: var(--sc-primary-soft);
   color: var(--sc-badge-text);
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 6px;
@@ -94,13 +94,13 @@
 }
 
 .how__match-route {
-  font-size: 0.8rem;
+  font-size: 0.9375rem;
   color: var(--sc-title);
   margin: 0 0 2px;
 }
 
 .how__match-detail {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   color: var(--sc-text-secondary);
   margin: 0 0 12px;
 }

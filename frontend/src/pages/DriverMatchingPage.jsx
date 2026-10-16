@@ -1,6 +1,7 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, ArrowRight, LoaderCircle, RefreshCw, Search } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, ArrowRight, LoaderCircle, MapPinned, RefreshCw, Search } from 'lucide-react'
+import { lazy, Suspense } from 'react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import {
@@ -10,6 +11,8 @@ import {
   withdrawApplication,
 } from '../transportista/api'
 import '../styles/DriverMatchingPage.css'
+
+const TrackingMap = lazy(() => import('../components/TrackingMap'))
 
 const CURRENCY_FORMAT = new Intl.NumberFormat('es-CL', {
   style: 'currency',
@@ -44,6 +47,8 @@ export default function DriverMatchingPage({ session, onLogout }) {
   const [retryToken, setRetryToken] = useState(0)
   const [expandedId, setExpandedId] = useState(null)
   const [applicationId, setApplicationId] = useState(null)
+  const [applicationStep, setApplicationStep] = useState(1)
+  const applicationRateRef = useRef(null)
   const [withdrawId, setWithdrawId] = useState(null)
   const [search, setSearch] = useState('')
   const [form, setForm] = useState({ tarifaPropuesta: '', comentario: '' })
@@ -109,6 +114,7 @@ export default function DriverMatchingPage({ session, onLogout }) {
         ? `Actualizaste tu postulación para ${load.ruta.origen} → ${load.ruta.destino}.`
         : `Postulación enviada para ${load.ruta.origen} → ${load.ruta.destino}.`)
       setApplicationId(null)
+      setApplicationStep(1)
       setForm({ tarifaPropuesta: '', comentario: '' })
       reloadData()
     } catch (error) {
@@ -116,6 +122,17 @@ export default function DriverMatchingPage({ session, onLogout }) {
     } finally {
       setBusyId(null)
     }
+  }
+
+  const goToApplicationDetails = () => {
+    const offeredRate = Number(form.tarifaPropuesta)
+    if (!Number.isFinite(offeredRate) || offeredRate <= 0) {
+      setActionError('Ingresa una tarifa propuesta mayor que cero para continuar.')
+      applicationRateRef.current?.focus()
+      return
+    }
+    setActionError('')
+    setApplicationStep(2)
   }
 
   const handleWithdraw = async (application) => {
@@ -139,6 +156,9 @@ export default function DriverMatchingPage({ session, onLogout }) {
       <Navbar activeSection="matching" session={session} onLogout={onLogout} />
 
       <main className="page__main">
+        <Link className="driver-matching__back-link" to="/dashboard">
+          <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
+        </Link>
         <p className="eyebrow">Transportista · Cargas disponibles</p>
         <h1 className="page__title">Busca cargas y postula</h1>
         <p className="page__subtitle">
@@ -245,6 +265,7 @@ export default function DriverMatchingPage({ session, onLogout }) {
                           className="driver-matching__button"
                           onClick={() => {
                             setApplicationId(applicationId === load.id ? null : load.id)
+                            setApplicationStep(1)
                             setForm({ tarifaPropuesta: String(load.tarifaOfrecida), comentario: '' })
                             setActionError('')
                           }}
@@ -262,46 +283,103 @@ export default function DriverMatchingPage({ session, onLogout }) {
                         <p><strong>Capacidad requerida:</strong> {NUMBER_FORMAT.format(load.pesoKg)} kg y {NUMBER_FORMAT.format(load.volumenM3)} m³</p>
                         <p><strong>Tarifa del cliente:</strong> {CURRENCY_FORMAT.format(load.tarifaOfrecida)} CLP</p>
                         <p>La ruta y la tarifa se confirman con el cliente antes de iniciar el viaje.</p>
+                        <h4><MapPinned size={16} aria-hidden="true" /> Mapa referencial del recorrido</h4>
+                        <p>El mapa muestra una ruta aproximada; no representa la ubicación GPS del camión.</p>
+                        <Suspense fallback={<p className="driver-matching__map-fallback" role="status">Cargando mapa…</p>}>
+                          <TrackingMap
+                            viaje={{
+                              id: load.id,
+                              ruta: {
+                                id: load.ruta.id ?? load.id,
+                                origen: load.ruta.origen,
+                                destino: load.ruta.destino,
+                                cruceMaritimo: Boolean(load.ruta.cruceMaritimo),
+                                duracionEstimadaMin: load.ruta.duracionEstimadaMin,
+                              },
+                            }}
+                            progress={0}
+                            showVehicle={false}
+                          />
+                        </Suspense>
                       </div>
                     )}
 
                     {applicationId === load.id && (
                       <form className="driver-matching__application" onSubmit={(event) => handleApply(event, load)}>
-                        <label>
-                          Tu tarifa propuesta (CLP)
-                          <input
-                            type="number"
-                            min="1"
-                            step="1"
-                            required
-                            inputMode="numeric"
-                            value={form.tarifaPropuesta}
-                            onChange={(event) => setForm((current) => ({ ...current, tarifaPropuesta: event.target.value }))}
-                          />
-                        </label>
-                        <label>
-                          Comentario para el cliente (opcional)
-                          <textarea
-                            maxLength={500}
-                            rows={3}
-                            value={form.comentario}
-                            onChange={(event) => setForm((current) => ({ ...current, comentario: event.target.value }))}
-                          />
-                          <span>{form.comentario.length}/500 caracteres</span>
-                        </label>
-                        <div className="driver-matching__actions">
-                          <button className="driver-matching__button" type="submit" disabled={busyId === load.id}>
-                            {busyId === load.id ? 'Enviando…' : 'Enviar postulación'}
-                          </button>
-                          <button
-                            className="driver-matching__button driver-matching__button--secondary"
-                            type="button"
-                            onClick={() => setApplicationId(null)}
-                            disabled={busyId === load.id}
-                          >
-                            Cancelar
-                          </button>
-                        </div>
+                        <p className="driver-matching__step" role="status">
+                          Paso {applicationStep} de 2 · {applicationStep === 1 ? 'Propón tu tarifa' : 'Revisa y completa tu postulación'}
+                        </p>
+                        {applicationStep === 1 ? (
+                          <>
+                            <label>
+                              Tu tarifa propuesta (CLP)
+                              <input
+                                ref={applicationRateRef}
+                                type="number"
+                                min="1"
+                                step="1"
+                                required
+                                inputMode="numeric"
+                                value={form.tarifaPropuesta}
+                                onChange={(event) => setForm((current) => ({ ...current, tarifaPropuesta: event.target.value }))}
+                              />
+                            </label>
+                            <p className="driver-matching__application-note">
+                              Tarifa ofrecida por el cliente: {CURRENCY_FORMAT.format(load.tarifaOfrecida)}. Podrás revisar tu propuesta antes de enviarla.
+                            </p>
+                            <div className="driver-matching__actions">
+                              <button className="driver-matching__button" type="button" onClick={goToApplicationDetails}>
+                                Siguiente
+                              </button>
+                              <button
+                                className="driver-matching__button driver-matching__button--secondary"
+                                type="button"
+                                onClick={() => setApplicationId(null)}
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </>
+                        ) : (
+                          <>
+                            <p className="driver-matching__application-summary">
+                              <strong>Ruta:</strong> {load.ruta.origen} → {load.ruta.destino}
+                              <br />
+                              <strong>Tu tarifa:</strong> {CURRENCY_FORMAT.format(Number(form.tarifaPropuesta))}
+                            </p>
+                            <label>
+                              Comentario para el cliente (opcional)
+                              <textarea
+                                maxLength={500}
+                                rows={3}
+                                value={form.comentario}
+                                onChange={(event) => setForm((current) => ({ ...current, comentario: event.target.value }))}
+                              />
+                              <span>{form.comentario.length}/500 caracteres</span>
+                            </label>
+                            <div className="driver-matching__actions">
+                              <button
+                                className="driver-matching__button driver-matching__button--secondary"
+                                type="button"
+                                onClick={() => setApplicationStep(1)}
+                                disabled={busyId === load.id}
+                              >
+                                Volver
+                              </button>
+                              <button className="driver-matching__button" type="submit" disabled={busyId === load.id}>
+                                {busyId === load.id ? 'Enviando…' : 'Enviar postulación'}
+                              </button>
+                              <button
+                                className="driver-matching__button driver-matching__button--secondary"
+                                type="button"
+                                onClick={() => setApplicationId(null)}
+                                disabled={busyId === load.id}
+                              >
+                                Cancelar
+                              </button>
+                            </div>
+                          </>
+                        )}
                       </form>
                     )}
                   </article>
@@ -381,7 +459,7 @@ export default function DriverMatchingPage({ session, onLogout }) {
         </p>
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

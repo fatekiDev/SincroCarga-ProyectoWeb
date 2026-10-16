@@ -24,7 +24,7 @@ function Presentacion() {
           </p>
           <p className="hero__paragraph">
             Publicamos disponibilidad, registramos carga y encontramos coincidencias
-            por ruta, techo y compatibilidad de camión, con pago seguro dentro de la app.
+            por ruta, techo y compatibilidad de camión, con un flujo de pago demostrativo.
           </p>
         </div>
 
@@ -32,22 +32,23 @@ function Presentacion() {
           <div className="hero__ctas">
             <div className="hero__cta-card">
               <p>¿Necesitas enviar un pedido?</p>
-              <Button variant="primary" onClick={() => navigate('/publicar')}>Publicar carga</Button>
+              <Button fullWidth variant="primary" onClick={() => navigate('/publicar')}>Publicar carga</Button>
             </div>
             <div className="hero__cta-card">
               <p>¿Eres camionero?</p>
-              <Button variant="primary" onClick={() => navigate('/registro')}>Registrarme</Button>
+              <Button fullWidth variant="primary" onClick={() => navigate('/registro')}>Registrarme</Button>
             </div>
           </div>
 
           <div className="hero__stats" role="list" aria-label="Resultados de la plataforma">
-            {/* Nota: los valores son "—" mientras no exista el dato real
-                proveniente del backend. Nunca mostrar cifras inventadas. */}
-            <StatCard value="—" label="coincidencias activas" />
-            <StatCard value="—" label="pago asegurado" />
-            <StatCard value="—" label="tiempo promedio" />
+            <StatCard value="≈ 3" label="cargas de referencia" />
+            <StatCard value="Demo" label="pago protegido" />
+            <StatCard value="≈ 2 h" label="tiempo promedio estimado" />
           </div>
         </div>
+        <p className="hero__stats-note">
+          Estimaciones referenciales para esta demostración, no métricas operativas en tiempo real. El pago no representa una transferencia ni un monto retenido.
+        </p>
       </div>
     </section>
   )

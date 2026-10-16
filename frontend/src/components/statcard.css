@@ -1,21 +1,23 @@
 .stat-card {
   background: var(--sc-card-bg);
-  border-radius: var(--sc-radius-sm);
-  padding: 10px 14px;
+  border: 1px solid var(--sc-border);
+  border-radius: var(--sc-radius-md);
+  padding: 12px 14px;
   text-align: center;
-  min-width: 80px;
-  flex: 1 0 auto;
+  min-width: 110px;
+  flex: 1 1 0;
 }
 
 .stat-card__value {
-  font-size: 1rem;
+  font-size: 1.125rem;
   font-weight: 700;
   color: var(--sc-title);
   margin: 0 0 2px;
 }
 
 .stat-card__label {
-  font-size: 0.65rem;
+  font-size: 0.8125rem;
   color: var(--sc-text-secondary);
+  line-height: 1.35;
   margin: 0;
 }

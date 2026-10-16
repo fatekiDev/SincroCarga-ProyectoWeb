@@ -6,6 +6,22 @@
   margin-top: 24px;
 }
 
+.publish-space__back-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 12px;
+  color: var(--sc-primary);
+  font-size: var(--sc-fs-small);
+  font-weight: 600;
+}
+
+.publish-space__back-link:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 3px;
+}
+
 .publish-space__panel {
   min-width: 0;
   border: 1px solid var(--sc-border);

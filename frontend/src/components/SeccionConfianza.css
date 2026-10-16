@@ -1,6 +1,6 @@
 .trust {
-  background: var(--sc-header-bg);
-  padding: 32px 0;
+  background: var(--sc-surface-testimonial);
+  padding: clamp(36px, 5vw, 64px) 0;
 }
 
 .trust__grid {
@@ -11,23 +11,26 @@
 }
 
 .trust__icon {
-  display: inline-block;
-  width: 40px;
-  height: 40px;
+  display: inline-flex;
+  width: 48px;
+  height: 48px;
+  align-items: center;
+  justify-content: center;
   border-radius: 50%;
-  background: var(--sc-primary-soft);
+  background: rgba(255, 255, 255, 0.78);
+  color: var(--sc-primary);
   margin-bottom: 10px;
 }
 
 .trust__item h3 {
-  font-size: 0.8rem;
+  font-size: 1rem;
   font-weight: 600;
   color: var(--sc-title);
   margin: 0 0 4px;
 }
 
 .trust__item p {
-  font-size: 0.7rem;
+  font-size: 0.875rem;
   color: var(--sc-text-secondary);
   margin: 0;
   line-height: 1.5;

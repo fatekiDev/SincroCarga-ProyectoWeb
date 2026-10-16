@@ -263,3 +263,18 @@
     grid-row: 1 / span 2;
   }
 }
+.driver-verification__back-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 7px;
+  margin-bottom: 14px;
+  color: var(--sc-primary);
+  font-size: var(--sc-fs-small);
+  font-weight: 600;
+}
+
+.driver-verification__back-link:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 3px;
+}

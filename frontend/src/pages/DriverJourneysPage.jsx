@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, Clock3, LoaderCircle, MapPinned, RefreshCw, Truck } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, Clock3, LoaderCircle, MapPinned, RefreshCw, Truck } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import { getCarrierJourneys } from '../transportista/api'
@@ -67,6 +67,9 @@ export default function DriverJourneysPage({ session, onLogout }) {
       <Navbar activeSection="viajes" session={session} onLogout={onLogout} />
 
       <main className="page__main driver-journeys__main">
+        <Link className="driver-journeys__back-link" to="/dashboard">
+          <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
+        </Link>
         <p className="eyebrow">Transportista · Seguimiento</p>
         <h1 className="page__title">Estado de mis viajes</h1>
         <p className="page__subtitle">
@@ -167,7 +170,7 @@ export default function DriverJourneysPage({ session, onLogout }) {
         )}
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

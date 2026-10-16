@@ -1,14 +1,18 @@
 import logo from '../assets/logoprincipal.png'
+import { Link } from 'react-router-dom'
+import { getHomePath } from '../auth/session'
 import './InfoContacto.css'
 
-function InfoContacto() {
+function InfoContacto({ session }) {
   return (
     <footer id="contacto" className="site-footer">
       <div className="container site-footer__grid">
         <div>
           <div className="site-footer__brand-row">
-            <img src={logo} alt="Logotipo de SincroCarga" className="site-footer__logo" />
-            <p className="site-footer__brand">SincroCarga</p>
+            <Link to={getHomePath(session)} className="site-footer__brand-link" aria-label="SincroCarga, ir a mi inicio">
+              <img src={logo} alt="" aria-hidden="true" className="site-footer__logo" />
+              <span className="site-footer__brand">SincroCarga</span>
+            </Link>
           </div>
           <p className="site-footer__tagline">
             Conectamos espacio disponible con carga real en Chiloé.

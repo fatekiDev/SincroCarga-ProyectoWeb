@@ -431,7 +431,7 @@ export default function ReviewPage({ session, onLogout }) {
         )}
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
 
       {showReceiptDialog && journey && driver && (
         <div className="review-dialog-backdrop" onClick={(event) => event.target === event.currentTarget && setShowReceiptDialog(false)} role="presentation">

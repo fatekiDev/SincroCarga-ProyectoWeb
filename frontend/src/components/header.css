@@ -60,9 +60,10 @@
 .dashboard-logout {
   border: 0;
   padding: 8px;
-  background: transparent;
-  color: var(--sc-text-secondary);
-  font-size: 0.8rem;
+  border-radius: var(--sc-radius-sm);
+  background: #fff1f0;
+  color: #b42318;
+  font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
 }
@@ -70,7 +71,8 @@
 .site-header__logout:hover,
 .navbar__logout:hover,
 .dashboard-logout:hover {
-  color: var(--sc-primary);
+  background: #ffe2df;
+  color: #912018;
 }
 
 .site-header__logout:disabled,

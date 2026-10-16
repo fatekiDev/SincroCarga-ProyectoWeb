@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { authRequest } from "../auth/api";
+import { getHomePath } from "../auth/session";
 import logo from "../assets/logoprincipal.png";
 import "./Register.css";
 
@@ -38,31 +39,31 @@ const CLIENTE_FIELDS = [
       { value: "1", label: "Empresa" },
     ],
   },
-  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", maxLength: 150, showWhen: ["tipoClienteId", "2"] },
-  { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", maxLength: 150, showWhen: ["tipoClienteId", "1"] },
+  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", maxLength: 150, placeholder: "Ej.: María González", showWhen: ["tipoClienteId", "2"] },
+  { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", maxLength: 150, placeholder: "Ej.: Transportes del Sur Ltda.", showWhen: ["tipoClienteId", "1"] },
   { name: "rut", label: "RUT", type: "text", autoComplete: "off", maxLength: 12, placeholder: "12.345.678-9" },
-  { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel", maxLength: 20 },
-  { name: "direccion", label: "Dirección (opcional)", type: "text", required: false, maxLength: 200 },
-  { name: "comuna", label: "Comuna (opcional)", type: "text", required: false, maxLength: 100 },
-  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150 },
-  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password" },
-  { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password" },
+  { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel", maxLength: 20, placeholder: "+56 9 1234 5678" },
+  { name: "direccion", label: "Dirección (opcional)", type: "text", required: false, maxLength: 200, placeholder: "Calle y número" },
+  { name: "comuna", label: "Comuna (opcional)", type: "text", required: false, maxLength: 100, placeholder: "Ej.: Castro" },
+  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150, placeholder: "nombre@correo.cl" },
+  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password", placeholder: "Crea una contraseña segura" },
+  { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password", placeholder: "Escribe la misma contraseña" },
 ];
 
 const PASSWORD_FIELDS = [
-  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password" },
-  { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password" },
+  { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password", placeholder: "Crea una contraseña segura" },
+  { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password", placeholder: "Escribe la misma contraseña" },
 ];
 
 const DRIVER_FIELDS = [
-  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150 },
+  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150, placeholder: "nombre@correo.cl" },
   ...PASSWORD_FIELDS,
   { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", maxLength: 12, placeholder: "76.111.222-3" },
-  { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text", maxLength: 150 },
+  { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text", maxLength: 150, placeholder: "Ej.: Transportes del Sur Ltda." },
   { name: "rut", label: "RUT del conductor", type: "text", maxLength: 12, placeholder: "12.345.678-9" },
-  { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name", maxLength: 150 },
-  { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel", maxLength: 20 },
-  { name: "licencia", label: "Número de licencia de conducir", type: "text", maxLength: 30 },
+  { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name", maxLength: 150, placeholder: "Ej.: María González" },
+  { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel", maxLength: 20, placeholder: "+56 9 1234 5678" },
+  { name: "licencia", label: "Número de licencia de conducir", type: "text", maxLength: 30, placeholder: "Número indicado en tu licencia" },
   { name: "licenciaVencimiento", label: "Vencimiento de licencia", type: "date" },
   {
     name: "tipoVehiculo",
@@ -72,11 +73,11 @@ const DRIVER_FIELDS = [
     maxLength: 50,
   },
   { name: "patente", label: "Patente", type: "text", maxLength: 10, placeholder: "ABCD-12 o AB-1234" },
-  { name: "marca", label: "Marca del vehículo", type: "text", maxLength: 50 },
-  { name: "modelo", label: "Modelo del vehículo", type: "text", maxLength: 50 },
-  { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1, integer: true },
-  { name: "capacidadCargaKg", label: "Capacidad de carga (kg)", type: "number", min: 0, step: "any", positive: true },
-  { name: "capacidadCargaM3", label: "Capacidad de carga (m³)", type: "number", min: 0, step: "any", positive: true },
+  { name: "marca", label: "Marca del vehículo", type: "text", maxLength: 50, placeholder: "Ej.: Mercedes-Benz" },
+  { name: "modelo", label: "Modelo del vehículo", type: "text", maxLength: 50, placeholder: "Ej.: Atego" },
+  { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1, integer: true, placeholder: String(new Date().getFullYear()) },
+  { name: "capacidadCargaKg", label: "Capacidad de carga (kg)", type: "number", min: 0, step: "any", positive: true, placeholder: "Ej.: 5000" },
+  { name: "capacidadCargaM3", label: "Capacidad de carga (m³)", type: "number", min: 0, step: "any", positive: true, placeholder: "Ej.: 20" },
 ];
 
 function getFieldSection(role, fieldName) {
@@ -370,6 +371,7 @@ function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange })
                       type={visiblePasswords[field.name] ? "text" : "password"}
                       required
                       autoComplete={field.autoComplete}
+                      placeholder={field.placeholder || ""}
                       aria-invalid={Boolean(errors[field.name])}
                       aria-describedby={errors[field.name] ? `${field.name}-error` : "password-hint"}
                       className={`reg-input ${errors[field.name] ? "has-error" : ""}`}
@@ -437,13 +439,13 @@ function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange })
   );
 }
 
-export default function Register({ onAuthenticated }) {
+export default function Register({ onAuthenticated, session }) {
   const [role, setRole] = useState(null); // null | "camionero" | "cliente"
   const [drafts, setDrafts] = useState({});
 
   return (
     <div className="reg-page">
-      <Link to="/" className="reg-brand" aria-label="Volver a SincroCarga">
+      <Link to={getHomePath(session)} className="reg-brand" aria-label="SincroCarga, ir a mi inicio">
         <img src={logo} alt="Logotipo de SincroCarga" className="reg-brand-logo" />
         <div className="reg-brand-text">
           <span className="reg-brand-name">SincroCarga</span>

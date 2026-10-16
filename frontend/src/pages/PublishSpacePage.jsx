@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { AlertTriangle, LoaderCircle, PackagePlus, RefreshCw } from 'lucide-react'
+import { AlertTriangle, ArrowLeft, LoaderCircle, PackagePlus, RefreshCw } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import {
@@ -173,6 +173,9 @@ export default function PublishSpacePage({ session, onLogout }) {
       <Navbar activeSection="publicar" session={session} onLogout={onLogout} />
 
       <main className="page__main">
+        <Link className="publish-space__back-link" to="/dashboard">
+          <ArrowLeft size={16} aria-hidden="true" /> Volver al panel
+        </Link>
         <p className="eyebrow">Transportista · Capacidad disponible</p>
         <h1 className="page__title">Publica espacio en tu camión</h1>
         <p className="page__subtitle">
@@ -389,7 +392,7 @@ export default function PublishSpacePage({ session, onLogout }) {
         )}
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

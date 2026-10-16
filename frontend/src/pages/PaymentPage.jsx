@@ -231,7 +231,7 @@ export default function PaymentPage({ session, onLogout }) {
         )}
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }

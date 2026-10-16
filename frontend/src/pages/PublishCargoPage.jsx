@@ -737,7 +737,7 @@ export default function PublishCargoPage({ session, onLogout }) {
         </section>
       </main>
 
-      <Footer tagline="Matching de carga y transporte en Chiloé" />
+      <Footer session={session} tagline="Matching de carga y transporte en Chiloé" />
     </div>
   )
 }
