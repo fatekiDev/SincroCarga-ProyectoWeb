@@ -71,7 +71,7 @@ const DRIVER_FIELDS = [
     options: ["Camión 3/4", "Camión simple", "Rampla", "Camioneta de carga", "Otro"],
     maxLength: 50,
   },
-  { name: "patente", label: "Patente", type: "text", maxLength: 10, placeholder: "AB-CD-12" },
+  { name: "patente", label: "Patente", type: "text", maxLength: 10, placeholder: "ABCD-12 o AB-1234" },
   { name: "marca", label: "Marca del vehículo", type: "text", maxLength: 50 },
   { name: "modelo", label: "Modelo del vehículo", type: "text", maxLength: 50 },
   { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1, integer: true },
@@ -219,6 +219,12 @@ function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange })
         }
       }
     });
+    if (role === "camionero" && form.patente?.trim()) {
+      const normalizedPlate = form.patente.trim().replace(/[\s-]/g, "").toUpperCase();
+      if (!/^(?:[A-Z]{4}\d{2}|[A-Z]{2}\d{4})$/.test(normalizedPlate)) {
+        next.patente = "Ingresa una patente chilena válida (ABCD-12 o AB-1234).";
+      }
+    }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email?.trim() || "")) {
       next.email = "Ingresa un correo electrónico válido.";
     }
@@ -278,7 +284,7 @@ function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange })
         },
         camion: {
           tipo: form.tipoVehiculo,
-          patente: form.patente,
+          patente: form.patente.trim().toUpperCase(),
           marca: form.marca,
           modelo: form.modelo,
           anio: Number(form.anio),

@@ -161,31 +161,14 @@
   line-height: 1.45;
 }
 
-.driver-verification__submit {
-  width: 100%;
-  min-height: 36px;
-  border: 0;
-  border-radius: 7px;
-  background: var(--sc-primary);
-  color: var(--sc-primary-text);
-  font: inherit;
+.driver-verification__submit-note {
+  margin: 0;
+  border-radius: var(--sc-radius-sm);
+  background: var(--sc-surface-muted);
+  padding: 10px;
+  color: var(--sc-text-secondary);
   font-size: 12px;
-  font-weight: 600;
-  cursor: pointer;
-}
-
-.driver-verification__submit:hover {
-  background: var(--sc-primary-hover);
-}
-
-.driver-verification__submit:disabled {
-  background: var(--sc-disabled);
-  cursor: not-allowed;
-}
-
-.driver-verification__submit:focus-visible {
-  outline: 3px solid var(--sc-focus-shadow);
-  outline-offset: 2px;
+  line-height: 1.5;
 }
 
 .driver-verification__timeline {

@@ -4,6 +4,20 @@
   justify-content: space-between;
 }
 
+.tracking-map__unavailable {
+  display: grid;
+  min-height: 160px;
+  place-items: center;
+  margin: 16px 0 0;
+  border-radius: 8px;
+  background: var(--sc-surface-muted);
+  padding: 20px;
+  color: var(--sc-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+  text-align: center;
+}
+
 .status-pill {
   display: flex;
   align-items: center;

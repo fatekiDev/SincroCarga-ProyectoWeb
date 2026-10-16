@@ -35,6 +35,16 @@ antes de desplegarla hay que configurar el dominio permitido, HTTPS, CORS y
 cookies para el hosting, y revisar las obligaciones de protección de los datos
 personales recopilados.
 
+## Carril del transportista
+
+El panel del camionero consulta la API `/api/transportista` para listar cargas,
+guardar y retirar postulaciones, publicar/cancelar capacidad disponible y
+consultar los viajes registrados. Las acciones requieren una sesión con rol
+`camionero` y se persisten en PostgreSQL. El mapa del transportista es un
+recorrido de referencia, no seguimiento GPS. El envío de documentos aún no está
+implementado: los archivos seleccionados en la verificación solo permanecen en
+memoria mientras la página está abierta.
+
 ## Panel de administración
 
 Con una sesión iniciada, visita `/admin`. Las pestañas de Solicitudes,

@@ -19,6 +19,7 @@ export default function Navbar({ activeSection, session, onLogout }) {
       { key: 'inicio', label: 'Inicio', path: '/dashboard' },
       { key: 'publicar', label: 'Publicar espacio', path: '/publicar' },
       { key: 'matching', label: 'Buscar cargas', path: '/matching' },
+      { key: 'viajes', label: 'Mis viajes', path: '/viajes' },
     ]
     : CLIENT_NAV_ITEMS;
   const user = {

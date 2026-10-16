@@ -4,6 +4,7 @@ import Header from './components/header'
 import InfoContacto from './components/InfoContacto'
 import MainPage from './pages/MainPage'
 import DashboardCamionero from './pages/dashboard_camionero.jsx'
+import DriverJourneysPage from './pages/DriverJourneysPage'
 import PublishCargoPage from './pages/PublishCargoPage'
 import ReviewPage from './pages/ReviewPage'
 import TrackingPage from './pages/TrackingPage'
@@ -109,6 +110,14 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         element={
           <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
             <DashboardCamionero session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/viajes"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
+            <DriverJourneysPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />

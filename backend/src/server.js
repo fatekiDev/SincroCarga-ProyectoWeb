@@ -7,6 +7,7 @@ import authRouter from './routes/auth.routes.js'
 import publicacionesRouter from './routes/publicaciones.routes.js'
 import seguimientoRouter from './routes/seguimiento.routes.js'
 import pagosRouter from './routes/pagos.routes.js'
+import transportistaRouter from './routes/transportista.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
@@ -58,6 +59,7 @@ app.use('/api/publicaciones', publicacionesRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/seguimiento', seguimientoRouter)
 app.use('/api/pagos', pagosRouter)
+app.use('/api/transportista', transportistaRouter)
 
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: 'Endpoint no encontrado' })
@@ -69,7 +71,7 @@ app.use((error, _req, res, next) => {
   }
 
   const clientErrors = {
-    '23505': [409, 'El correo o identificador ya está registrado'],
+    '23505': [409, 'El correo, identificador o postulación ya está registrado'],
     '22001': [400, 'Uno de los campos excede la longitud permitida'],
     '22003': [400, 'Uno de los valores numéricos está fuera de rango'],
     '22007': [400, 'Una de las fechas no es válida'],

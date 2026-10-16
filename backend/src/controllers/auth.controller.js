@@ -35,6 +35,13 @@ function publicUser(user) {
   return { id: user.id_usuario ?? user.id, email: user.email, role: user.rol ?? user.role }
 }
 
+function normalizePlate(value) {
+  const compactPlate = value.trim().replace(/[\s-]/g, '').toUpperCase()
+  return compactPlate.length === 6
+    ? `${compactPlate.slice(0, 4)}-${compactPlate.slice(4)}`
+    : `${compactPlate.slice(0, 2)}-${compactPlate.slice(2)}`
+}
+
 export async function register(req, res) {
   const errors = validateRegistration(req.body)
   if (errors.length > 0) {
@@ -65,7 +72,7 @@ export async function register(req, res) {
     }
     account.profile.camion = {
       ...account.profile.camion,
-      patente: account.profile.camion.patente.trim().toUpperCase(),
+      patente: normalizePlate(account.profile.camion.patente),
       marca: account.profile.camion.marca.trim(),
       modelo: account.profile.camion.modelo.trim(),
       tipo: account.profile.camion.tipo.trim(),

@@ -112,9 +112,9 @@ export default function DriverVerificationPage({ session, onLogout }) {
 
               {fileError && <p className="driver-verification__message" role="alert">{fileError}</p>}
 
-              <button className="driver-verification__submit" type="button" disabled>
-                Envío de documentos no disponible
-              </button>
+              <p className="driver-verification__submit-note" role="note">
+                El servidor todavía no permite enviar documentos. Los archivos que seleccionas solo se revisan localmente y no se guardan al salir.
+              </p>
             </div>
           </section>
 

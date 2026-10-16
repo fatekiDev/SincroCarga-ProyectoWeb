@@ -94,6 +94,9 @@ function validateCarrierProfile(profile) {
   const truck = profile.camion
   if (!requiredString(truck.tipo, 50)) errors.push('camion.tipo es obligatorio')
   if (!requiredString(truck.patente, 10)) errors.push('camion.patente es obligatorio')
+  else if (!/^(?:[A-Z]{4}\d{2}|[A-Z]{2}\d{4})$/i.test(truck.patente.trim().replace(/[\s-]/g, ''))) {
+    errors.push('camion.patente debe tener un formato chileno válido (ABCD-12 o AB-1234)')
+  }
   if (!requiredString(truck.marca, 50)) errors.push('camion.marca es obligatoria')
   if (!requiredString(truck.modelo, 50)) errors.push('camion.modelo es obligatorio')
   if (!Number.isInteger(truck.anio) || truck.anio <= 1950 || truck.anio > CURRENT_YEAR + 1) {

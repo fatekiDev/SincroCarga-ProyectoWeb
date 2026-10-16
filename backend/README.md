@@ -69,6 +69,29 @@ tarifa; no incluye datos identificables de clientes.
   del pago simulado del viaje del cliente.
 - `POST /api/pagos/:viajeId/simular`: registra una simulación de pago si el
   cliente acepta los términos.
+- `GET /api/transportista/catalogos`: obtiene rutas y camiones activos propios.
+- `GET /api/transportista/cargas`: lista cargas disponibles para la flota del
+  transportista autenticado y omite las que ya tienen una postulación propia.
+- `POST /api/transportista/cargas/:publicacionId/postular`: registra o vuelve a
+  enviar una postulación con tarifa y comentario.
+- `GET /api/transportista/postulaciones`: lista postulaciones propias y el viaje
+  asociado cuando ya existe.
+- `POST /api/transportista/postulaciones/:postulacionId/retirar`: retira una
+  postulación propia que siga pendiente.
+- `GET /api/transportista/espacios`: lista publicaciones de capacidad propias.
+- `POST /api/transportista/espacios`: publica capacidad disponible asociada a un
+  camión activo, una ruta y un rango de fechas.
+- `POST /api/transportista/espacios/:publicacionId/cancelar`: cancela una
+  publicación propia que siga disponible.
+- `GET /api/transportista/viajes`: lista los viajes vinculados a postulaciones
+  propias, con su estado y recorrido.
+
+Todos los endpoints de `/api/transportista` requieren sesión activa con rol
+`camionero`. La API determina el transportista desde la sesión, valida que su
+camión tenga capacidad suficiente y que cuente con licencia de conducir vigente
+antes de permitir una postulación. Los recorridos de mapa son referenciales: la
+base no registra GPS para el camión. La carga de documentos aún no tiene un
+endpoint de almacenamiento y la selección desde el frontend permanece local.
 
 El registro de cliente solicita tipo, nombre/razón social, RUT, teléfono,
 correo y contraseña. El de camionero solicita datos de la empresa, conductor,

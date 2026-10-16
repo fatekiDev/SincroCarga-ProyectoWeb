@@ -108,7 +108,7 @@ function getRouteCoordinates(route) {
       : [start, end]
   }
 
-  return [CITY_COORDINATES.ancud, CITY_COORDINATES.castro]
+  return null
 }
 
 function interpolatePosition(positions, percent) {
@@ -144,7 +144,7 @@ function FitRoute({ positions, routeId }) {
   return null
 }
 
-export default function TrackingMap({ viaje, progress }) {
+export default function TrackingMap({ viaje, progress, showVehicle = true }) {
   const { id: routeId, origen, destino, cruceMaritimo, duracionEstimadaMin } = viaje.ruta
   const positions = useMemo(() => getRouteCoordinates({
     id: routeId,
@@ -152,9 +152,17 @@ export default function TrackingMap({ viaje, progress }) {
     destino,
     cruceMaritimo,
   }), [routeId, origen, destino, cruceMaritimo])
-  const truckPosition = interpolatePosition(positions, progress)
+  const truckPosition = positions ? interpolatePosition(positions, progress) : null
   const crossingPosition = cruceMaritimo ? CROSSING_COORDINATE : null
   const routeIdentity = `${routeId}-${origen}-${destino}`
+
+  if (!positions) {
+    return (
+      <p className="tracking-map__unavailable" role="note">
+        No hay un mapa referencial disponible para estas comunas. Revisa el recorrido indicado.
+      </p>
+    )
+  }
 
   return (
     <div className="tracking-map" aria-label={`Mapa demostrativo de ${viaje.ruta.origen} a ${viaje.ruta.destino}`}>
@@ -183,9 +191,11 @@ export default function TrackingMap({ viaje, progress }) {
             <Popup>{`Cruce ${cruceMaritimo} · ${duracionEstimadaMin} min estimados`}</Popup>
           </Marker>
         )}
-        <Marker position={truckPosition} icon={TRUCK_ICON}>
-          <Popup>Posición simulada del camión</Popup>
-        </Marker>
+        {showVehicle && (
+          <Marker position={truckPosition} icon={TRUCK_ICON}>
+            <Popup>Posición simulada del camión</Popup>
+          </Marker>
+        )}
       </MapContainer>
     </div>
   )
