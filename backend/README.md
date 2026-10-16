@@ -15,9 +15,10 @@ API REST construida con Express y PostgreSQL.
    npm run dev
    ```
 
-Las migraciones `001_authentication.sql`, `002_unique_trip_rating.sql` y
-`003_simulated_payments.sql` son aditivas: añaden autenticación, unicidad de
-calificaciones y almacenamiento del pago de demostración. Ejecuta
+Las migraciones `001_authentication.sql`, `002_unique_trip_rating.sql`,
+`003_simulated_payments.sql` y `004_unique_rut.sql` añaden autenticación,
+unicidad de calificaciones, almacenamiento del pago de demostración y unicidad
+de RUT. Ejecuta
 `npm run db:migrate` una vez después de cargar el esquema base.
 
 4. Comprueba la conexión con `http://localhost:3000/api/health/db`.
@@ -94,7 +95,8 @@ antes de permitir una postulación. Los recorridos de mapa son referenciales: la
 base no registra GPS para el camión. La carga de documentos aún no tiene un
 endpoint de almacenamiento y la selección desde el frontend permanece local.
 
-El registro de cliente solicita tipo, nombre/razón social, RUT, teléfono,
+El registro de cliente solicita tipo, nombre/razón social, RUT en formato
+`XX.XXX.XXX-X` con dígito verificador válido, teléfono,
 correo y contraseña. El de camionero solicita datos de la empresa, conductor,
 licencia y camión. El correo de acceso debe ser único. La contraseña debe tener
 al menos 12 caracteres.
@@ -185,7 +187,8 @@ Configurar estas variables en Render (no guardarlas en el repositorio):
 Render proporciona `PORT` automáticamente. No hace falta configurar `PGHOST`,
 `PGUSER` ni `PGPASSWORD` cuando se usa `DATABASE_URL`. No ejecutar
 `npm run db:migrate` en Render: la migración se aplica una sola vez a Neon desde
-el SQL Editor.
+el SQL Editor. Antes de habilitar registros en producción, ejecuta allí el
+contenido de `../databases/migrations/004_unique_rut.sql`.
 
 La API exige HTTPS para cookies seguras y solo permite los orígenes indicados en
 `FRONTEND_ORIGINS`. La URL del backend debe usarse en `VITE_API_URL` al compilar

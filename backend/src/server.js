@@ -81,6 +81,10 @@ app.use((error, _req, res, next) => {
     '22P02': [400, 'Uno de los valores tiene un formato no válido'],
   }
 
+  if (error.code === '23505' && error.constraint === 'uq_rut_registrado') {
+    return res.status(409).json({ error: 'Este RUT ya está registrado' })
+  }
+
   if (clientErrors[error.code]) {
     const [status, message] = clientErrors[error.code]
     return res.status(status).json({ error: message })

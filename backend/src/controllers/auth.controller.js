@@ -59,18 +59,18 @@ export async function register(req, res) {
     profile: { ...req.body.profile },
   }
   if (account.role === 'cliente') {
-    account.profile.rut = account.profile.rut.trim()
+    account.profile.rut = account.profile.rut.trim().toUpperCase()
     account.profile.nombreRazonSocial = account.profile.nombreRazonSocial.trim()
     account.profile.telefono = account.profile.telefono.trim()
   } else {
     account.profile.empresa = {
       ...account.profile.empresa,
-      rut: account.profile.empresa.rut.trim(),
+      rut: account.profile.empresa.rut.trim().toUpperCase(),
       razonSocial: account.profile.empresa.razonSocial.trim(),
     }
     account.profile.conductor = {
       ...account.profile.conductor,
-      rut: account.profile.conductor.rut.trim(),
+      rut: account.profile.conductor.rut.trim().toUpperCase(),
       nombre: account.profile.conductor.nombre.trim(),
       telefono: account.profile.conductor.telefono.trim(),
       licencia: account.profile.conductor.licencia.trim(),

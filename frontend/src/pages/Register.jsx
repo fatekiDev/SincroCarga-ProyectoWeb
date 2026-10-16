@@ -28,6 +28,23 @@ const BackIcon = () => (
   </svg>
 );
 
+function isValidRut(value) {
+  const match = /^(\d{1,2})\.(\d{3})\.(\d{3})-([\dkK])$/.exec(value.trim());
+  if (!match) return false;
+
+  const number = match.slice(1, 4).join("");
+  let sum = 0;
+  let factor = 2;
+  for (let index = number.length - 1; index >= 0; index -= 1) {
+    sum += Number(number[index]) * factor;
+    factor = factor === 7 ? 2 : factor + 1;
+  }
+
+  const remainder = 11 - (sum % 11);
+  const verifier = remainder === 11 ? "0" : remainder === 10 ? "K" : String(remainder);
+  return match[4].toUpperCase() === verifier;
+}
+
 const CLIENTE_FIELDS = [
   {
     name: "tipoClienteId",
@@ -41,7 +58,7 @@ const CLIENTE_FIELDS = [
   },
   { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", maxLength: 150, placeholder: "Ej.: María González", showWhen: ["tipoClienteId", "2"] },
   { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", maxLength: 150, placeholder: "Ej.: Transportes del Sur Ltda.", showWhen: ["tipoClienteId", "1"] },
-  { name: "rut", label: "RUT", type: "text", autoComplete: "off", maxLength: 12, placeholder: "12.345.678-9" },
+  { name: "rut", label: "RUT", type: "text", autoComplete: "off", maxLength: 12, placeholder: "12.345.678-5" },
   { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel", maxLength: 20, placeholder: "+56 9 1234 5678" },
   { name: "direccion", label: "Dirección (opcional)", type: "text", required: false, maxLength: 200, placeholder: "Calle y número" },
   { name: "comuna", label: "Comuna (opcional)", type: "text", required: false, maxLength: 100, placeholder: "Ej.: Castro" },
@@ -58,9 +75,9 @@ const PASSWORD_FIELDS = [
 const DRIVER_FIELDS = [
   { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150, placeholder: "nombre@correo.cl" },
   ...PASSWORD_FIELDS,
-  { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", maxLength: 12, placeholder: "76.111.222-3" },
+  { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", maxLength: 12, placeholder: "76.111.222-8" },
   { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text", maxLength: 150, placeholder: "Ej.: Transportes del Sur Ltda." },
-  { name: "rut", label: "RUT del conductor", type: "text", maxLength: 12, placeholder: "12.345.678-9" },
+  { name: "rut", label: "RUT del conductor", type: "text", maxLength: 12, placeholder: "12.345.678-5" },
   { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name", maxLength: 150, placeholder: "Ej.: María González" },
   { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel", maxLength: 20, placeholder: "+56 9 1234 5678" },
   { name: "licencia", label: "Número de licencia de conducir", type: "text", maxLength: 30, placeholder: "Número indicado en tu licencia" },
@@ -205,6 +222,8 @@ function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange })
       const value = form[field.name]?.toString().trim() || "";
       if (field.required !== false && !value) {
         next[field.name] = "Este campo es obligatorio.";
+      } else if (["rut", "empresaRut"].includes(field.name) && value && !isValidRut(value)) {
+        next[field.name] = "Ingresa un RUT válido con formato XX.XXX.XXX-X.";
       } else if (field.type === "number" && value) {
         const numericValue = Number(value);
         if (!Number.isFinite(numericValue)) {

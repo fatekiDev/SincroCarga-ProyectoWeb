@@ -43,6 +43,16 @@ export function registerAccount({ email, passwordHash, role, profile }) {
   return withTransaction(async (client) => {
     let profileId
 
+    const ruts = role === 'cliente'
+      ? [profile.rut]
+      : [profile.empresa.rut, profile.conductor.rut]
+    for (const rut of ruts) {
+      await client.query(`
+        INSERT INTO rut_registrado (rut_normalizado)
+        VALUES ($1)
+      `, [rut.replace(/[.-]/g, '').toUpperCase()])
+    }
+
     if (role === 'cliente') {
       const result = await client.query(`
         INSERT INTO cliente (

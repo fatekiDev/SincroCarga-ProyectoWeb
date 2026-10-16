@@ -1,5 +1,6 @@
 const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
 const DATE_PATTERN = /^\d{4}-\d{2}-\d{2}$/
+const RUT_PATTERN = /^(\d{1,2})\.(\d{3})\.(\d{3})-([\dkK])$/
 const CURRENT_YEAR = new Date().getFullYear()
 
 function isRecord(value) {
@@ -27,6 +28,31 @@ function validEmail(email) {
     && EMAIL_PATTERN.test(email.trim())
 }
 
+function validRut(rut) {
+  if (typeof rut !== 'string') return false
+
+  const match = RUT_PATTERN.exec(rut.trim())
+  if (!match) return false
+
+  const number = match.slice(1, 4).join('')
+  let sum = 0
+  let factor = 2
+
+  for (let index = number.length - 1; index >= 0; index -= 1) {
+    sum += Number(number[index]) * factor
+    factor = factor === 7 ? 2 : factor + 1
+  }
+
+  const remainder = 11 - (sum % 11)
+  const expectedVerifier = remainder === 11
+    ? '0'
+    : remainder === 10
+      ? 'K'
+      : String(remainder)
+
+  return match[4].toUpperCase() === expectedVerifier
+}
+
 function validatePassword(password) {
   return typeof password === 'string'
     && password.length >= 12
@@ -40,7 +66,11 @@ function validateCustomerProfile(profile) {
   if (![1, 2].includes(profile.tipoClienteId)) {
     errors.push('tipoClienteId debe ser 1 (Empresa) o 2 (Persona Natural)')
   }
-  if (!requiredString(profile.rut, 12)) errors.push('rut es obligatorio y debe tener como máximo 12 caracteres')
+  if (!requiredString(profile.rut, 12)) {
+    errors.push('rut es obligatorio y debe tener como máximo 12 caracteres')
+  } else if (!validRut(profile.rut)) {
+    errors.push('rut debe tener formato XX.XXX.XXX-X y un dígito verificador válido')
+  }
   if (!requiredString(profile.nombreRazonSocial, 150)) {
     errors.push('nombreRazonSocial es obligatorio y debe tener como máximo 150 caracteres')
   }
@@ -68,6 +98,8 @@ function validateCarrierProfile(profile) {
 
   if (!requiredString(profile.empresa.rut, 12)) {
     errors.push('empresa.rut es obligatorio y debe tener como máximo 12 caracteres')
+  } else if (!validRut(profile.empresa.rut)) {
+    errors.push('empresa.rut debe tener formato XX.XXX.XXX-X y un dígito verificador válido')
   }
   if (!requiredString(profile.empresa.razonSocial, 150)) {
     errors.push('empresa.razonSocial es obligatoria y debe tener como máximo 150 caracteres')
@@ -77,6 +109,8 @@ function validateCarrierProfile(profile) {
   }
   if (!requiredString(profile.conductor.rut, 12)) {
     errors.push('conductor.rut es obligatorio y debe tener como máximo 12 caracteres')
+  } else if (!validRut(profile.conductor.rut)) {
+    errors.push('conductor.rut debe tener formato XX.XXX.XXX-X y un dígito verificador válido')
   }
   if (!requiredString(profile.conductor.nombre, 150)) {
     errors.push('conductor.nombre es obligatorio y debe tener como máximo 150 caracteres')
