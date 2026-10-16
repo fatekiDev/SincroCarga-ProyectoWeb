@@ -1,13 +1,11 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { createTransportista, getTransportistas, updateTransportista } from '../admin/adminApi';
+import { getTransportistas, updateTransportista } from '../admin/adminApi';
 
 const PAGE_SIZE = 5;
-const STATUSES = ['Todos', 'Verificado', 'Pendiente', 'Suspendido'];
+const STATUSES = ['Todos', 'Verificado', 'Pendiente', 'Rechazado', 'Suspendido'];
 
-const emptyForm = { nombre: '', rut: '', patente: '', vehiculo: '', telefono: '' };
-
-function AdminTransportistas({ onLogout }) {
+function AdminTransportistas({ onLogout, session }) {
   const [search, setSearch] = useState('');
   const [estado, setEstado] = useState('Todos');
   const [page, setPage] = useState(1);
@@ -16,8 +14,6 @@ function AdminTransportistas({ onLogout }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [notice, setNotice] = useState('');
-  const [creating, setCreating] = useState(false);
-  const [form, setForm] = useState(emptyForm);
   const [managed, setManaged] = useState(null);
   const [saving, setSaving] = useState(false);
 
@@ -53,29 +49,6 @@ function AdminTransportistas({ onLogout }) {
     setPage(1);
   };
 
-  const submitCreate = async (event) => {
-    event.preventDefault();
-    setSaving(true);
-    setError('');
-    setNotice('');
-    try {
-      const carrier = await createTransportista(form);
-      setCreating(false);
-      setForm(emptyForm);
-      setSearch('');
-      setEstado('Todos');
-      setPage(1);
-      setResult(null);
-      setLoading(true);
-      setRefresh((current) => current + 1);
-      setNotice(`Conductor ${carrier.nombre} registrado. Su estado inicial es Pendiente.`);
-    } catch (requestError) {
-      setError(requestError.message || 'No se pudo registrar el conductor.');
-    } finally {
-      setSaving(false);
-    }
-  };
-
   const submitManage = async (event) => {
     event.preventDefault();
     setSaving(true);
@@ -102,7 +75,7 @@ function AdminTransportistas({ onLogout }) {
   const pages = result?.totalPages ?? 1;
 
   return (
-    <AdminLayout onLogout={onLogout}>
+    <AdminLayout onLogout={onLogout} userName={session?.name || session?.email}>
       <h1 className="adm-title">Transportistas</h1>
       <p className="adm-subtitle">Camioneros verificados y su estado en la plataforma.</p>
 
@@ -143,12 +116,7 @@ function AdminTransportistas({ onLogout }) {
             {STATUSES.map((status) => <option key={status} value={status}>Estado: {status}</option>)}
           </select>
         </label>
-        <button type="button" className="adm-btn adm-btn-primary" onClick={() => {
-          setError('');
-          setCreating(true);
-        }}>
-          Nuevo Conductor
-        </button>
+        <p className="adm-muted">Los nuevos transportistas crean su cuenta desde el registro de la plataforma.</p>
       </div>
 
       <div className="adm-table-wrap">
@@ -229,47 +197,6 @@ function AdminTransportistas({ onLogout }) {
         </div>
       )}
 
-      {creating && (
-        <div
-          className="adm-overlay"
-          onClick={(event) => event.target === event.currentTarget && setCreating(false)}
-          onKeyDown={(event) => event.key === 'Escape' && setCreating(false)}
-        >
-          <form className="adm-modal" role="dialog" aria-modal="true" aria-labelledby="adm-create-title" onSubmit={submitCreate}>
-            <button type="button" className="adm-modal-close" aria-label="Cerrar" onClick={() => setCreating(false)}>×</button>
-            <h2 id="adm-create-title">Nuevo conductor</h2>
-            <p className="adm-muted">El registro de demostración queda guardado en este navegador.</p>
-            <div className="adm-form-grid">
-              {[
-                ['nombre', 'Nombre completo', 'text'],
-                ['rut', 'RUT', 'text'],
-                ['patente', 'Patente', 'text'],
-                ['vehiculo', 'Vehículo', 'text'],
-                ['telefono', 'Teléfono', 'tel'],
-              ].map(([name, label, type]) => (
-                <label className="adm-form-field" key={name}>
-                  <span>{label}</span>
-                  <input
-                    autoComplete="off"
-                    required
-                    maxLength={name === 'nombre' || name === 'vehiculo' ? 100 : 30}
-                    type={type}
-                    value={form[name]}
-                    onChange={(event) => setForm((current) => ({ ...current, [name]: event.target.value }))}
-                  />
-                </label>
-              ))}
-            </div>
-            <div className="adm-modal-actions">
-              <button type="button" className="adm-btn adm-btn-outline" onClick={() => setCreating(false)}>Cancelar</button>
-              <button type="submit" className="adm-btn adm-btn-primary" disabled={saving}>
-                {saving ? 'Guardando…' : 'Registrar conductor'}
-              </button>
-            </div>
-          </form>
-        </div>
-      )}
-
       {managed && (
         <div
           className="adm-overlay"
@@ -283,7 +210,9 @@ function AdminTransportistas({ onLogout }) {
             <label className="adm-form-field">
               <span>Estado del transportista</span>
               <select value={managed.estado} onChange={(event) => setManaged((current) => ({ ...current, estado: event.target.value }))}>
-                {STATUSES.filter((status) => status !== 'Todos').map((status) => <option key={status}>{status}</option>)}
+                {STATUSES.filter((status) => status !== 'Todos').map((status) => (
+                  <option key={status} disabled={status === 'Rechazado'}>{status}</option>
+                ))}
               </select>
             </label>
             <label className="adm-form-field">

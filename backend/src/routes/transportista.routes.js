@@ -1,5 +1,5 @@
 import { Router } from 'express'
-import { requireAuth, requireRole } from '../middleware/require-auth.js'
+import { requireAuth, requireRole, requireVerifiedCarrier } from '../middleware/require-auth.js'
 import {
   cancelCarrierTransportPublication,
   createCarrierApplication,
@@ -14,7 +14,7 @@ import {
 
 const router = Router()
 
-router.use(requireAuth, requireRole('camionero'))
+router.use(requireAuth, requireRole('camionero'), requireVerifiedCarrier)
 router.get('/catalogos', getCarrierCatalogs)
 router.get('/cargas', getAvailableLoads)
 router.get('/postulaciones', getCarrierApplications)

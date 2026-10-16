@@ -8,6 +8,7 @@ import publicacionesRouter from './routes/publicaciones.routes.js'
 import seguimientoRouter from './routes/seguimiento.routes.js'
 import pagosRouter from './routes/pagos.routes.js'
 import transportistaRouter from './routes/transportista.routes.js'
+import adminRouter from './routes/admin.routes.js'
 
 const app = express()
 const port = Number(process.env.PORT ?? 3000)
@@ -60,6 +61,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/seguimiento', seguimientoRouter)
 app.use('/api/pagos', pagosRouter)
 app.use('/api/transportista', transportistaRouter)
+app.use('/api/admin', adminRouter)
 
 app.use('/api', (_req, res) => {
   res.status(404).json({ error: 'Endpoint no encontrado' })

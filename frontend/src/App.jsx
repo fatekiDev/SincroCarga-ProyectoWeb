@@ -17,6 +17,10 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import { authRequest } from './auth/api'
 import { getHomePath } from './auth/session'
+import AdminPanel from './pages/AdminPanel'
+import AdminSolicitudes from './pages/AdminSolicitudes'
+import AdminTransportistas from './pages/AdminTransportistas'
+import AdminReportes from './pages/AdminReportes'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -92,6 +96,15 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         }} />}
       />
       <Route
+        path="/admin/login"
+        element={session
+          ? <Navigate to={getHomePath(session)} replace />
+          : <Login isAdminLogin onAuthenticated={(user) => {
+            onAuthenticated(user)
+            navigate(getHomePath(user), { replace: true })
+          }} />}
+      />
+      <Route
         path="/registro"
         element={<Register session={session} onAuthenticated={(user) => {
           onAuthenticated(user)
@@ -109,7 +122,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/dashboard"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" requireVerifiedCarrier redirectPath="/login">
             <DashboardCamionero session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
@@ -117,7 +130,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/viajes"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="camionero" requireVerifiedCarrier redirectPath="/login">
             <DriverJourneysPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
@@ -125,7 +138,12 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/publicar"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute
+            session={session}
+            authStatus={authStatus}
+            requireVerifiedCarrier={session?.role === 'camionero'}
+            redirectPath="/login"
+          >
             {session?.role === 'camionero'
               ? <PublishSpacePage session={session} onLogout={handleLogoutAndNavigate} />
               : <PublishCargoPage session={session} onLogout={handleLogoutAndNavigate} />}
@@ -135,7 +153,12 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/matching"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute
+            session={session}
+            authStatus={authStatus}
+            requireVerifiedCarrier={session?.role === 'camionero'}
+            redirectPath="/login"
+          >
             {session?.role === 'camionero'
               ? <DriverMatchingPage session={session} onLogout={handleLogoutAndNavigate} />
               : <TrackingPage session={session} onLogout={handleLogoutAndNavigate} />}
@@ -159,17 +182,55 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
           </ProtectedRoute>
         }
       />
+      <Route
+        path="/admin"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
+            <AdminPanel session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/solicitudes"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
+            <AdminSolicitudes session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/transportistas"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
+            <AdminTransportistas session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/reportes"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
+            <AdminReportes session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
     </>
   )
 }
 
-function ProtectedRoute({ session, authStatus, role, redirectPath, children }) {
+function ProtectedRoute({ session, authStatus, role, redirectPath, children, requireVerifiedCarrier = false }) {
   if (authStatus === 'loading') return <p role="status">Verificando sesión…</p>
   if (authStatus === 'error') return <p role="alert">No se puede verificar la sesión porque el backend no responde.</p>
   if (!session) return <Navigate to={redirectPath} replace />
   if (role && session.role !== role) return <Navigate to={getHomePath(session)} replace />
+  if (
+    requireVerifiedCarrier
+    && (session.verificationStatus !== 'Verificado' || session.carrierActive === false)
+  ) {
+    return <Navigate to="/verificacion" replace />
+  }
   return children
 }
 

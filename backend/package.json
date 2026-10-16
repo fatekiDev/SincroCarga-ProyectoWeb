@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "node src/server.js",
     "start": "node src/server.js",
-    "db:migrate": "node src/db/migrate.js"
+    "db:migrate": "node src/db/migrate.js",
+    "admin:create": "node src/scripts/create-admin.js"
   },
   "dependencies": {
     "bcryptjs": "^3.0.3",

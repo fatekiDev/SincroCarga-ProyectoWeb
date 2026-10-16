@@ -41,7 +41,7 @@ function downloadCsv(report, period) {
   window.setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
-function AdminReportes({ onLogout }) {
+function AdminReportes({ onLogout, session }) {
   const [period, setPeriod] = useState('30d');
   const [report, setReport] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -87,7 +87,7 @@ function AdminReportes({ onLogout }) {
   const maxRoute = Math.max(1, ...(report?.rutasFrecuentes ?? []).map((item) => item.cantidad));
 
   return (
-    <AdminLayout onLogout={onLogout}>
+    <AdminLayout onLogout={onLogout} userName={session?.name || session?.email}>
       <h1 className="adm-title">Reportes</h1>
       <p className="adm-subtitle">Indicadores de la operación en Chiloé.</p>
 
@@ -114,7 +114,7 @@ function AdminReportes({ onLogout }) {
       </div>
 
       <p className="adm-demo-note">
-        Datos locales de demostración. No representan información persistida en PostgreSQL.
+        Indicadores calculados a partir de los viajes completados y pagos registrados en PostgreSQL.
       </p>
       {notice && <p className="adm-success" role="status">{notice}</p>}
       {error && <p className="adm-error" role="alert">{error}</p>}
@@ -140,7 +140,7 @@ function AdminReportes({ onLogout }) {
             <article className="adm-card">
               <h2 className="adm-card-title">Comisión SincroCarga</h2>
               <p className="adm-card-value">{currency(report.comisiones)} <span>CLP</span></p>
-              <p className="adm-muted">10% de las tarifas del período</p>
+              <p className="adm-muted">Comisiones registradas en los pagos</p>
             </article>
             <article className="adm-card">
               <h2 className="adm-card-title">Calificación promedio</h2>
@@ -150,7 +150,11 @@ function AdminReportes({ onLogout }) {
                   : '—'}
                 <span> de 5</span>
               </p>
-              <p className="adm-muted">{report.registros.length ? `Basada en ${report.registros.length} reseñas demo` : 'Sin reseñas en el período'}</p>
+              <p className="adm-muted">
+                {report.calificacionesCount
+                  ? `Basada en ${report.calificacionesCount} calificaciones`
+                  : 'Sin calificaciones en el período'}
+              </p>
             </article>
           </section>
 

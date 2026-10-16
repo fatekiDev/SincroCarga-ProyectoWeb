@@ -26,7 +26,7 @@ const ArrowIcon = () => (
   </svg>
 );
 
-export default function Login({ onAuthenticated, session }) {
+export default function Login({ onAuthenticated, session, isAdminLogin = false }) {
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [requestError, setRequestError] = useState("");
@@ -98,7 +98,10 @@ export default function Login({ onAuthenticated, session }) {
       </Link>
 
       <main className="auth-card">
-        <h1 className="auth-title">Bienvenido de nuevo a SincroCarga</h1>
+        <h1 className="auth-title">
+          {isAdminLogin ? 'Acceso administrativo' : 'Bienvenido de nuevo a SincroCarga'}
+        </h1>
+        {isAdminLogin && <p className="auth-help">Ingresa con la cuenta de administración autorizada.</p>}
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
           <label className="auth-label" htmlFor="email">
@@ -163,8 +166,15 @@ export default function Login({ onAuthenticated, session }) {
           ¿Problemas para acceder? <a href={supportHref}>Contacta a soporte</a> por correo.
         </p>
         <p className="auth-switch">
-          ¿No tienes cuenta? <Link to="/registro">Registrarse</Link>
+          {isAdminLogin
+            ? <>¿No eres administrador? <Link to="/login">Volver al acceso general</Link></>
+            : <>¿No tienes cuenta? <Link to="/registro">Registrarse</Link></>}
         </p>
+        {!isAdminLogin && (
+          <p className="auth-switch">
+            <Link to="/admin/login">Acceso administrador</Link>
+          </p>
+        )}
 
       </main>
     </div>

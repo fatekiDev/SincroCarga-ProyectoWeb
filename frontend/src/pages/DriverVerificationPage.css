@@ -18,6 +18,37 @@
   line-height: 1.5;
 }
 
+.driver-verification__copy,
+.driver-verification__message {
+  margin: 10px 0 0;
+  color: var(--sc-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.driver-verification__message {
+  border-radius: var(--sc-radius-sm);
+  background: #fff7ed;
+  padding: 12px;
+  color: #9a3412;
+}
+
+.driver-verification__dashboard-link {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  margin-top: 14px;
+  color: var(--sc-primary);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.driver-verification__dashboard-link:focus-visible,
+.driver-verification__copy a:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 3px;
+}
+
 .driver-verification__grid {
   display: grid;
   grid-template-columns: minmax(0, 1fr);

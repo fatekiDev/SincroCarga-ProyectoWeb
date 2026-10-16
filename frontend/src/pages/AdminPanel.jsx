@@ -5,11 +5,7 @@ import { getResumen } from '../admin/adminApi';
 
 const clp = (n) => `$${Number(n).toLocaleString('es-CL')}`;
 
-function estadoDocs(item) {
-  return item.documentos === 'completos' ? 'Documentos completos' : `Falta ${item.faltante || 'documento'}`;
-}
-
-function AdminPanel({ onLogout }) {
+function AdminPanel({ onLogout, session }) {
   const [data, setData] = useState(null);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(true);
@@ -24,7 +20,7 @@ function AdminPanel({ onLogout }) {
   }, []);
 
   return (
-    <AdminLayout onLogout={onLogout}>
+    <AdminLayout onLogout={onLogout} userName={session?.name || session?.email}>
       <h1 className="adm-title">Panel administrativo</h1>
       <p className="adm-subtitle">Resumen de verificaciones y actividad de la plataforma.</p>
 
@@ -66,7 +62,9 @@ function AdminPanel({ onLogout }) {
                   {data.verificacionesPendientes.map((v) => (
                     <li key={v.id}>
                       <span>{v.nombre} · {v.patente}</span>
-                      <span className={v.documentos === 'completos' ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-warn'}>{estadoDocs(v)}</span>
+                      <span className={v.licenciaVigente ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-warn'}>
+                        {v.licenciaVigente ? 'Licencia vigente' : 'Revisar licencia'}
+                      </span>
                     </li>
                   ))}
                 </ul>

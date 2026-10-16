@@ -1,15 +1,14 @@
 import { useEffect, useState } from 'react';
 import AdminLayout from '../components/AdminLayout';
-import { getSolicitudes, getDocumentos, aprobarSolicitud, rechazarSolicitud } from '../admin/adminApi';
+import { getSolicitudes, getSolicitudDetalle, aprobarSolicitud, rechazarSolicitud } from '../admin/adminApi';
 
-function AdminSolicitudes({ onLogout }) {
+function AdminSolicitudes({ onLogout, session }) {
   const [solicitudes, setSolicitudes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [aviso, setAviso] = useState('');
   const [seleccionadaId, setSeleccionadaId] = useState(null);
-  const [documentoActivo, setDocumentoActivo] = useState(null);
-  const [documentosCargados, setDocumentosCargados] = useState({ solicitudId: null, items: [] });
+  const [detalleCargado, setDetalleCargado] = useState({ solicitudId: null, item: null });
   const [ocupadoId, setOcupadoId] = useState(null);
   const [rechazando, setRechazando] = useState(null); // solicitud que se está rechazando
   const [motivo, setMotivo] = useState('');
@@ -31,14 +30,14 @@ function AdminSolicitudes({ onLogout }) {
   useEffect(() => {
     if (seleccionadaId == null) return undefined;
     let cancelado = false;
-    getDocumentos(seleccionadaId)
-      .then((items) => {
-        if (!cancelado) setDocumentosCargados({ solicitudId: seleccionadaId, items });
+    getSolicitudDetalle(seleccionadaId)
+      .then((item) => {
+        if (!cancelado) setDetalleCargado({ solicitudId: seleccionadaId, item });
       })
       .catch((requestError) => {
         if (cancelado) return;
-        setDocumentosCargados({ solicitudId: seleccionadaId, items: [] });
-        setError(requestError.message || 'No se pudieron cargar los documentos.');
+        setDetalleCargado({ solicitudId: seleccionadaId, item: null });
+        setError(requestError.message || 'No se pudieron cargar los datos de verificación.');
       });
     return () => { cancelado = true; };
   }, [seleccionadaId]);
@@ -77,14 +76,13 @@ function AdminSolicitudes({ onLogout }) {
   };
 
   const seleccionada = solicitudes.find((s) => s.id === seleccionadaId);
-  const cargandoDocs = seleccionadaId != null && documentosCargados.solicitudId !== seleccionadaId;
-  const documentos = cargandoDocs || seleccionadaId == null ? [] : documentosCargados.items;
-  const cerrarDocumento = () => setDocumentoActivo(null);
+  const cargandoDetalle = seleccionadaId != null && detalleCargado.solicitudId !== seleccionadaId;
+  const detalle = cargandoDetalle || seleccionadaId == null ? null : detalleCargado.item;
 
   return (
-    <AdminLayout onLogout={onLogout}>
+    <AdminLayout onLogout={onLogout} userName={session?.name || session?.email}>
       <h1 className="adm-title">Solicitudes de camioneros pendientes</h1>
-      <p className="adm-subtitle">Revisa los documentos y aprueba o rechaza cada solicitud.</p>
+      <p className="adm-subtitle">Revisa los datos registrados del conductor y el vehículo para decidir cada solicitud.</p>
 
       {aviso && <p className="adm-success" role="status">{aviso}</p>}
       {error && <p className="adm-error" role="alert">{error}</p>}
@@ -100,7 +98,7 @@ function AdminSolicitudes({ onLogout }) {
             <thead>
               <tr>
                 <th scope="col">Nombre</th><th scope="col">RUT</th><th scope="col">Patente</th>
-                <th scope="col">Vehículo</th><th scope="col">Documentos</th><th scope="col">Acciones</th>
+                <th scope="col">Vehículo</th><th scope="col">Licencia</th><th scope="col">Acciones</th>
               </tr>
             </thead>
             <tbody>
@@ -113,8 +111,8 @@ function AdminSolicitudes({ onLogout }) {
                   <td>{s.patente}</td>
                   <td>{s.vehiculo}</td>
                   <td>
-                    <span className={s.documentos === 'completos' ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-error'}>
-                      {s.documentos === 'completos' ? 'Completos' : `Falta ${s.faltante || 'documento'}`}
+                    <span className={s.licenciaVigente ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-error'}>
+                      {s.licenciaVigente ? 'Vigente' : 'Vencida o no registrada'}
                     </span>
                   </td>
                   <td>
@@ -131,28 +129,27 @@ function AdminSolicitudes({ onLogout }) {
       )}
 
       {seleccionada && (
-        <section className="adm-card adm-docs" aria-label={`Documentos de ${seleccionada.nombre}`}>
-          <h2 className="adm-card-title">Documentos de {seleccionada.nombre}</h2>
-          {cargandoDocs ? (
-            <p className="adm-loading" role="status"><span className="adm-spinner" aria-hidden="true" /> Cargando documentos…</p>
+        <section className="adm-card adm-docs" aria-label={`Datos de verificación de ${seleccionada.nombre}`}>
+          <h2 className="adm-card-title">Datos registrados de {seleccionada.nombre}</h2>
+          {cargandoDetalle ? (
+            <p className="adm-loading" role="status"><span className="adm-spinner" aria-hidden="true" /> Cargando datos…</p>
           ) : (
-            <div className="adm-docs-grid">
-              {documentos.map((d) => (
-                <article key={d.tipo} className="adm-doc">
-                  <h3>{d.tipo}</h3>
-                  <span className={d.estado === 'cargado' ? 'adm-badge adm-badge-ok' : 'adm-badge adm-badge-error'}>
-                    {d.estado === 'cargado' ? 'Cargado' : 'Falta'}
-                  </span>
-                  <button
-                    type="button"
-                    className="adm-btn adm-btn-outline adm-btn-sm"
-                    onClick={() => setDocumentoActivo(d)}
-                  >
-                    Ver documento
-                  </button>
-                </article>
-              ))}
-            </div>
+            detalle && (
+              <>
+                <dl className="adm-verification-details">
+                  <div><dt>Correo</dt><dd>{detalle.email}</dd></div>
+                  <div><dt>Empresa</dt><dd>{detalle.empresa} · {detalle.empresaRut}</dd></div>
+                  <div><dt>Conductor</dt><dd>{detalle.nombre} · RUT {detalle.rut}</dd></div>
+                  <div><dt>Contacto</dt><dd>{detalle.telefono}</dd></div>
+                  <div><dt>Licencia</dt><dd>{detalle.licencia || 'No registrada'} · vence {detalle.vencimientoLicencia || 'sin fecha'}</dd></div>
+                  <div><dt>Vehículo</dt><dd>{detalle.vehiculo || 'No registrado'} · {detalle.patente || 'sin patente'} · {detalle.anio || 'sin año'}</dd></div>
+                  <div><dt>Capacidad</dt><dd>{detalle.capacidadKg ?? '—'} kg · {detalle.capacidadM3 ?? '—'} m³</dd></div>
+                </dl>
+                <p className="adm-muted">
+                  La cuenta aún no almacena archivos adjuntos. Esta revisión se basa en los datos registrados; confirma la vigencia de la licencia antes de aprobar.
+                </p>
+              </>
+            )
           )}
         </section>
       )}
@@ -172,65 +169,6 @@ function AdminSolicitudes({ onLogout }) {
         </div>
       )}
 
-      {documentoActivo && (
-        <div
-          className="adm-overlay"
-          onClick={(event) => event.target === event.currentTarget && cerrarDocumento()}
-          onKeyDown={(event) => event.key === 'Escape' && cerrarDocumento()}
-        >
-          <section
-            className="adm-modal adm-document-modal"
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby="adm-document-title"
-          >
-            <button
-              type="button"
-              className="adm-modal-close"
-              aria-label="Cerrar vista previa"
-              onClick={cerrarDocumento}
-            >
-              ×
-            </button>
-            <h2 id="adm-document-title">{documentoActivo.tipo}</h2>
-            <p className="adm-muted">
-              {seleccionada?.nombre} · {documentoActivo.numero || 'Documento del transportista'}
-            </p>
-            {documentoActivo.url ? (
-              <>
-                <iframe
-                  className="adm-document-preview"
-                  src={documentoActivo.url}
-                  title={`Vista previa: ${documentoActivo.tipo}`}
-                  sandbox=""
-                  referrerPolicy="no-referrer"
-                />
-                <a
-                  className="adm-btn adm-btn-outline"
-                  href={documentoActivo.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  Abrir documento en otra pestaña
-                </a>
-              </>
-            ) : (
-              <div className="adm-document-placeholder" role="status">
-                <strong>Vista previa de demostración</strong>
-                <p>
-                  Esta solicitud no tiene un archivo adjunto almacenado. El documento se muestra
-                  como dato de prueba y no se genera ni descarga un archivo real.
-                </p>
-              </div>
-            )}
-            <div className="adm-modal-actions">
-              <button type="button" className="adm-btn adm-btn-primary" onClick={cerrarDocumento}>
-                Cerrar
-              </button>
-            </div>
-          </section>
-        </div>
-      )}
     </AdminLayout>
   );
 }
