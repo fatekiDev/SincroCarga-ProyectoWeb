@@ -38,13 +38,13 @@ const CLIENTE_FIELDS = [
       { value: "1", label: "Empresa" },
     ],
   },
-  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", showWhen: ["tipoClienteId", "2"] },
-  { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", showWhen: ["tipoClienteId", "1"] },
-  { name: "rut", label: "RUT", type: "text", autoComplete: "off", placeholder: "12.345.678-9" },
-  { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel" },
-  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email" },
-  { name: "direccion", label: "Dirección (opcional)", type: "text", required: false },
-  { name: "comuna", label: "Comuna (opcional)", type: "text", required: false },
+  { name: "nombre", label: "Nombre completo", type: "text", autoComplete: "name", maxLength: 150, showWhen: ["tipoClienteId", "2"] },
+  { name: "razonSocial", label: "Razón social", type: "text", autoComplete: "organization", maxLength: 150, showWhen: ["tipoClienteId", "1"] },
+  { name: "rut", label: "RUT", type: "text", autoComplete: "off", maxLength: 12, placeholder: "12.345.678-9" },
+  { name: "telefono", label: "Teléfono", type: "tel", autoComplete: "tel", maxLength: 20 },
+  { name: "direccion", label: "Dirección (opcional)", type: "text", required: false, maxLength: 200 },
+  { name: "comuna", label: "Comuna (opcional)", type: "text", required: false, maxLength: 100 },
+  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150 },
   { name: "password", label: "Contraseña (mínimo 12 caracteres)", type: "password", autoComplete: "new-password" },
   { name: "confirmPassword", label: "Confirmar contraseña", type: "password", autoComplete: "new-password" },
 ];
@@ -55,28 +55,39 @@ const PASSWORD_FIELDS = [
 ];
 
 const DRIVER_FIELDS = [
-  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email" },
+  { name: "email", label: "Correo electrónico", type: "email", autoComplete: "email", maxLength: 150 },
   ...PASSWORD_FIELDS,
-  { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", placeholder: "76.111.222-3" },
-  { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text" },
-  { name: "rut", label: "RUT del conductor", type: "text", placeholder: "12.345.678-9" },
-  { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name" },
-  { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel" },
-  { name: "licencia", label: "Número de licencia de conducir", type: "text" },
+  { name: "empresaRut", label: "RUT de la empresa transportista", type: "text", maxLength: 12, placeholder: "76.111.222-3" },
+  { name: "empresaRazonSocial", label: "Razón social de la empresa", type: "text", maxLength: 150 },
+  { name: "rut", label: "RUT del conductor", type: "text", maxLength: 12, placeholder: "12.345.678-9" },
+  { name: "nombre", label: "Nombre completo del conductor", type: "text", autoComplete: "name", maxLength: 150 },
+  { name: "telefono", label: "Teléfono de contacto", type: "tel", autoComplete: "tel", maxLength: 20 },
+  { name: "licencia", label: "Número de licencia de conducir", type: "text", maxLength: 30 },
   { name: "licenciaVencimiento", label: "Vencimiento de licencia", type: "date" },
   {
     name: "tipoVehiculo",
     label: "Tipo de vehículo",
     type: "select",
     options: ["Camión 3/4", "Camión simple", "Rampla", "Camioneta de carga", "Otro"],
+    maxLength: 50,
   },
-  { name: "patente", label: "Patente", type: "text", placeholder: "AB-CD-12" },
-  { name: "marca", label: "Marca del vehículo", type: "text" },
-  { name: "modelo", label: "Modelo del vehículo", type: "text" },
-  { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1 },
-  { name: "capacidadCargaKg", label: "Capacidad de carga (kg)", type: "number", min: 0, step: "any" },
-  { name: "capacidadCargaM3", label: "Capacidad de carga (m³)", type: "number", min: 0, step: "any" },
+  { name: "patente", label: "Patente", type: "text", maxLength: 10, placeholder: "AB-CD-12" },
+  { name: "marca", label: "Marca del vehículo", type: "text", maxLength: 50 },
+  { name: "modelo", label: "Modelo del vehículo", type: "text", maxLength: 50 },
+  { name: "anio", label: "Año del vehículo", type: "number", min: 1951, max: new Date().getFullYear() + 1, integer: true },
+  { name: "capacidadCargaKg", label: "Capacidad de carga (kg)", type: "number", min: 0, step: "any", positive: true },
+  { name: "capacidadCargaM3", label: "Capacidad de carga (m³)", type: "number", min: 0, step: "any", positive: true },
 ];
+
+function getFieldSection(role, fieldName) {
+  if (["email", "password", "confirmPassword"].includes(fieldName)) return "Datos de acceso";
+  if (role === "cliente") return "Datos del cliente";
+  if (["empresaRut", "empresaRazonSocial"].includes(fieldName)) return "Empresa transportista";
+  if (["rut", "nombre", "telefono", "licencia", "licenciaVencimiento"].includes(fieldName)) {
+    return "Datos del conductor";
+  }
+  return "Datos del vehículo";
+}
 
 const ROLE_CONFIG = {
   camionero: {
@@ -94,36 +105,53 @@ const ROLE_CONFIG = {
 function RoleSelector({ onSelect }) {
   return (
     <>
-      <h1 className="reg-title">Crea tu Cuenta: ¿Qué quieres ser?</h1>
+      <h1 className="reg-title">Crea tu cuenta: elige tu perfil</h1>
+      <p className="reg-subtitle">
+        Selecciona cómo usarás SincroCarga. En el siguiente paso completarás los datos de tu cuenta.
+      </p>
+      <p className="reg-step" role="status">Paso 1 de 2 · Elige tu perfil</p>
 
       <div className="reg-role-grid">
         <div className="reg-role-card">
-          <div className="reg-role-icon">
+          <div className="reg-role-icon" aria-hidden="true">
             <TruckIcon />
           </div>
           <h2 className="reg-role-name">Camionero / Transportista</h2>
-          <p className="reg-role-desc">
+          <p className="reg-role-desc" id="camionero-role-description">
             Ofrece tu vehículo y capacidad de carga para transportar mercadería por Chiloé.
           </p>
-          <button type="button" className="reg-role-btn" onClick={() => onSelect("camionero")}>
+          <button
+            type="button"
+            className="reg-role-btn"
+            aria-describedby="camionero-role-description"
+            onClick={() => onSelect("camionero")}
+          >
             Soy Camionero
           </button>
         </div>
 
         <div className="reg-role-card">
-          <div className="reg-role-icon">
+          <div className="reg-role-icon" aria-hidden="true">
             <PersonIcon />
           </div>
           <h2 className="reg-role-name">Cliente / Generador de Carga</h2>
-          <p className="reg-role-desc">
+          <p className="reg-role-desc" id="cliente-role-description">
             Publica tu carga y encuentra al transportista adecuado para moverla.
           </p>
-          <button type="button" className="reg-role-btn" onClick={() => onSelect("cliente")}>
+          <button
+            type="button"
+            className="reg-role-btn"
+            aria-describedby="cliente-role-description"
+            onClick={() => onSelect("cliente")}
+          >
             Soy Cliente
           </button>
         </div>
       </div>
 
+      <p className="reg-help">
+        ¿Necesitas ayuda? <a href="mailto:contacto@sincrocarga.cl">Contacta a soporte</a>.
+      </p>
       <p className="reg-switch">
         ¿Ya tienes cuenta? <Link to="/login">Iniciar Sesión</Link>
       </p>
@@ -131,29 +159,64 @@ function RoleSelector({ onSelect }) {
   );
 }
 
-function RoleForm({ role, onBack, onAuthenticated }) {
+function RoleForm({ role, initialForm, onBack, onAuthenticated, onDraftChange }) {
   const config = ROLE_CONFIG[role];
-  const initialState = Object.fromEntries(
-    config.fields.map((field) => [field.name, field.defaultValue || ""]),
-  );
-  const [form, setForm] = useState(initialState);
+  const [form, setForm] = useState(() => ({
+    ...Object.fromEntries(config.fields.map((field) => [field.name, field.defaultValue || ""])),
+    ...initialForm,
+  }));
   const [errors, setErrors] = useState({});
   const [requestError, setRequestError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [visiblePasswords, setVisiblePasswords] = useState({});
   const fields = config.fields.filter(
     (field) => !field.showWhen || form[field.showWhen[0]] === field.showWhen[1],
   );
+  const fieldGroups = fields.reduce((groups, field) => {
+    const section = getFieldSection(role, field.name);
+    const currentGroup = groups[groups.length - 1];
+    if (currentGroup?.section === section) {
+      currentGroup.fields.push(field);
+    } else {
+      groups.push({ section, fields: [field] });
+    }
+    return groups;
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+    const nextForm = { ...form, [name]: value };
+    setForm(nextForm);
+    onDraftChange(nextForm);
+    setRequestError("");
+    setErrors((previous) => Object.fromEntries(
+      Object.entries(previous).filter(([fieldName]) => {
+        if (fieldName === name) return false;
+        const field = config.fields.find((item) => item.name === fieldName);
+        return !field?.showWhen || nextForm[field.showWhen[0]] === field.showWhen[1];
+      }),
+    ));
   };
 
   const validate = () => {
     const next = {};
     fields.forEach((field) => {
-      if (field.required !== false && !form[field.name]?.toString().trim()) {
+      const value = form[field.name]?.toString().trim() || "";
+      if (field.required !== false && !value) {
         next[field.name] = "Este campo es obligatorio.";
+      } else if (field.type === "number" && value) {
+        const numericValue = Number(value);
+        if (!Number.isFinite(numericValue)) {
+          next[field.name] = "Ingresa un número válido.";
+        } else if (field.integer && !Number.isInteger(numericValue)) {
+          next[field.name] = "Ingresa un año entero.";
+        } else if (field.positive && numericValue <= 0) {
+          next[field.name] = "Ingresa un valor mayor que cero.";
+        } else if (field.min != null && numericValue < field.min) {
+          next[field.name] = `El valor mínimo es ${field.min}.`;
+        } else if (field.max != null && numericValue > field.max) {
+          next[field.name] = `El valor máximo es ${field.max}.`;
+        }
       }
     });
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email?.trim() || "")) {
@@ -161,6 +224,8 @@ function RoleForm({ role, onBack, onAuthenticated }) {
     }
     if ((form.password || "").length < 12) {
       next.password = "La contraseña debe tener al menos 12 caracteres.";
+    } else if (new TextEncoder().encode(form.password).length > 72) {
+      next.password = "La contraseña no puede superar los 72 bytes.";
     }
     if (
       form.password &&
@@ -170,7 +235,12 @@ function RoleForm({ role, onBack, onAuthenticated }) {
       next.confirmPassword = "Las contraseñas no coinciden.";
     }
     setErrors(next);
-    return Object.keys(next).length === 0;
+    const firstInvalidField = Object.keys(next)[0];
+    if (firstInvalidField) {
+      document.getElementById(firstInvalidField)?.focus();
+      return false;
+    }
+    return true;
   };
 
   const toRegistrationPayload = () => {
@@ -230,10 +300,16 @@ function RoleForm({ role, onBack, onAuthenticated }) {
         method: "POST",
         body: toRegistrationPayload(),
       });
-      setForm((current) => ({ ...current, password: "", confirmPassword: "" }));
+      const clearedForm = { ...form, password: "", confirmPassword: "" };
+      setForm(clearedForm);
+      onDraftChange(clearedForm);
       onAuthenticated(user);
     } catch (error) {
-      setRequestError(error.message);
+      setRequestError(
+        error instanceof TypeError
+          ? "No pudimos conectar con el servicio de registro. Revisa tu conexión e inténtalo nuevamente."
+          : error.message,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -247,49 +323,97 @@ function RoleForm({ role, onBack, onAuthenticated }) {
 
       <h1 className="reg-title reg-title-form">{config.title}</h1>
       <p className="reg-subtitle">{config.subtitle}</p>
+      <p className="reg-step" role="status">Paso 2 de 2 · Completa tus datos</p>
 
-      <form className="reg-form" onSubmit={handleSubmit} noValidate>
-        {fields.map((field) => (
-          <div className="reg-field" key={field.name}>
-            <label className="reg-label" htmlFor={field.name}>
-              {field.label}
-            </label>
+      <form className="reg-form" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
+        {fieldGroups.map((group) => (
+          <fieldset className="reg-fieldset" key={group.section}>
+            <legend>{group.section}</legend>
+            {group.fields.map((field) => (
+              <div className="reg-field" key={field.name}>
+                <label className="reg-label" htmlFor={field.name}>
+                  {field.label}
+                  {field.required !== false && <span className="reg-required" aria-hidden="true"> *</span>}
+                </label>
 
-            {field.type === "select" ? (
-              <select
-                id={field.name}
-                name={field.name}
-                className={`reg-select ${errors[field.name] ? "has-error" : ""}`}
-                value={form[field.name]}
-                onChange={handleChange}
-              >
-                <option value="" disabled>
-                  Selecciona una opción
-                </option>
-                {field.options.map((option) => {
-                  const value = typeof option === "string" ? option : option.value;
-                  const label = typeof option === "string" ? option : option.label;
-                  return <option key={value} value={value}>{label}</option>;
-                })}
-              </select>
-            ) : (
-              <input
-                id={field.name}
-                name={field.name}
-                type={field.type}
-                min={field.min}
-                max={field.max}
-                step={field.step}
-                placeholder={field.placeholder || ""}
-                autoComplete={field.autoComplete || "off"}
-                className={`reg-input ${errors[field.name] ? "has-error" : ""}`}
-                value={form[field.name]}
-                onChange={handleChange}
-              />
-            )}
+                {field.type === "select" ? (
+                  <select
+                    id={field.name}
+                    name={field.name}
+                    required={field.required !== false}
+                    aria-invalid={Boolean(errors[field.name])}
+                    aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}
+                    className={`reg-select ${errors[field.name] ? "has-error" : ""}`}
+                    value={form[field.name]}
+                    onChange={handleChange}
+                  >
+                    <option value="" disabled>
+                      Selecciona una opción
+                    </option>
+                    {field.options.map((option) => {
+                      const value = typeof option === "string" ? option : option.value;
+                      const label = typeof option === "string" ? option : option.label;
+                      return <option key={value} value={value}>{label}</option>;
+                    })}
+                  </select>
+                ) : field.type === "password" ? (
+                  <div className="reg-password-wrap">
+                    <input
+                      id={field.name}
+                      name={field.name}
+                      type={visiblePasswords[field.name] ? "text" : "password"}
+                      required
+                      autoComplete={field.autoComplete}
+                      aria-invalid={Boolean(errors[field.name])}
+                      aria-describedby={errors[field.name] ? `${field.name}-error` : "password-hint"}
+                      className={`reg-input ${errors[field.name] ? "has-error" : ""}`}
+                      value={form[field.name]}
+                      onChange={handleChange}
+                    />
+                    <button
+                      type="button"
+                      className="reg-password-toggle"
+                      aria-label={visiblePasswords[field.name] ? "Ocultar contraseña" : "Mostrar contraseña"}
+                      aria-pressed={Boolean(visiblePasswords[field.name])}
+                      onClick={() => setVisiblePasswords((previous) => ({
+                        ...previous,
+                        [field.name]: !previous[field.name],
+                      }))}
+                    >
+                      {visiblePasswords[field.name] ? "Ocultar" : "Mostrar"}
+                    </button>
+                  </div>
+                ) : (
+                  <input
+                    id={field.name}
+                    name={field.name}
+                    type={field.type}
+                    required={field.required !== false}
+                    min={field.min}
+                    max={field.max}
+                    maxLength={field.maxLength}
+                    step={field.step}
+                    placeholder={field.placeholder || ""}
+                    autoComplete={field.autoComplete || "off"}
+                    aria-invalid={Boolean(errors[field.name])}
+                    aria-describedby={errors[field.name] ? `${field.name}-error` : undefined}
+                    className={`reg-input ${errors[field.name] ? "has-error" : ""}`}
+                    value={form[field.name]}
+                    onChange={handleChange}
+                  />
+                )}
 
-            {errors[field.name] && <p className="reg-error">{errors[field.name]}</p>}
-          </div>
+                {field.name === "password" && (
+                  <p className="reg-hint" id="password-hint">
+                    Usa entre 12 y 72 bytes. Puedes combinar varias palabras.
+                  </p>
+                )}
+                {errors[field.name] && (
+                  <p className="reg-error" id={`${field.name}-error`}>{errors[field.name]}</p>
+                )}
+              </div>
+            ))}
+          </fieldset>
         ))}
 
         {requestError && <p className="reg-error" role="alert">{requestError}</p>}
@@ -297,12 +421,19 @@ function RoleForm({ role, onBack, onAuthenticated }) {
           {isSubmitting ? "Creando cuenta…" : "Crear cuenta"}
         </button>
       </form>
+      <p className="reg-help">
+        ¿Necesitas ayuda? <a href="mailto:contacto@sincrocarga.cl">Contacta a soporte</a>.
+      </p>
+      <p className="reg-switch">
+        ¿Ya tienes cuenta? <Link to="/login">Iniciar sesión</Link>
+      </p>
     </>
   );
 }
 
 export default function Register({ onAuthenticated }) {
   const [role, setRole] = useState(null); // null | "camionero" | "cliente"
+  const [drafts, setDrafts] = useState({});
 
   return (
     <div className="reg-page">
@@ -315,14 +446,13 @@ export default function Register({ onAuthenticated }) {
       </Link>
 
       <main className={`reg-card ${role ? "reg-card-form" : ""}`}>
-        <p className="reg-demo-notice" role="note">
-          Completa tus datos para crear tu cuenta de SincroCarga.
-        </p>
         {role ? (
           <RoleForm
             role={role}
+            initialForm={drafts[role]}
             onBack={() => setRole(null)}
             onAuthenticated={onAuthenticated}
+            onDraftChange={(draft) => setDrafts((previous) => ({ ...previous, [role]: draft }))}
           />
         ) : (
           <RoleSelector onSelect={setRole} />
