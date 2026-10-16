@@ -13,58 +13,30 @@ const DOCUMENTS = [
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024
 const ACCEPTED_FILE_TYPES = ['application/pdf', 'image/jpeg', 'image/png']
+const ACCEPTED_FILE_EXTENSIONS = ['pdf', 'jpg', 'jpeg', 'png']
 
 export default function DriverVerificationPage({ session, onLogout }) {
   const [files, setFiles] = useState({})
   const [fileError, setFileError] = useState('')
-  const [submitMessage, setSubmitMessage] = useState('')
 
   const handleFileChange = (documentId, file) => {
-    setFileError('')
-    setSubmitMessage('')
+    if (!file) return
 
-    if (!file) {
-      setFiles((current) => {
-        const next = { ...current }
-        delete next[documentId]
-        return next
-      })
-      return
-    }
-
-    if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
-      setFiles((current) => {
-        const next = { ...current }
-        delete next[documentId]
-        return next
-      })
+    const extension = file.name.split('.').pop()?.toLocaleLowerCase('en')
+    if (!ACCEPTED_FILE_TYPES.includes(file.type) && !ACCEPTED_FILE_EXTENSIONS.includes(extension)) {
       setFileError('El archivo debe estar en formato PDF, JPG o PNG.')
       return
     }
 
-    if (file.size > MAX_FILE_SIZE) {
-      setFiles((current) => {
-        const next = { ...current }
-        delete next[documentId]
-        return next
-      })
-      setFileError('El archivo no puede superar los 10 MB.')
+    if (file.size === 0 || file.size > MAX_FILE_SIZE) {
+      setFileError(file.size === 0
+        ? 'El archivo está vacío. Selecciona uno que contenga el documento.'
+        : 'El archivo no puede superar los 10 MB.')
       return
     }
 
+    setFileError('')
     setFiles((current) => ({ ...current, [documentId]: file }))
-  }
-
-  const handleSubmit = (event) => {
-    event.preventDefault()
-    const missingDocuments = DOCUMENTS.filter((document) => !files[document.id])
-
-    if (missingDocuments.length > 0) {
-      setSubmitMessage(`Selecciona los documentos pendientes: ${missingDocuments.map((document) => document.label).join(', ')}.`)
-      return
-    }
-
-    setSubmitMessage('La carga segura de documentos aún no está habilitada. No se envió ningún archivo.')
   }
 
   const selectedCount = DOCUMENTS.filter((document) => files[document.id]).length
@@ -74,9 +46,9 @@ export default function DriverVerificationPage({ session, onLogout }) {
       <Navbar session={session} onLogout={onLogout} />
 
       <main className="page__main driver-verification__main">
-        <h1 className="driver-verification__title">Tu verificación está en curso</h1>
+        <h1 className="driver-verification__title">Prepara tus documentos</h1>
         <p className="driver-verification__subtitle">
-          Sube tus documentos para que un administrador verifique tu camión.
+          La revisión de tu cuenta todavía no ha comenzado. Puedes revisar y seleccionar los documentos solicitados aquí.
         </p>
 
         <div className="driver-verification__grid">
@@ -85,7 +57,7 @@ export default function DriverVerificationPage({ session, onLogout }) {
               Carga de documentos
             </h2>
 
-            <form onSubmit={handleSubmit}>
+            <div>
               <div className="driver-verification__document-list">
                 {DOCUMENTS.map((document) => {
                   const file = files[document.id]
@@ -101,7 +73,7 @@ export default function DriverVerificationPage({ session, onLogout }) {
                       </div>
 
                       <span className={`driver-verification__badge ${file ? 'driver-verification__badge--selected' : ''}`}>
-                        {file ? 'Seleccionado' : 'Pendiente'}
+                        {file ? 'Solo en este navegador' : 'No seleccionado'}
                       </span>
 
                       <label className="driver-verification__upload">
@@ -111,30 +83,44 @@ export default function DriverVerificationPage({ session, onLogout }) {
                           type="file"
                           accept=".pdf,.jpg,.jpeg,.png,application/pdf,image/jpeg,image/png"
                           aria-label={`${file ? 'Cambiar' : 'Subir'} ${document.label.toLowerCase()}`}
+                          aria-describedby="driver-verification-file-hint"
                           onChange={(event) => handleFileChange(document.id, event.target.files?.[0])}
                         />
                       </label>
+                      {file && (
+                        <button
+                          className="driver-verification__remove"
+                          type="button"
+                          aria-label={`Quitar archivo de ${document.label.toLowerCase()}`}
+                          onClick={() => setFiles((current) => {
+                            const next = { ...current }
+                            delete next[document.id]
+                            return next
+                          })}
+                        >
+                          Quitar
+                        </button>
+                      )}
                     </div>
                   )
                 })}
               </div>
 
-              <p className="driver-verification__file-hint">
-                PDF, JPG o PNG · Máximo 10 MB por archivo
+              <p id="driver-verification-file-hint" className="driver-verification__file-hint">
+                PDF, JPG o PNG · Máximo 10 MB por archivo · Asegúrate de que el documento esté vigente y legible.
               </p>
 
               {fileError && <p className="driver-verification__message" role="alert">{fileError}</p>}
-              {submitMessage && <p className="driver-verification__message" role="status">{submitMessage}</p>}
 
-              <button className="driver-verification__submit" type="submit">
-                Enviar documentos
+              <button className="driver-verification__submit" type="button" disabled>
+                Envío de documentos no disponible
               </button>
-            </form>
+            </div>
           </section>
 
           <section className="driver-verification__card" aria-labelledby="progress-title">
             <h2 id="progress-title" className="driver-verification__card-title">
-              Estado de la verificación
+              Pasos para preparar tu cuenta
             </h2>
 
             <ol className="driver-verification__timeline">
@@ -145,7 +131,7 @@ export default function DriverVerificationPage({ session, onLogout }) {
               />
               <VerificationStep
                 title="Selección de documentos"
-                description={selectedCount === DOCUMENTS.length ? 'Listos para enviar' : `${selectedCount} de ${DOCUMENTS.length} seleccionados`}
+                description={`${selectedCount} de ${DOCUMENTS.length} seleccionados en este navegador`}
                 status="current"
               />
               <VerificationStep
@@ -162,7 +148,7 @@ export default function DriverVerificationPage({ session, onLogout }) {
             </ol>
 
             <p className="driver-verification__notice">
-              La carga segura todavía no está conectada. Los archivos que selecciones permanecen en este navegador y no se envían ni se guardan.
+              La carga segura aún no está disponible. Los archivos seleccionados se perderán al cerrar o recargar esta página; no se envían ni guardan en el servidor y la revisión no ha comenzado.
             </p>
           </section>
         </div>

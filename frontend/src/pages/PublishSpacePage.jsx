@@ -1,36 +1,44 @@
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
 import Navbar from '../components/Navbar'
 import Footer from '../components/Footer'
 import '../styles/PublishSpacePage.css'
 
-const SUGGESTED_MATCH = {
-  route: 'Puerto Montt → Castro',
-  match: '96% match',
-  cargo: 'Materiales de construcción',
-  load: '6 ton · hoy 15:30',
-  price: 87500,
+const INITIAL_FORM = {
+  origin: '',
+  destination: '',
+  departure: '',
+  capacity: '',
 }
 
-const INITIAL_FORM = {
-  origin: 'Puerto Montt',
-  destination: 'Castro',
-  departure: '',
-  capacity: '8',
+function getLocalDateTime() {
+  const localDate = new Date(Date.now() - new Date().getTimezoneOffset() * 60_000)
+  return localDate.toISOString().slice(0, 16)
 }
 
 export default function PublishSpacePage({ session, onLogout }) {
   const [form, setForm] = useState(INITIAL_FORM)
   const [published, setPublished] = useState(false)
+  const [routeError, setRouteError] = useState('')
 
   const updateField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }))
     setPublished(false)
+    setRouteError('')
   }
 
   const handleSubmit = (event) => {
     event.preventDefault()
+    if (form.origin.trim().toLocaleLowerCase('es-CL') === form.destination.trim().toLocaleLowerCase('es-CL')) {
+      setRouteError('El origen y el destino deben ser distintos.')
+      return
+    }
     setPublished(true)
+  }
+
+  const clearForm = () => {
+    setForm(INITIAL_FORM)
+    setPublished(false)
+    setRouteError('')
   }
 
   return (
@@ -41,7 +49,7 @@ export default function PublishSpacePage({ session, onLogout }) {
         <p className="eyebrow">Camionero · Publicar espacio</p>
         <h1 className="page__title">Publica tu espacio vacío</h1>
         <p className="page__subtitle">
-          Indica tu ruta y el tonelaje libre. El sistema busca cargas compatibles.
+          Indica tu ruta y el tonelaje libre. Después podrás revisar solicitudes de ejemplo en “Buscar cargas”.
         </p>
 
         <div className="publish-space__grid">
@@ -52,6 +60,7 @@ export default function PublishSpacePage({ session, onLogout }) {
                 <span>Origen</span>
                 <input
                   required
+                  maxLength={100}
                   value={form.origin}
                   onChange={(event) => updateField('origin', event.target.value)}
                   placeholder="Ej: Puerto Montt"
@@ -62,6 +71,7 @@ export default function PublishSpacePage({ session, onLogout }) {
                 <span>Destino</span>
                 <input
                   required
+                  maxLength={100}
                   value={form.destination}
                   onChange={(event) => updateField('destination', event.target.value)}
                   placeholder="Ej: Castro"
@@ -73,6 +83,7 @@ export default function PublishSpacePage({ session, onLogout }) {
                 <input
                   required
                   type="datetime-local"
+                  min={getLocalDateTime()}
                   value={form.departure}
                   onChange={(event) => updateField('departure', event.target.value)}
                 />
@@ -86,41 +97,41 @@ export default function PublishSpacePage({ session, onLogout }) {
                   min="0.1"
                   max="100"
                   step="0.1"
+                  inputMode="decimal"
                   value={form.capacity}
                   onChange={(event) => updateField('capacity', event.target.value)}
                 />
               </label>
 
+              {routeError && <p className="publish-space__error" role="alert">{routeError}</p>}
               {published && (
                 <p className="publish-space__message" role="status">
-                  Espacio publicado para esta demostración. No se guarda en el servidor.
+                  Simulación completada. El espacio no se publicó ni se guardó en el servidor.
                 </p>
               )}
 
-              <button className="publish-space__submit" type="submit">
-                {published ? 'Actualizar espacio' : 'Publicar espacio'}
-              </button>
+              <div className="publish-space__form-actions">
+                <button className="publish-space__submit" type="submit">
+                  Simular publicación
+                </button>
+                <button className="publish-space__clear" type="button" onClick={clearForm}>
+                  Limpiar formulario
+                </button>
+              </div>
             </form>
           </section>
 
           <section className="publish-space__panel" aria-labelledby="suggestion-title">
             <h2 className="publish-space__panel-title" id="suggestion-title">
-              Coincidencia sugerida
+              Antes de continuar
             </h2>
-            <article className="publish-space__suggestion">
-              <div className="publish-space__suggestion-heading">
-                <h3>{SUGGESTED_MATCH.route}</h3>
-                <strong>${SUGGESTED_MATCH.price.toLocaleString('es-CL')}</strong>
-              </div>
-              <span className="publish-space__match-badge">{SUGGESTED_MATCH.match}</span>
-              <p>{SUGGESTED_MATCH.cargo}</p>
-              <p className="publish-space__suggestion-meta">{SUGGESTED_MATCH.load}</p>
-              <Link className="publish-space__coordinate" to="/matching">
-                Ver solicitudes en Matching
-              </Link>
-            </article>
+            <ul className="publish-space__guidance">
+              <li>Indica el espacio libre real, no la capacidad total del camión.</li>
+              <li>Revisa la fecha y hora antes de continuar.</li>
+              <li>Podrás revisar cargas compatibles en la sección “Buscar cargas”.</li>
+            </ul>
             <p className="publish-space__demo-note">
-              Coincidencia de ejemplo; la búsqueda automática todavía no está conectada al servidor.
+              Esta página es una demostración: no se crea ni publica un viaje real.
             </p>
           </section>
         </div>

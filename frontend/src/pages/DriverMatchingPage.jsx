@@ -36,31 +36,31 @@ const INITIAL_REQUESTS = [
   },
 ]
 
-const INITIAL_ACCEPTED = [
-  {
-    id: 'accepted-1',
-    route: 'Parga → Castro',
-    match: 94,
-    cargo: 'Entrega de herramientas',
-    load: '3 ton',
-    departure: 'jue 10:00',
-    price: 60000,
-    details: 'Pago protegido · listo para coordinar el viaje.',
-  },
-]
-
 function formatPrice(price) {
   return `$${price.toLocaleString('es-CL')}`
 }
 
 export default function DriverMatchingPage({ session, onLogout }) {
   const [available, setAvailable] = useState(INITIAL_REQUESTS)
-  const [accepted, setAccepted] = useState(INITIAL_ACCEPTED)
+  const [accepted, setAccepted] = useState([])
   const [expandedId, setExpandedId] = useState(null)
+  const [pendingAcceptanceId, setPendingAcceptanceId] = useState(null)
+  const [actionMessage, setActionMessage] = useState('')
 
   const acceptRequest = (request) => {
     setAvailable((current) => current.filter((item) => item.id !== request.id))
     setAccepted((current) => [...current, request])
+    setPendingAcceptanceId(null)
+    setActionMessage(`${request.route} se marcó como aceptada en esta demostración. No se reservó la carga.`)
+  }
+
+  const undoAcceptance = (request) => {
+    setAccepted((current) => current.filter((item) => item.id !== request.id))
+    setAvailable((current) => [...current, request].sort(
+      (first, second) => INITIAL_REQUESTS.findIndex((item) => item.id === first.id)
+        - INITIAL_REQUESTS.findIndex((item) => item.id === second.id),
+    ))
+    setActionMessage(`Se deshizo la aceptación de ${request.route}.`)
   }
 
   return (
@@ -73,9 +73,10 @@ export default function DriverMatchingPage({ session, onLogout }) {
         <p className="page__subtitle">
           Cargas compatibles con tus rutas y camiones disponibles.
         </p>
-        <p className="driver-matching__demo-note">
-          Solicitudes de ejemplo: las acciones se mantienen solo durante esta visita.
+        <p className="driver-matching__demo-note" role="note">
+          Datos y acciones de demostración. Aceptar aquí no contacta al cliente, no reserva la carga y no crea un viaje.
         </p>
+        {actionMessage && <p className="driver-matching__action-message" role="status">{actionMessage}</p>}
 
         <div className="driver-matching__columns">
           <section aria-labelledby="available-title">
@@ -90,8 +91,14 @@ export default function DriverMatchingPage({ session, onLogout }) {
                   key={request.id}
                   request={request}
                   expanded={expandedId === request.id}
+                  confirming={pendingAcceptanceId === request.id}
                   onToggle={() => setExpandedId(expandedId === request.id ? null : request.id)}
-                  onAccept={() => acceptRequest(request)}
+                  onAccept={() => {
+                    setPendingAcceptanceId(request.id)
+                    setActionMessage('')
+                  }}
+                  onConfirm={() => acceptRequest(request)}
+                  onCancel={() => setPendingAcceptanceId(null)}
                 />
               ))}
             </div>
@@ -111,6 +118,7 @@ export default function DriverMatchingPage({ session, onLogout }) {
                   accepted
                   expanded={expandedId === request.id}
                   onToggle={() => setExpandedId(expandedId === request.id ? null : request.id)}
+                  onUndo={() => undoAcceptance(request)}
                 />
               ))}
             </div>
@@ -123,7 +131,17 @@ export default function DriverMatchingPage({ session, onLogout }) {
   )
 }
 
-function RequestCard({ request, accepted = false, expanded, onToggle, onAccept }) {
+function RequestCard({
+  request,
+  accepted = false,
+  expanded,
+  confirming = false,
+  onToggle,
+  onAccept,
+  onConfirm,
+  onCancel,
+  onUndo,
+}) {
   return (
     <article className="driver-matching__card">
       <div className="driver-matching__card-heading">
@@ -131,11 +149,10 @@ function RequestCard({ request, accepted = false, expanded, onToggle, onAccept }
         <strong>{formatPrice(request.price)}</strong>
       </div>
       <span className={`driver-matching__badge${accepted ? ' driver-matching__badge--accepted' : ''}`}>
-        {accepted ? 'Aceptada' : `${request.match}% match`}
+        {accepted ? 'Aceptada en demo' : `${request.match}% de compatibilidad`}
       </span>
       <p className="driver-matching__cargo">{request.cargo}</p>
       <p className="driver-matching__meta">{request.load} · {request.departure}</p>
-      {accepted && <p className="driver-matching__payment">Pago protegido · listo para continuar</p>}
 
       {expanded && (
         <div className="driver-matching__details">
@@ -144,10 +161,29 @@ function RequestCard({ request, accepted = false, expanded, onToggle, onAccept }
         </div>
       )}
 
+      {confirming && (
+        <div className="driver-matching__confirmation" role="group" aria-label={`Confirmar aceptación de ${request.route}`}>
+          <p>Esto solo cambia esta vista. No contactará al cliente ni reservará la carga.</p>
+          <div className="driver-matching__actions">
+            <button type="button" className="driver-matching__button" onClick={onConfirm}>
+              Confirmar en demo
+            </button>
+            <button type="button" className="driver-matching__button driver-matching__button--secondary" onClick={onCancel}>
+              Cancelar
+            </button>
+          </div>
+        </div>
+      )}
+
       <div className="driver-matching__actions">
-        {!accepted && (
+        {!accepted && !confirming && (
           <button type="button" className="driver-matching__button" onClick={onAccept}>
-            Aceptar solicitud
+            Aceptar en demo
+          </button>
+        )}
+        {accepted && (
+          <button type="button" className="driver-matching__button driver-matching__button--secondary" onClick={onUndo}>
+            Deshacer
           </button>
         )}
         <button

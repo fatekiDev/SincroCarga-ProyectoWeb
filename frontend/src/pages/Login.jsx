@@ -79,8 +79,7 @@ export default function Login({ onAuthenticated }) {
       <main className="auth-card">
         <h1 className="auth-title">Bienvenido de nuevo a SincroCarga</h1>
         <p className="auth-demo-notice" role="note">
-          Autenticación conectada a la base local de desarrollo. Usa datos de prueba;
-          el servicio todavía no está preparado para producción.
+          Ingresa con el correo y la contraseña de tu cuenta.
         </p>
 
         <form className="auth-form" onSubmit={handleSubmit} noValidate>

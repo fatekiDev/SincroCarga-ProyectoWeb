@@ -120,6 +120,21 @@
   outline-offset: 2px;
 }
 
+.driver-verification__remove {
+  border: 0;
+  background: transparent;
+  color: var(--sc-text-secondary);
+  font: inherit;
+  font-size: 11px;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+.driver-verification__remove:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 2px;
+}
+
 .driver-verification__upload input {
   position: absolute;
   width: 1px;
@@ -161,6 +176,11 @@
 
 .driver-verification__submit:hover {
   background: var(--sc-primary-hover);
+}
+
+.driver-verification__submit:disabled {
+  background: var(--sc-disabled);
+  cursor: not-allowed;
 }
 
 .driver-verification__submit:focus-visible {

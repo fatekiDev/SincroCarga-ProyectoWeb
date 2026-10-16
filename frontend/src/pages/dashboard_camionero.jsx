@@ -1,127 +1,69 @@
-import { Link, useNavigate } from "react-router-dom";
-import logo from "../assets/logoprincipal.png";
-import LogoutButton from "../components/LogoutButton";
-import "../styles/dashboard_camionero.css";
+import { ArrowRight, FileCheck2, PackagePlus, Search } from 'lucide-react'
+import { Link } from 'react-router-dom'
+import Navbar from '../components/Navbar'
+import Footer from '../components/Footer'
+import '../styles/dashboard_camionero.css'
 
-// Datos de ejemplo — más adelante vendrán de tu API/backend
-const stats = {
-  saldo: 245800,
-  matchesNuevos: 5,
-  rating: 4.9,
-  resenas: 120,
-};
+const DRIVER_ACTIONS = [
+  {
+    icon: PackagePlus,
+    title: 'Publicar espacio disponible',
+    description: 'Registra una ruta y el espacio libre de tu camión.',
+    path: '/publicar',
+    action: 'Ir a publicar',
+  },
+  {
+    icon: Search,
+    title: 'Buscar cargas',
+    description: 'Revisa solicitudes compatibles con tus viajes.',
+    path: '/matching',
+    action: 'Ver solicitudes',
+  },
+  {
+    icon: FileCheck2,
+    title: 'Preparar documentos',
+    description: 'Consulta los documentos necesarios para tu cuenta.',
+    path: '/verificacion',
+    action: 'Ver documentos',
+  },
+]
 
-const testimonios = [
-  { nombre: "Carlos M.", texto: "Excelente chofer, muy puntual." },
-  { nombre: "Ana P.", texto: "Carga impecable, muy recomendado." },
-];
-
-function DashboardCamionero({ session, onLogout }) {
-  const navigate = useNavigate();
-
+export default function DashboardCamionero({ session, onLogout }) {
   return (
-    <div className="dashboard">
-      {/* HEADER */}
-      <header className="header">
-        <Link to="/dashboard" className="header-logo" aria-label="Ir al dashboard de camionero">
-          <img src={logo} alt="" className="logo-img" aria-hidden="true" />
-          <div className="logo-text">
-            <div className="logo-name">SincroCarga</div>
-            <div className="logo-tagline">MATCHING OPERATIVO</div>
-          </div>
-        </Link>
+    <div className="page dashboard">
+      <Navbar activeSection="inicio" session={session} onLogout={onLogout} />
 
-        <nav className="nav-desktop">
-          <Link to="/publicar">Publicar</Link>
-          <Link to="/matching">Matching</Link>
-          <Link to="/pagos">Pagos seguros</Link>
-        </nav>
-
-        <button className="hamburger">☰</button>
-        <LogoutButton className="dashboard-logout" onLogout={onLogout} />
-
-        <div className="profile">
-          <div className="profile-avatar" />
-          <div className="profile-name">
-            {session.email} - <Link to="/dashboard">Mi Perfil</Link>
-          </div>
-        </div>
-      </header>
-
-      {/* BIENVENIDA */}
-      <section>
-        <h1 className="welcome-title">¡Bienvenido a tu panel de camionero!</h1>
-        <p className="welcome-subtitle">
-          Tu panel de control para optimizar tus rutas y ganar más.
+      <main className="page__main dashboard__main">
+        <p className="eyebrow">Panel del camionero</p>
+        <h1 className="page__title">Hola, {session.email || 'camionero'}</h1>
+        <p className="page__subtitle">
+          Elige qué quieres hacer y sigue el estado de cada paso desde su sección.
         </p>
-      </section>
 
-      {/* STATS */}
-      <section className="stats-row">
-        <div className="stat-card">
-          <div className="stat-card-title">💰 Saldo Actual</div>
-          <div className="stat-card-value">
-            ${stats.saldo.toLocaleString("es-CL")} <span className="unit">CLP</span>
-          </div>
-          <button className="btn-primary">Retirar Fondos</button>
-        </div>
+        <section className="dashboard__notice" aria-label="Estado de las funciones">
+          <strong>Entorno de demostración</strong>
+          <p>
+            Publicar espacio y aceptar cargas aún no guarda cambios en el servidor.
+            No se generarán reservas ni pagos reales.
+          </p>
+        </section>
 
-        <div className="stat-card">
-          <div className="stat-card-title">📦 Matching de Encargos</div>
-          <div className="stat-card-value">
-            {stats.matchesNuevos} <span className="unit">(nuevas)</span>
-          </div>
-          <button className="btn-primary" onClick={() => navigate("/matching")}>Ver Solicitudes</button>
-        </div>
+        <section className="dashboard__actions" aria-label="Accesos rápidos">
+          {DRIVER_ACTIONS.map(({ icon: Icon, title, description, path, action }) => (
+            <article className="dashboard__action-card" key={path}>
+              <Icon size={22} aria-hidden="true" />
+              <h2>{title}</h2>
+              <p>{description}</p>
+              <Link to={path}>
+                {action}
+                <ArrowRight size={16} aria-hidden="true" />
+              </Link>
+            </article>
+          ))}
+        </section>
+      </main>
 
-        <div className="stat-card">
-          <div className="stat-card-title">⭐ Calificación</div>
-          <div className="stat-card-value">
-            <span className="star">★★★★★</span> {stats.rating}{" "}
-            <span className="unit">({stats.resenas} reseñas)</span>
-          </div>
-          <button className="btn-primary">Ver Feedback</button>
-        </div>
-      </section>
-
-      {/* PROGRESO + TESTIMONIOS */}
-      <section className="mid-row">
-        <div className="progress-card">
-          <div className="progress-card-title">🥇 ¡Casi listo para tu bono de fletes!</div>
-          <div className="progress-bar-track">
-            <div className="progress-bar-fill" style={{ width: "80%" }} />
-          </div>
-          <div className="progress-card-count">8/10</div>
-          <div className="progress-card-text">
-            Completa 10 fletes este mes para calificar y ganar $50.000 CLP extra. ¡Solo 2 más!
-          </div>
-        </div>
-
-        <div className="testimonial-card">
-          <div className="testimonial-title">Lo que dicen tus clientes</div>
-          <div className="testimonial-items">
-            {testimonios.map((t) => (
-              <div className="testimonial-item" key={t.nombre}>
-                <strong>{t.nombre}:</strong> {t.texto}
-                <span className="stars">★★★★★</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA BANNER */}
-      <section className="cta-banner">
-        <div className="cta-text-group">
-          <div className="cta-tag">✓ Todo listo para operar</div>
-          <div className="cta-title">
-            Optimiza tus fletes vacíos en Chiloé con SincroCarga.
-          </div>
-        </div>
-        <button className="btn-cta-final" onClick={() => navigate("/matching")}>Revisar Matches de Hoy</button>
-      </section>
+      <Footer tagline="Matching de carga y transporte en Chiloé" />
     </div>
-  );
+  )
 }
-
-export default DashboardCamionero

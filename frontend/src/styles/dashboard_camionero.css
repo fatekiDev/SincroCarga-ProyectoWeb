@@ -1,97 +1,81 @@
-* { box-sizing: border-box; margin: 0; padding: 0; }
+.dashboard__main {
+  padding-top: 32px;
+  padding-bottom: 40px;
+}
 
-body {
-  font-family: 'Segoe UI', Arial, sans-serif;
-  background: var(--sc-bg);
+.dashboard__notice {
+  margin-top: 24px;
+  border: 1px solid var(--sc-border);
+  border-left: 4px solid var(--sc-warning);
+  border-radius: var(--sc-radius-md);
+  background: var(--sc-surface-muted);
+  padding: 16px 18px;
+  color: var(--sc-title);
+}
+
+.dashboard__notice strong {
+  font-size: 14px;
+}
+
+.dashboard__notice p {
+  margin: 6px 0 0;
   color: var(--sc-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
 }
 
-#root {
-  width: 100%;
-  max-width: none;
-  margin: 0;
-  text-align: left;
-  border: 0;
-}
-
-.dashboard {
-  max-width: 1200px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
-  padding: 16px;
-}
-
-.header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+.dashboard__actions {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 16px;
-  background: var(--sc-header-bg);
-  padding: 14px 20px;
-  border-radius: 10px;
+  margin-top: 24px;
 }
 
-.header-logo { display: flex; align-items: center; gap: 10px; }
-.logo-img { width: 46px; height: 46px; object-fit: contain; flex-shrink: 0; }
-.logo-text .logo-name { font-weight: 700; font-size: 16px; color: var(--sc-title); }
-.logo-text .logo-tagline { font-size: 11px; letter-spacing: 0.5px; color: var(--sc-text-secondary); }
-
-.nav-desktop { display: flex; gap: 24px; }
-.nav-desktop a { text-decoration: none; color: var(--sc-title); font-size: 14px; font-weight: 500; }
-
-.hamburger { display: none; background: none; border: none; font-size: 22px; color: var(--sc-title); cursor: pointer; }
-
-.profile { display: flex; align-items: center; gap: 10px; }
-.profile-avatar { width: 40px; height: 40px; border-radius: 50%; background: var(--sc-avatar); }
-.profile-name { font-size: 14px; color: var(--sc-title); }
-.profile-name a { color: var(--sc-primary); text-decoration: none; font-weight: 600; }
-
-.welcome-title { font-size: 30px; font-weight: 800; color: var(--sc-title); }
-.welcome-subtitle { font-size: 15px; color: var(--sc-text-secondary); margin-top: 6px; }
-
-.stats-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
-.stat-card { background: var(--sc-card-bg); border: 1px solid var(--sc-border); border-radius: 12px; padding: 20px; display: flex; flex-direction: column; gap: 12px; }
-.stat-card-title { font-size: 15px; font-weight: 700; color: var(--sc-title); }
-.stat-card-value { font-size: 26px; font-weight: 800; color: var(--sc-title); }
-.stat-card-value .unit { font-size: 14px; font-weight: 400; color: var(--sc-text-secondary); }
-.stat-card-value .star { color: var(--sc-star); }
-
-.btn-primary { background: var(--sc-primary); color: var(--sc-primary-text); border: none; border-radius: 8px; padding: 12px; font-size: 14px; font-weight: 600; cursor: pointer; width: 100%; }
-
-.mid-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-
-.progress-card { background: var(--sc-card-bg); border: 1px solid var(--sc-border); border-radius: 12px; padding: 20px; }
-.progress-card-title { font-size: 16px; font-weight: 700; color: var(--sc-title); display: flex; align-items: center; gap: 8px; }
-.progress-bar-track { height: 14px; background: var(--sc-border); border-radius: 7px; margin: 14px 0 10px; overflow: hidden; }
-.progress-bar-fill { height: 100%; background: var(--sc-primary); border-radius: 7px; }
-.progress-card-count { font-size: 13px; color: var(--sc-text-secondary); text-align: right; margin-bottom: 6px; }
-.progress-card-text { font-size: 14px; color: var(--sc-text-secondary); }
-
-.testimonial-card { background: var(--sc-surface-testimonial); border-radius: 12px; padding: 20px; }
-.testimonial-title { font-size: 16px; font-weight: 700; color: var(--sc-title); margin-bottom: 14px; }
-.testimonial-items { display: flex; gap: 14px; }
-.testimonial-item { flex: 1; background: var(--sc-white-soft); border-radius: 8px; padding: 12px; font-size: 13px; color: var(--sc-title); }
-.testimonial-item .stars { color: var(--sc-star); margin-top: 6px; display: block; }
-
-.cta-banner { background: var(--sc-footer-bg); border-radius: 12px; padding: 24px; display: flex; align-items: center; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
-.cta-text-group { flex: 1; min-width: 250px; }
-.cta-tag { color: var(--sc-success); font-size: 13px; font-weight: 600; margin-bottom: 6px; }
-.cta-title { color: var(--sc-text-on-dark); font-size: 20px; font-weight: 700; }
-.btn-cta-final { background: var(--sc-text-on-dark); color: var(--sc-footer-bg); border: none; border-radius: 8px; padding: 14px 22px; font-size: 14px; font-weight: 700; cursor: pointer; flex-shrink: 0; }
-
-@media (max-width: 900px) {
-  .stats-row { grid-template-columns: repeat(2, 1fr); }
-  .nav-desktop { display: none; }
-  .hamburger { display: block; }
+.dashboard__action-card {
+  display: flex;
+  min-width: 0;
+  flex-direction: column;
+  align-items: flex-start;
+  border: 1px solid var(--sc-border);
+  border-radius: var(--sc-radius-md);
+  background: var(--sc-card-bg);
+  padding: 20px;
+  color: var(--sc-primary);
 }
 
-@media (max-width: 600px) {
-  .stats-row { grid-template-columns: 1fr; }
-  .mid-row { grid-template-columns: 1fr; }
-  .testimonial-items { flex-direction: column; }
-  .cta-banner { flex-direction: column; align-items: stretch; }
-  .btn-cta-final { width: 100%; }
-  .welcome-title { font-size: 24px; }
+.dashboard__action-card h2 {
+  margin: 14px 0 6px;
+  color: var(--sc-title);
+  font-size: 16px;
+}
+
+.dashboard__action-card p {
+  margin: 0;
+  flex: 1;
+  color: var(--sc-text-secondary);
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.dashboard__action-card a {
+  display: inline-flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 8px;
+  margin-top: 16px;
+  color: var(--sc-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.dashboard__action-card a:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 3px;
+}
+
+@media (max-width: 760px) {
+  .dashboard__actions {
+    grid-template-columns: 1fr;
+  }
 }

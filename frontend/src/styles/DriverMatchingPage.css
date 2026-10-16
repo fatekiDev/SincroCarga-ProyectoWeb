@@ -2,6 +2,17 @@
   margin: 12px 0 0;
   color: var(--sc-text-secondary);
   font-size: 12px;
+  line-height: 1.5;
+}
+
+.driver-matching__action-message {
+  margin: 12px 0 0;
+  border-radius: var(--sc-radius-sm);
+  background: var(--sc-success-soft);
+  padding: 10px 12px;
+  color: var(--sc-success-text);
+  font-size: 12px;
+  line-height: 1.5;
 }
 
 .driver-matching__columns {
@@ -62,8 +73,7 @@
   font-weight: 600;
 }
 
-.driver-matching__badge--accepted,
-.driver-matching__payment {
+.driver-matching__badge--accepted {
   background: var(--sc-success-soft);
   color: var(--sc-success-text);
 }
@@ -75,19 +85,6 @@
 }
 
 .driver-matching__meta,
-.driver-matching__payment {
-  margin: 0;
-  color: var(--sc-text-secondary);
-  font-size: 12px;
-}
-
-.driver-matching__payment {
-  display: inline-block;
-  margin-top: 8px;
-  border-radius: 999px;
-  padding: 4px 8px;
-}
-
 .driver-matching__details {
   margin-top: 12px;
   border-top: 1px solid var(--sc-border);
@@ -108,6 +105,20 @@
   margin-top: 12px;
 }
 
+.driver-matching__confirmation {
+  margin-top: 12px;
+  border-radius: var(--sc-radius-sm);
+  background: var(--sc-surface-muted);
+  padding: 12px;
+}
+
+.driver-matching__confirmation p {
+  margin: 0;
+  color: var(--sc-text-secondary);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
 .driver-matching__button {
   border: 1px solid var(--sc-primary);
   border-radius: 7px;
@@ -117,6 +128,12 @@
   font: inherit;
   font-size: 12px;
   font-weight: 600;
+  cursor: pointer;
+}
+
+.driver-matching__button:focus-visible {
+  outline: 3px solid var(--sc-focus-shadow);
+  outline-offset: 2px;
 }
 
 .driver-matching__button:hover {

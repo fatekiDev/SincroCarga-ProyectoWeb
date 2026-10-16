@@ -136,7 +136,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
       <Route
         path="/review"
         element={
-          <ProtectedRoute session={session} authStatus={authStatus} redirectPath="/login">
+          <ProtectedRoute session={session} authStatus={authStatus} role="cliente" redirectPath="/login">
             <ReviewPage session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
