@@ -30,10 +30,21 @@ export default function Login({ onAuthenticated }) {
   const [errors, setErrors] = useState({});
   const [requestError, setRequestError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const supportHref = `mailto:contacto@sincrocarga.cl?subject=${encodeURIComponent(
+    "Ayuda para acceder a SincroCarga",
+  )}&body=${encodeURIComponent(`Correo de mi cuenta: ${form.email.trim()}`)}`;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
+    setRequestError("");
+    setErrors((prev) => {
+      if (!prev[name]) return prev;
+      const next = { ...prev };
+      delete next[name];
+      return next;
+    });
   };
 
   const validate = () => {
@@ -43,7 +54,12 @@ export default function Login({ onAuthenticated }) {
     }
     if (!form.password) next.password = "Ingresa tu contraseña.";
     setErrors(next);
-    return Object.keys(next).length === 0;
+    const firstInvalidField = Object.keys(next)[0];
+    if (firstInvalidField) {
+      document.getElementById(firstInvalidField)?.focus();
+      return false;
+    }
+    return true;
   };
 
   const handleSubmit = async (e) => {
@@ -60,7 +76,11 @@ export default function Login({ onAuthenticated }) {
       setForm((current) => ({ ...current, password: "" }));
       onAuthenticated(user);
     } catch (error) {
-      setRequestError(error.message);
+      setRequestError(
+        error instanceof TypeError
+          ? "No pudimos conectar con el servicio de acceso. Revisa tu conexión e inténtalo nuevamente."
+          : error.message,
+      );
     } finally {
       setIsSubmitting(false);
     }
@@ -78,11 +98,8 @@ export default function Login({ onAuthenticated }) {
 
       <main className="auth-card">
         <h1 className="auth-title">Bienvenido de nuevo a SincroCarga</h1>
-        <p className="auth-demo-notice" role="note">
-          Ingresa con el correo y la contraseña de tu cuenta.
-        </p>
 
-        <form className="auth-form" onSubmit={handleSubmit} noValidate>
+        <form className="auth-form" onSubmit={handleSubmit} noValidate aria-busy={isSubmitting}>
           <label className="auth-label" htmlFor="email">
             Correo Electrónico
           </label>
@@ -94,12 +111,15 @@ export default function Login({ onAuthenticated }) {
               id="email"
               name="email"
               type="email"
+              required
               autoComplete="email"
+              aria-invalid={Boolean(errors.email)}
+              aria-describedby={errors.email ? "email-error" : undefined}
               value={form.email}
               onChange={handleChange}
             />
           </div>
-          {errors.email && <p className="auth-error">{errors.email}</p>}
+          {errors.email && <p className="auth-error" id="email-error">{errors.email}</p>}
 
           <label className="auth-label" htmlFor="password">
             Contraseña
@@ -111,21 +131,36 @@ export default function Login({ onAuthenticated }) {
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? "text" : "password"}
+              required
               autoComplete="current-password"
+              aria-invalid={Boolean(errors.password)}
+              aria-describedby={errors.password ? "password-error" : undefined}
               value={form.password}
               onChange={handleChange}
             />
+            <button
+              type="button"
+              className="auth-password-toggle"
+              aria-label={showPassword ? "Ocultar contraseña" : "Mostrar contraseña"}
+              aria-pressed={showPassword}
+              onClick={() => setShowPassword((visible) => !visible)}
+            >
+              {showPassword ? "Ocultar" : "Mostrar"}
+            </button>
           </div>
-          {errors.password && <p className="auth-error">{errors.password}</p>}
+          {errors.password && <p className="auth-error" id="password-error">{errors.password}</p>}
 
           {requestError && <p className="auth-error" role="alert">{requestError}</p>}
-          <button type="submit" className="auth-btn-primary">
+          <button type="submit" className="auth-btn-primary" disabled={isSubmitting}>
             {isSubmitting ? "VERIFICANDO…" : "ENTRAR"}
-            <ArrowIcon />
+            <span aria-hidden="true"><ArrowIcon /></span>
           </button>
         </form>
 
+        <p className="auth-help">
+          ¿Problemas para acceder? <a href={supportHref}>Contacta a soporte</a> por correo.
+        </p>
         <p className="auth-switch">
           ¿No tienes cuenta? <Link to="/registro">Registrarse</Link>
         </p>
