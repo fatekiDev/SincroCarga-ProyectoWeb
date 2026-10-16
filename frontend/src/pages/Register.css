@@ -77,15 +77,11 @@
   line-height: 1.5;
 }
 
-.reg-demo-notice {
-  margin: 0 0 22px;
-  padding: 12px;
-  border: 1px solid #fdba74;
-  border-radius: 8px;
-  background: #fff7ed;
-  color: #7c2d12;
+.reg-step {
+  margin: -8px 0 18px;
+  color: #2b6cb0;
   font-size: 13px;
-  line-height: 1.5;
+  font-weight: 600;
 }
 
 /* --- Selección de rol --- */
@@ -170,6 +166,23 @@
   margin: 24px 0 0;
 }
 
+.reg-help {
+  text-align: center;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: #5c7086;
+  margin: 20px 0 0;
+}
+
+.reg-help a {
+  color: #2b6cb0;
+  font-weight: 600;
+}
+
+.reg-help a:hover {
+  text-decoration: underline;
+}
+
 .reg-switch a {
   color: #2b6cb0;
   font-weight: 600;
@@ -206,6 +219,24 @@
   gap: 14px;
 }
 
+.reg-fieldset {
+  min-width: 0;
+  margin: 0;
+  padding: 16px;
+  border: 1px solid #e2e9f1;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.reg-fieldset legend {
+  padding: 0 6px;
+  color: #16324f;
+  font-size: 14px;
+  font-weight: 700;
+}
+
 .reg-field {
   display: flex;
   flex-direction: column;
@@ -218,8 +249,13 @@
   margin-bottom: 6px;
 }
 
+.reg-required {
+  color: #b42318;
+}
+
 .reg-input,
 .reg-select {
+  width: 100%;
   border: 1px solid #d9e2ec;
   background: #f8fafc;
   border-radius: 10px;
@@ -249,6 +285,34 @@
   border-color: #d64545;
 }
 
+.reg-password-wrap {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reg-password-toggle {
+  flex-shrink: 0;
+  border: 0;
+  padding: 8px 4px;
+  background: transparent;
+  color: #2b6cb0;
+  font: inherit;
+  font-size: 12.5px;
+  font-weight: 600;
+}
+
+.reg-password-toggle:hover {
+  text-decoration: underline;
+}
+
+.reg-hint {
+  margin: 5px 0 0;
+  color: #5c7086;
+  font-size: 12px;
+  line-height: 1.45;
+}
+
 .reg-error {
   color: #d64545;
   font-size: 12.5px;
@@ -273,6 +337,13 @@
   background: #1c2b3a;
 }
 
+.reg-submit-btn:disabled,
+.reg-submit-btn:disabled:hover {
+  background: #526171;
+  cursor: wait;
+  opacity: 0.8;
+}
+
 .reg-submit-btn:active {
   transform: translateY(1px);
 }
@@ -280,7 +351,9 @@
 @media (prefers-reduced-motion: reduce) {
   .reg-role-card,
   .reg-role-btn,
-  .reg-submit-btn {
+  .reg-submit-btn,
+  .reg-input,
+  .reg-select {
     transition: none;
   }
 }
