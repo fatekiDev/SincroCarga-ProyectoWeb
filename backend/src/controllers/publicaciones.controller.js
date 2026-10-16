@@ -26,18 +26,22 @@ export async function getPublicationCatalogs(_req, res) {
 export async function getPublicationQuote(req, res) {
   const tipoCargaId = Number(req.body?.tipoCargaId)
   const rutaId = Number(req.body?.rutaId)
+  const pesoKg = Number(req.body?.pesoKg)
+  const volumenM3 = Number(req.body?.volumenM3)
   if (!Number.isSafeInteger(tipoCargaId) || tipoCargaId < 1
-    || !Number.isSafeInteger(rutaId) || rutaId < 1) {
+    || !Number.isSafeInteger(rutaId) || rutaId < 1
+    || !Number.isFinite(pesoKg) || pesoKg <= 0
+    || !Number.isFinite(volumenM3) || volumenM3 <= 0) {
     return res.status(400).json({
-      error: 'Selecciona un tipo de carga y una ruta válidos',
-      details: ['tipoCargaId y rutaId deben ser enteros positivos'],
+      error: 'Indica un tipo de carga, ruta, peso y volumen válidos',
+      details: ['tipoCargaId y rutaId deben ser enteros positivos; pesoKg y volumenM3 deben ser mayores que cero'],
     })
   }
 
-  const quote = await getPublicationQuoteRecord({ tipoCargaId, rutaId })
-  if (!quote) {
+  const quote = await getPublicationQuoteRecord({ tipoCargaId, rutaId, pesoKg, volumenM3 })
+  if (!quote || quote.tarifaOfrecida <= 0) {
     return res.status(404).json({
-      error: 'No hay una tarifa referencial vigente para esta combinación de ruta y carga',
+      error: 'No hay una tarifa referencial positiva vigente para esta combinación de ruta y carga',
     })
   }
 
@@ -69,7 +73,22 @@ export async function createPublication(req, res) {
     return res.status(400).json({ error: 'Datos de publicación inválidos', details: errors })
   }
 
-  const publication = await createPublicationRecord(req.body, req.user.cliente_id)
+  const quote = await getPublicationQuoteRecord({
+    tipoCargaId: req.body.tipoCargaId,
+    rutaId: req.body.rutaId,
+    pesoKg: req.body.pesoKg,
+    volumenM3: req.body.volumenM3,
+  })
+  if (!quote || quote.tarifaOfrecida <= 0) {
+    return res.status(404).json({
+      error: 'No hay una tarifa referencial positiva vigente para esta combinación de ruta y carga',
+    })
+  }
+
+  const publication = await createPublicationRecord({
+    ...req.body,
+    tarifaOfrecida: quote.tarifaOfrecida,
+  }, req.user.cliente_id)
   res.status(201)
     .location(`/api/publicaciones/${publication.id}`)
     .json({ data: publication })
@@ -86,7 +105,22 @@ export async function updatePublication(req, res) {
     return res.status(400).json({ error: 'Datos de publicación inválidos', details: errors })
   }
 
-  const publication = await updatePublicationRecord(id, req.body, req.user.cliente_id)
+  const quote = await getPublicationQuoteRecord({
+    tipoCargaId: req.body.tipoCargaId,
+    rutaId: req.body.rutaId,
+    pesoKg: req.body.pesoKg,
+    volumenM3: req.body.volumenM3,
+  })
+  if (!quote || quote.tarifaOfrecida <= 0) {
+    return res.status(404).json({
+      error: 'No hay una tarifa referencial positiva vigente para esta combinación de ruta y carga',
+    })
+  }
+
+  const publication = await updatePublicationRecord(id, {
+    ...req.body,
+    tarifaOfrecida: quote.tarifaOfrecida,
+  }, req.user.cliente_id)
   if (!publication) {
     return res.status(404).json({ error: 'Publicación no encontrada' })
   }

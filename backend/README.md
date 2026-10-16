@@ -37,7 +37,8 @@ tarifa; no incluye datos identificables de clientes.
 - `GET /api/health/db`: comprueba la conexión con PostgreSQL.
 - `GET /api/publicaciones/catalogos`: lista tipos de carga y rutas disponibles.
 - `POST /api/publicaciones/cotizacion`: cotiza según la tarifa referencial vigente
-  para ruta/tipo y suma el cruce marítimo solo cuando la ruta lo tiene.
+  para ruta/tipo, el peso y volumen de la carga; suma el cruce marítimo cuando
+  corresponde.
 - `POST /api/auth/register`: registra un perfil cliente o empresa/conductor/
   camión, guarda un hash de contraseña y crea una sesión.
 - `POST /api/auth/login`: valida correo y contraseña y crea una sesión.
@@ -106,9 +107,14 @@ y cancelación solo se permiten mientras la publicación siga `Disponible`.
 
 `POST` y `PUT` requieren `tipoCargaId`, `descripcion`, `pesoKg`, `volumenM3`,
 `valorDeclarado` (número o `null`), `rutaId`, `fechaLimitePostulacion`
-(`YYYY-MM-DD`, actual o futura) y `tarifaOfrecida`. La cotización usa la tarifa
-referencial vigente para la combinación de ruta y tipo de carga; agrega la tarifa
-del cruce si la ruta tiene uno e informa la distancia estimada.
+(`YYYY-MM-DD`, actual o futura), `pesoKg` y `volumenM3`. La cotización usa la
+tarifa referencial vigente para la combinación de ruta y tipo de carga. Calcula
+el peso facturable como el mayor entre el peso real y el volumen multiplicado
+por 250 kg/m³; la tarifa referencial cubre el primer tramo de 1.000 kg y cada
+tramo adicional iniciado suma un 15% de esa tarifa. Al final agrega la tarifa
+del cruce si la ruta tiene uno e informa el peso facturable y la distancia.
+El servidor recalcula este importe al crear o editar la publicación; no confía
+en el valor de `tarifaOfrecida` enviado por el navegador.
 
 El seguimiento requiere una sesión de cliente y devuelve solo un viaje con estado
 `En Progreso` que pertenezca a esa cuenta. El historial se lee de

@@ -52,6 +52,16 @@ const FIELD_LABELS = {
   tarifaOfrecida: 'Tarifa',
 }
 
+const QUOTE_INPUTS = new Set([
+  'tipoCargaId',
+  'rutaId',
+  'pesoKg',
+  'largoCm',
+  'anchoCm',
+  'altoCm',
+  'volumenM3',
+])
+
 const CURRENCY_FORMAT = new Intl.NumberFormat('es-CL', {
   style: 'currency',
   currency: 'CLP',
@@ -116,6 +126,10 @@ export default function PublishCargoPage({ session, onLogout }) {
   const [publicationError, setPublicationError] = useState('')
   const [cancelConfirmId, setCancelConfirmId] = useState(null)
   const [busyPublicationId, setBusyPublicationId] = useState(null)
+  const selectedType = catalogs.tiposCarga.find((type) => String(type.id) === form.tipoCargaId)
+  const selectedRoute = catalogs.rutas.find((route) => String(route.id) === form.rutaId)
+  const directVolumeMode = Boolean(editingId || repeatMode)
+  const volume = getVolume(form, directVolumeMode)
 
   useEffect(() => {
     const controller = new AbortController()
@@ -148,7 +162,10 @@ export default function PublishCargoPage({ session, onLogout }) {
   }, [])
 
   useEffect(() => {
-    if (!form.tipoCargaId || !form.rutaId) {
+    const pesoKg = Number(form.pesoKg)
+    if (!form.tipoCargaId || !form.rutaId
+      || !Number.isFinite(pesoKg) || pesoKg <= 0
+      || !Number.isFinite(volume) || volume <= 0) {
       return undefined
     }
 
@@ -156,6 +173,8 @@ export default function PublishCargoPage({ session, onLogout }) {
     getPublicationQuote({
       tipoCargaId: Number(form.tipoCargaId),
       rutaId: Number(form.rutaId),
+      pesoKg,
+      volumenM3: volume,
     }, { signal: controller.signal })
       .then((result) => {
         setQuote(result)
@@ -168,20 +187,29 @@ export default function PublishCargoPage({ session, onLogout }) {
       })
 
     return () => controller.abort()
-  }, [form.tipoCargaId, form.rutaId])
-
-  const selectedType = catalogs.tiposCarga.find((type) => String(type.id) === form.tipoCargaId)
-  const selectedRoute = catalogs.rutas.find((route) => String(route.id) === form.rutaId)
-  const directVolumeMode = Boolean(editingId || repeatMode)
-  const volume = getVolume(form, directVolumeMode)
+  }, [
+    form.tipoCargaId,
+    form.rutaId,
+    form.pesoKg,
+    form.largoCm,
+    form.anchoCm,
+    form.altoCm,
+    form.volumenM3,
+    volume,
+  ])
 
   const updateField = (field, value) => {
     const nextForm = { ...form, [field]: value }
     setForm(nextForm)
-    if (field === 'tipoCargaId' || field === 'rutaId') {
+    if (QUOTE_INPUTS.has(field)) {
       setQuote(null)
       setQuoteError('')
-      setQuoteStatus(nextForm.tipoCargaId && nextForm.rutaId ? 'loading' : 'idle')
+      const nextVolume = getVolume(nextForm, directVolumeMode)
+      const hasValidCargoSize = Number.isFinite(Number(nextForm.pesoKg))
+        && Number(nextForm.pesoKg) > 0
+        && Number.isFinite(nextVolume)
+        && nextVolume > 0
+      setQuoteStatus(nextForm.tipoCargaId && nextForm.rutaId && hasValidCargoSize ? 'loading' : 'idle')
     }
     setErrors((previous) => ({ ...previous, [field]: '' }))
     setServerDetails([])
@@ -535,7 +563,7 @@ export default function PublishCargoPage({ session, onLogout }) {
                   <Route size={19} />
                   <div>
                     <h2>Ruta y fecha límite</h2>
-                    <p>La tarifa se obtiene de la tarifa referencial vigente para esta ruta y carga.</p>
+                    <p>La tarifa considera la ruta, el tipo y tamaño de la carga, además del cruce marítimo si corresponde.</p>
                   </div>
                 </div>
 
@@ -591,10 +619,13 @@ export default function PublishCargoPage({ session, onLogout }) {
                     {quoteStatus === 'success' && quote && (
                       <>
                         <div><span>Tarifa referencial</span><strong>{CURRENCY_FORMAT.format(quote.tarifaBase)}</strong></div>
+                        <div><span>Peso facturable</span><strong>{formatNumber(quote.pesoFacturableKg)} kg</strong></div>
+                        <div><span>Ajuste por tamaño</span><strong>+ {CURRENCY_FORMAT.format(quote.recargoCarga)}</strong></div>
                         {quote.cruceMaritimo && (
                           <div><span>Recargo por cruce marítimo</span><strong>+ {CURRENCY_FORMAT.format(quote.recargoCruce)}</strong></div>
                         )}
                         <div className="publish-quote__total"><span>Total ofrecido</span><strong>{CURRENCY_FORMAT.format(quote.tarifaOfrecida)}</strong></div>
+                        <p>El peso facturable es el mayor entre el peso real y el volumen × {formatNumber(quote.factorVolumetricoKgM3)} kg/m³. Cada tramo iniciado sobre 1.000 kg agrega 15% de la tarifa referencial.</p>
                         <p>Distancia estimada: {formatNumber(quote.distanciaKm)} km{quote.cruceMaritimo ? ` · ${quote.cruceMaritimo}` : ''}</p>
                       </>
                     )}

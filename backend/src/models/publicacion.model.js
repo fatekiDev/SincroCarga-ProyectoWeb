@@ -1,4 +1,5 @@
 import { pool } from '../db/pool.js'
+import { calculatePublicationQuote } from '../services/publicaciones.pricing.js'
 
 function mapPublication(row) {
   if (!row) return null
@@ -133,7 +134,7 @@ export async function findPublicationCatalogs() {
   return { tiposCarga: cargoTypes.rows, rutas: routes.rows }
 }
 
-export async function findPublicationQuote({ tipoCargaId, rutaId }) {
+export async function findPublicationQuote({ tipoCargaId, rutaId, pesoKg, volumenM3 }) {
   const { rows } = await pool.query(`
     SELECT
       r.distancia_km,
@@ -156,13 +157,14 @@ export async function findPublicationQuote({ tipoCargaId, rutaId }) {
 
   const base = Number(rows[0].tarifa_base)
   const crossingFee = Number(rows[0].recargo_cruce)
-  return {
+  return calculatePublicationQuote({
     tarifaBase: base,
     recargoCruce: crossingFee,
-    tarifaOfrecida: base + crossingFee,
     distanciaKm: Number(rows[0].distancia_km),
     cruceMaritimo: rows[0].cruce_maritimo,
-  }
+    pesoKg,
+    volumenM3,
+  })
 }
 
 export async function findClientPublications(clienteId) {

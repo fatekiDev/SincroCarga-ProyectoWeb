@@ -46,9 +46,6 @@ function validateCommonFields(body) {
   if (!isCurrentOrFutureDate(body.fechaLimitePostulacion)) {
     errors.push('fechaLimitePostulacion debe ser una fecha válida, actual o futura, con formato YYYY-MM-DD')
   }
-  if (!isPositiveNumber(body.tarifaOfrecida)) {
-    errors.push('tarifaOfrecida debe ser un número mayor que cero')
-  }
   return errors
 }
 
