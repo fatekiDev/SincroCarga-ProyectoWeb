@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom'
 import Button from './button'
 import LogoutButton from './LogoutButton'
 import { getHomePath } from '../auth/session'
-import logo from '../assets/logoprincipal.png'
+import logo from '../assets/logoprincipal.svg'
 import './header.css'
 
 function Header({ session, onLogout }) {

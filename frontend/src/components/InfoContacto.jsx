@@ -1,4 +1,4 @@
-import logo from '../assets/logoprincipal.png'
+import logo from '../assets/logoprincipal.svg'
 import { Link } from 'react-router-dom'
 import { getHomePath } from '../auth/session'
 import './InfoContacto.css'

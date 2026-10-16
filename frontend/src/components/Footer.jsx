@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { getHomePath } from '../auth/session';
-import logo from '../assets/logoprincipal.png';
+import logo from '../assets/logoprincipal.svg';
 import './Footer.css';
 
 export default function Footer({ tagline = 'Carga y transporte en Chiloé', session }) {

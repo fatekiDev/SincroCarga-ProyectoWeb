@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Pencil, UserRound } from 'lucide-react';
 import { getHomePath } from '../auth/session';
-import logo from '../assets/logoprincipal.png';
+import logo from '../assets/logoprincipal.svg';
 import LogoutButton from './LogoutButton';
 import './Navbar.css';
 

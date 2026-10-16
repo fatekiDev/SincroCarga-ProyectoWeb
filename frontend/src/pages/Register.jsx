@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import { authRequest } from "../auth/api";
 import { getHomePath } from "../auth/session";
-import logo from "../assets/logoprincipal.png";
+import logo from "../assets/logoprincipal.svg";
 import "./Register.css";
 
 const TruckIcon = () => (
