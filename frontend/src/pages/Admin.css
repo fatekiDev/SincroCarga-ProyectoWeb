@@ -613,6 +613,33 @@
   margin: 7px 0 0;
 }
 
+.adm-verification-details {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin: 0;
+}
+
+.adm-verification-details > div {
+  min-width: 0;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 10px 12px;
+}
+
+.adm-verification-details dt {
+  color: #68758a;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.adm-verification-details dd {
+  overflow-wrap: anywhere;
+  margin: 4px 0 0;
+  color: #17233c;
+  font-size: 14px;
+}
+
 .adm-visually-hidden {
   position: absolute;
   width: 1px;

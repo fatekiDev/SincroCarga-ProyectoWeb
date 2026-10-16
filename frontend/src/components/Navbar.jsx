@@ -34,7 +34,12 @@ export default function Navbar({ activeSection, session, onLogout }) {
   const [profileError, setProfileError] = useState('');
   const [profileMessage, setProfileMessage] = useState('');
   const isDriver = session.role === 'camionero';
-  const navItems = isDriver
+  const isVerifiedDriver = isDriver
+    && session.verificationStatus === 'Verificado'
+    && session.carrierActive !== false;
+  const navItems = isDriver && !isVerifiedDriver
+    ? [{ key: 'verification', label: 'Verificación', path: '/verificacion' }]
+    : isDriver
     ? [
       { key: 'inicio', label: 'Inicio', path: '/dashboard' },
       { key: 'publicar', label: 'Publicar espacio', path: '/publicar' },

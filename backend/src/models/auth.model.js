@@ -149,7 +149,10 @@ export async function findAccountByEmail(email) {
       u.email,
       u.password_hash,
       u.rol,
-      COALESCE(ch.nombre_completo, c.nombre_razon_social, t.razon_social) AS nombre
+      COALESCE(ch.nombre_completo, c.nombre_razon_social, t.razon_social, u.nombre_mostrar) AS nombre,
+      t.estado_verificacion,
+      t.motivo_revision,
+      t.activo AS transportista_activo
     FROM usuario AS u
     LEFT JOIN cliente AS c ON c.id_cliente = u.cliente_id
     LEFT JOIN transportista AS t ON t.id_transportista = u.transportista_id
@@ -173,7 +176,10 @@ export async function findUserBySessionToken(token) {
       u.rol,
       u.cliente_id,
       u.transportista_id,
-      COALESCE(ch.nombre_completo, c.nombre_razon_social, t.razon_social) AS nombre
+      COALESCE(ch.nombre_completo, c.nombre_razon_social, t.razon_social, u.nombre_mostrar) AS nombre,
+      t.estado_verificacion,
+      t.motivo_revision,
+      t.activo AS transportista_activo
     FROM usuario_sesion AS s
     INNER JOIN usuario AS u ON u.id_usuario = s.usuario_id
     LEFT JOIN cliente AS c ON c.id_cliente = u.cliente_id

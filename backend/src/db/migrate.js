@@ -6,6 +6,7 @@ const migrations = [
   new URL('../../../databases/migrations/001_authentication.sql', import.meta.url),
   new URL('../../../databases/migrations/002_unique_trip_rating.sql', import.meta.url),
   new URL('../../../databases/migrations/003_simulated_payments.sql', import.meta.url),
+  new URL('../../../databases/migrations/004_admin_verification.sql', import.meta.url),
 ]
 
 try {

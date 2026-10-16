@@ -31,6 +31,9 @@ export async function loginUser({ email, password }) {
       email: account.email,
       role: account.rol,
       nombre: account.nombre,
+      estado_verificacion: account.estado_verificacion,
+      motivo_revision: account.motivo_revision,
+      transportista_activo: account.transportista_activo,
     },
   }
 }

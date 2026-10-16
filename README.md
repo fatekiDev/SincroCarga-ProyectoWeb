@@ -8,6 +8,21 @@
 
 ---
 
+## Administración
+
+El acceso administrativo usa el mismo formulario de inicio de sesión y está disponible desde el enlace **Acceso administrador** en `/login`. Las cuentas admin no se pueden crear desde el registro público.
+
+Para habilitarlo en una instalación nueva:
+
+1. Configura la conexión de PostgreSQL en `backend/.env` y ejecuta `npm run db:migrate` desde `backend`.
+2. Define `ADMIN_EMAIL`, `ADMIN_NAME` (opcional) y `ADMIN_PASSWORD` solo en el entorno seguro de la terminal o del gestor de secretos; no publiques ni compartas la contraseña.
+3. Ejecuta `npm run admin:create` desde `backend`. El comando crea una sola cuenta y no sobrescribe cuentas existentes.
+4. Inicia sesión en `/admin/login`. Las rutas y la API administrativa requieren rol `admin`; las verificaciones, transportistas e informes consultan PostgreSQL.
+
+Las solicitudes de camionero comienzan como **Pendiente**. La revisión administrativa utiliza los datos de empresa, conductor, licencia y vehículo registrados en la cuenta. La plataforma aún no almacena archivos adjuntos de documentos, por lo que el panel no debe interpretarse como una revisión de archivos. Las operaciones de transportista permanecen bloqueadas hasta la aprobación; al rechazar la solicitud se guarda el motivo y se desactiva el transportista.
+
+---
+
 ## 📌 Descripción
 
 **SincroCarga** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.

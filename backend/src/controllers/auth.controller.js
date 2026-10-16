@@ -37,6 +37,9 @@ function publicUser(user) {
     email: user.email,
     role: user.rol ?? user.role,
     name: user.nombre ?? user.name ?? null,
+    verificationStatus: user.estado_verificacion ?? null,
+    verificationReason: user.motivo_revision ?? null,
+    carrierActive: user.transportista_activo ?? null,
   }
 }
 
@@ -89,7 +92,14 @@ export async function register(req, res) {
   const name = account.role === 'cliente'
     ? account.profile.nombreRazonSocial
     : account.profile.conductor.nombre
-  res.status(201).json({ data: publicUser({ ...user, nombre: name }) })
+  res.status(201).json({
+    data: publicUser({
+      ...user,
+      nombre: name,
+      estado_verificacion: account.role === 'camionero' ? 'Pendiente' : null,
+      transportista_activo: account.role === 'camionero',
+    }),
+  })
 }
 
 export async function login(req, res) {

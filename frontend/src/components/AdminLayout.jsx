@@ -3,12 +3,12 @@ import LogoutButton from './LogoutButton';
 import '../pages/Admin.css';
 
 // Header + footer compartidos por las pantallas del administrador.
-// userName y onLogout vienen de la sesión real cuando se integre; por ahora tienen valores por defecto.
 function AdminLayout({ children, userName = 'Admin', onLogout }) {
   const navigate = useNavigate();
-  const initials = userName === 'Admin'
-    ? 'AD'
-    : userName.split(' ').map((part) => part[0]).join('').slice(0, 2).toUpperCase();
+  const nameParts = userName.split(/[\s.@_-]+/).filter(Boolean)
+  const initials = nameParts.length > 1
+    ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+    : (nameParts[0]?.slice(0, 2) || 'AD').toUpperCase()
 
   const handleLogout = async () => {
     if (onLogout) await onLogout();

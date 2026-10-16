@@ -135,24 +135,50 @@
 }
 
 @media (max-width: 480px) {
+  .hero {
+    min-height: 0;
+  }
+
+  .hero__content {
+    padding: 36px 20px 28px;
+  }
+
   .hero__cta-card {
     min-height: 64px;
+    padding: 10px 12px;
+    gap: 10px;
   }
 
   .hero__cta-card .btn {
-    flex-basis: 132px;
+    flex-basis: 124px;
+  }
+
+  .hero__cta-card p {
+    font-size: 0.8125rem;
+    line-height: 1.35;
   }
 
   .hero__stats {
     display: grid;
-    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-columns: repeat(2, minmax(0, 1fr));
     width: 100%;
-    gap: 8px;
+    flex: 0 1 auto;
+    gap: 10px;
   }
 
   .hero__stats .stat-card {
     min-width: 0;
-    padding: 10px 6px;
+    padding: 12px 10px;
+  }
+
+  .hero__stats .stat-card:nth-child(3) {
+    grid-column: 1 / -1;
+    width: calc(50% - 5px);
+    justify-self: center;
+  }
+
+  .hero__stats .stat-card__label {
+    font-size: 0.75rem;
   }
 
   .hero__stats-note {

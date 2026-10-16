@@ -1,5 +1,6 @@
 import { SESSION_COOKIE, clearSessionCookie } from '../controllers/auth.controller.js'
 import { getUserFromSession } from '../services/auth.service.js'
+import { getCarrierVerification } from '../models/admin.model.js'
 
 export async function requireAuth(req, res, next) {
   const token = req.cookies[SESSION_COOKIE]
@@ -26,4 +27,19 @@ export function requireRole(role) {
 
     return next()
   }
+}
+
+export async function requireVerifiedCarrier(req, res, next) {
+  const verification = await getCarrierVerification(req.user.transportista_id)
+  if (!verification || !verification.activo) {
+    return res.status(403).json({ error: 'La cuenta transportista está suspendida. Contacta a soporte.' })
+  }
+  if (verification.estado_verificacion !== 'Verificado') {
+    return res.status(403).json({
+      error: verification.estado_verificacion === 'Rechazado'
+        ? `La verificación fue rechazada. ${verification.motivo_revision || 'Contacta a soporte para más información.'}`
+        : 'Tu cuenta de transportista debe ser verificada por administración antes de operar.',
+    })
+  }
+  return next()
 }
