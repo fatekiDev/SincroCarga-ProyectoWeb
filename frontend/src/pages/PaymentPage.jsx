@@ -111,9 +111,9 @@ export default function PaymentPage({ session, onLogout }) {
         )}
         {loadState === 'error' && (
           <Card className="payment-empty" role="alert">
-            <h1>No pudimos consultar el pago</h1>
-            <p>{loadError}</p>
-            <Button onClick={() => setRetryToken((token) => token + 1)}>Reintentar</Button>
+            <h1>No se pudo cargar el pago</h1>
+            <p>{loadError || 'Algo se cayó al ir a buscar el pago. Prueba de nuevo en un rato.'}</p>
+            <Button onClick={() => setRetryToken((token) => token + 1)}>Probar de nuevo</Button>
           </Card>
         )}
         {loadState === 'empty' && (
