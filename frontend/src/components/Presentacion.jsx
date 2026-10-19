@@ -40,11 +40,11 @@ function Presentacion() {
             </div>
           </div>
 
-          <div className="hero__stats" role="list" aria-label="Resultados de la plataforma">
+          <ul className="hero__stats" aria-label="Resultados de la plataforma">
             <StatCard value="≈ 3" label="cargas de referencia" />
             <StatCard value="Demo" label="pago protegido" />
             <StatCard value="≈ 2 h" label="tiempo promedio estimado" />
-          </div>
+          </ul>
         </div>
         <p className="hero__stats-note">
           Estimaciones referenciales para esta demostración, no métricas operativas en tiempo real. El pago no representa una transferencia ni un monto retenido.
