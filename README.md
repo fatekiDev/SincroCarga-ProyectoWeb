@@ -8,6 +8,55 @@
 
 ---
 
+## 🛠️ Instalación
+
+### 1) Preparar la base de datos
+
+1. Crea la base PostgreSQL llamada `bd_grupo2_sincrochiloe`.
+2. Carga el esquema base del proyecto desde `databases/bd_grupo2_sincrochiloe.sql`.
+3. Copia `backend/.env.example` a `backend/.env` y ajusta las variables de conexión PostgreSQL (`PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`).
+
+### 2) Instalar dependencias y migraciones
+
+Desde `backend` ejecuta:
+
+```bash
+npm install
+npm run db:migrate
+```
+
+`npm run db:migrate` aplica las migraciones definidas en `backend/src/db` y deja la base lista para la aplicación.
+
+### 3) Levantar la aplicación
+
+En dos terminales separadas:
+
+```bash
+# backend
+cd backend
+npm run dev
+
+# frontend
+cd frontend
+npm install
+npm run dev
+```
+
+La API queda disponible en `http://localhost:3000` y el frontend en `http://localhost:5173` (o el puerto configurado por Vite).
+
+### 4) Crear administrador (opcional)
+
+Para habilitar acceso administrativo en una instalación nueva:
+
+```bash
+cd backend
+ADMIN_EMAIL="admin@ejemplo.com" ADMIN_PASSWORD="TuPasswordSegura123" npm run admin:create
+```
+
+También puedes definir `ADMIN_NAME` si quieres personalizar el nombre del administrador. Nunca compartas ni subas estos valores al repositorio.
+
+---
+
 ## Administración
 
 El acceso administrativo usa el mismo formulario de inicio de sesión y está disponible desde el enlace **Acceso administrador** en `/login`. Las cuentas admin no se pueden crear desde el registro público.
