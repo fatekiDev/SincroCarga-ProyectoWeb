@@ -6,7 +6,7 @@ async function findPaymentContext(client, clienteId, viajeId = null) {
       v.id_viaje,
       v.estado AS estado_viaje,
       v.fecha_inicio,
-      p.tarifa_propuesta,
+      post.tarifa_propuesta,
       c.descripcion AS carga,
       c.peso_kg,
       c.volumen_m3,
