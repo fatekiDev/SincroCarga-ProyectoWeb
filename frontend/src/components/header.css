@@ -42,7 +42,7 @@
 
 .site-header__nav a {
   font-size: 0.8rem;
-  color: #5f6672;
+  color: var(--sc-text-secondary);
 }
 
 .site-header__nav a:hover {
