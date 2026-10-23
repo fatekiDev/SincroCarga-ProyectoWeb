@@ -682,6 +682,11 @@ export default function PublishCargoPage({ session, onLogout }) {
                   {isSubmitting ? 'Publicando…' : editingId ? 'Guardar cambios' : 'Publicar solicitud de flete'}
                 </Button>
               )}
+              {editingId && (
+                <Button type="button" variant="secondary" onClick={resetForm}>
+                  <X size={16} /> Salir de edición
+                </Button>
+              )}
             </div>
           </form>
         )}
