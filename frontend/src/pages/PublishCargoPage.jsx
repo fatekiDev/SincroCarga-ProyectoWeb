@@ -297,6 +297,7 @@ export default function PublishCargoPage({ session, onLogout }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (step !== 3) return
     setSubmitError('')
     setServerDetails([])
     setNotice('')
