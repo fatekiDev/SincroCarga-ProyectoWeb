@@ -381,7 +381,7 @@
   clip-path: inset(50%);
 }
 
-@media (max-width: 760px) {
+@media (max-width: 900px) {
   .driver-matching__columns {
     grid-template-columns: 1fr;
   }

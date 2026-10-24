@@ -129,6 +129,7 @@
 
   .hero__stats {
     justify-content: space-between;
+    flex: 0 1 auto;
   }
 
   .hero__stats-note {

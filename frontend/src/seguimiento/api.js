@@ -1,31 +1,12 @@
+import { apiRequest } from '../api/request'
+
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
-async function trackingRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/seguimiento${path}`, {
-    credentials: 'include',
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+async function trackingRequest(path, options = {}, feedback = {}) {
+  return apiRequest(`${API_BASE_URL}/api/seguimiento${path}`, options, {
+    ...feedback,
+    errorFallback: 'No se pudo cargar el seguimiento',
   })
-
-  let result
-  try {
-    result = await response.json()
-  } catch {
-    throw new Error('El servidor devolvió una respuesta no válida')
-  }
-
-  if (!response.ok) {
-    const error = new Error(result.error || 'No se pudo cargar el seguimiento')
-    error.details = Array.isArray(result.details) ? result.details : []
-    error.status = response.status
-    throw error
-  }
-
-  return result.data
 }
 
 export function getActiveTracking(options = {}) {
@@ -37,19 +18,19 @@ export function getJourneyReview(options = {}) {
 }
 
 export function confirmJourneyReceipt(viajeId) {
-  return trackingRequest(`/${viajeId}/confirmar-recepcion`, { method: 'POST' })
+  return trackingRequest(`/${viajeId}/confirmar-recepcion`, { method: 'POST' }, { successMessage: 'Recepción del viaje confirmada.' })
 }
 
 export function submitJourneyRating(viajeId, rating) {
   return trackingRequest(`/${viajeId}/calificacion`, {
     method: 'POST',
     body: rating,
-  })
+  }, { successMessage: 'Calificación enviada correctamente.' })
 }
 
 export function reportTrackingIncident(viajeId, descripcion) {
   return trackingRequest(`/${viajeId}/incidencias`, {
     method: 'POST',
     body: { descripcion },
-  })
+  }, { successMessage: 'Incidencia registrada en el viaje.' })
 }

@@ -41,7 +41,7 @@
 .reg-brand-tag {
   font-size: 10.5px;
   letter-spacing: 0.06em;
-  color: #7c93ab;
+  color: #52677f;
   font-weight: 600;
 }
 
@@ -135,7 +135,7 @@
 
 .reg-role-desc {
   font-size: 12.5px;
-  color: #7086a0;
+  color: #52677f;
   line-height: 1.5;
   margin: 0 0 16px;
   flex-grow: 1;

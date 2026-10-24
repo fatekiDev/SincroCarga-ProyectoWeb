@@ -20,7 +20,7 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
     <div className="adm-page">
       <header className="adm-header">
         <Link to="/admin" className="adm-brand" aria-label="SincroCarga, ir al panel administrativo">
-          <img src={logo} alt="" aria-hidden="true" className="adm-brand-logo" />
+          <img className="adm-brand-logo" src={logo} alt="" aria-hidden="true" />
           <span className="adm-brand-text">
             <strong>SincroCarga</strong>
             <small>MATCHING OPERATIVO</small>
@@ -31,7 +31,6 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
           <NavLink to="/admin" end className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Panel</NavLink>
           <NavLink to="/admin/solicitudes" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Solicitudes</NavLink>
           <NavLink to="/admin/transportistas" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Transportistas</NavLink>
-          <NavLink to="/admin/fletes" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Fletes</NavLink>
           <NavLink to="/admin/reportes" className={({ isActive }) => (isActive ? 'adm-nav-link active' : 'adm-nav-link')}>Reportes</NavLink>
         </nav>
 
@@ -46,13 +45,11 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
       <main className="adm-main">{children}</main>
 
       <footer className="adm-footer">
-        <span>SincroCarga · Matching de carga y transporte en Chiloé</span>
-        <nav className="adm-footer-links" aria-label="Enlaces de administración">
-          <Link to="/admin/solicitudes">Solicitudes</Link>
-          <Link to="/admin/transportistas">Transportistas</Link>
-          <Link to="/admin/fletes">Fletes activos</Link>
-          <Link to="/admin/reportes">Reportes</Link>
-        </nav>
+        <Link to="/admin" className="adm-footer-brand" aria-label="SincroCarga, volver al panel administrativo">
+          <img src={logo} alt="" aria-hidden="true" />
+          <span>SincroCarga · Matching de carga y transporte en Chiloé</span>
+        </Link>
+        <span>Cómo funciona · Pagos seguros · Soporte</span>
       </footer>
     </div>
   );

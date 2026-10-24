@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import { getAvailablePublications } from '../publicaciones/api'
 import './PublicacionesDisponibles.css'
 
 const CURRENCY_FORMAT = new Intl.NumberFormat('es-CL', {
@@ -8,8 +9,6 @@ const CURRENCY_FORMAT = new Intl.NumberFormat('es-CL', {
 })
 
 const NUMBER_FORMAT = new Intl.NumberFormat('es-CL')
-const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
-
 function formatDate(value) {
   if (!value) return 'Sin fecha límite'
 
@@ -35,21 +34,13 @@ export default function PublicacionesDisponibles() {
       setStatus('loading')
 
       try {
-        const response = await fetch(`${API_BASE_URL}/api/publicaciones`, {
-          signal: controller.signal,
-        })
+        const result = await getAvailablePublications({ signal: controller.signal })
 
-        if (!response.ok) {
-          throw new Error(`La API respondió con estado ${response.status}`)
-        }
-
-        const result = await response.json()
-
-        if (!Array.isArray(result.data)) {
+        if (!Array.isArray(result)) {
           throw new Error('La respuesta de publicaciones tiene un formato inesperado')
         }
 
-        setPublications(result.data)
+        setPublications(result)
         setStatus('success')
       } catch (error) {
         if (error.name === 'AbortError') return

@@ -21,7 +21,7 @@ import AdminPanel from './pages/AdminPanel'
 import AdminSolicitudes from './pages/AdminSolicitudes'
 import AdminTransportistas from './pages/AdminTransportistas'
 import AdminReportes from './pages/AdminReportes'
-import AdminFletes from './pages/AdminFletes'
+import RequestFeedback from './components/RequestFeedback'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -81,6 +81,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
 
   return (
     <>
+    <RequestFeedback />
     {authStatus === 'error' && (
       <p className="auth-session-error" role="alert">
         No se pudo comprobar tu sesión. Verifica que el backend esté funcionando y recarga la página.
@@ -204,14 +205,6 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         element={
           <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
             <AdminTransportistas session={session} onLogout={handleLogoutAndNavigate} />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/admin/fletes"
-        element={
-          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
-            <AdminFletes session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />

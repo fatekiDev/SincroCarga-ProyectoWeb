@@ -31,8 +31,8 @@
 
 .adm-brand-logo {
   display: block;
-  width: 34px;
-  height: 40px;
+  width: 32px;
+  height: 32px;
   flex: 0 0 auto;
   object-fit: contain;
 }
@@ -49,7 +49,7 @@
 }
 
 .adm-brand-text small {
-  color: #8190a7;
+  color: var(--sc-text-secondary);
   font-size: 7px;
   letter-spacing: 0.02em;
 }
@@ -76,11 +76,11 @@
 }
 
 .adm-nav-link:hover {
-  color: #2f6feb;
+  color: var(--sc-primary);
 }
 
 .adm-nav-link.active {
-  color: #2f6feb;
+  color: var(--sc-primary);
   font-weight: 600;
 }
 
@@ -109,9 +109,13 @@
 }
 
 .adm-user-name {
+  max-width: 160px;
+  overflow: hidden;
   color: #17233c;
   font-size: 12px;
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .adm-user-logout {
@@ -163,7 +167,7 @@
 
 .adm-subtitle {
   margin: 8px 0 18px;
-  color: #79869a;
+  color: var(--sc-text-secondary);
   font-size: 11px;
   line-height: 1.6;
 }
@@ -181,23 +185,6 @@
   border: 1px solid #e5eaf2;
   border-radius: 8px;
   background: #fff;
-}
-
-.adm-stat-link {
-  display: block;
-  color: inherit;
-  text-decoration: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-.adm-stat-link:hover {
-  border-color: #b9c7da;
-  box-shadow: 0 2px 8px rgb(23 35 60 / 8%);
-}
-
-.adm-stat-link:focus-visible {
-  outline: 2px solid #3975d5;
-  outline-offset: 2px;
 }
 
 .adm-card-title {
@@ -293,12 +280,12 @@
 }
 
 .adm-btn-primary {
-  background: #2f6feb;
+  background: var(--sc-primary);
   color: #fff;
 }
 
 .adm-btn-primary:hover:not(:disabled) {
-  background: #2558c4;
+  background: var(--sc-primary-hover);
 }
 
 .adm-btn-success {
@@ -458,8 +445,8 @@
 }
 
 .adm-doc .adm-btn-outline {
-  border-color: #2f6feb;
-  color: #2f6feb;
+  border-color: var(--sc-primary);
+  color: var(--sc-primary);
 }
 
 .adm-empty {
@@ -567,7 +554,7 @@
 }
 
 .adm-modal textarea:focus {
-  border-color: #2f6feb;
+  border-color: var(--sc-primary);
   outline: 3px solid rgb(47 111 235 / 14%);
 }
 
@@ -697,7 +684,7 @@
 .adm-field select:focus,
 .adm-form-field input:focus,
 .adm-form-field select:focus {
-  border-color: #2f6feb;
+  border-color: var(--sc-primary);
   outline: 3px solid rgb(47 111 235 / 12%);
 }
 
@@ -720,8 +707,8 @@
 }
 
 .adm-export {
-  border-color: #2f6feb;
-  color: #2f6feb;
+  border-color: var(--sc-primary);
+  color: var(--sc-primary);
 }
 
 .adm-export:hover:not(:disabled) {
@@ -793,7 +780,7 @@
   width: 100%;
   min-height: 4px;
   border-radius: 4px 4px 0 0;
-  background: #2f6feb;
+  background: var(--sc-primary);
   transition: height 200ms ease;
 }
 
@@ -841,7 +828,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #2f6feb;
+  background: var(--sc-primary);
 }
 
 .adm-pagination {
@@ -899,22 +886,24 @@
   font-size: 10px;
 }
 
-.adm-footer-links {
-  display: flex;
-  flex-wrap: wrap;
+.adm-footer-brand {
+  display: inline-flex;
+  min-width: 0;
   align-items: center;
-  gap: 14px;
-}
-
-.adm-footer-links a {
-  color: #aab8ca;
+  gap: 8px;
+  color: inherit;
   text-decoration: none;
 }
 
-.adm-footer-links a:hover,
-.adm-footer-links a:focus-visible {
-  color: #fff;
-  text-decoration: underline;
+.adm-footer-brand img {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
+.adm-footer span:last-child {
+  color: #aab8ca;
 }
 
 @media (max-width: 900px) {
@@ -926,9 +915,13 @@
   .adm-nav {
     order: 3;
     flex-basis: 100%;
+    flex-wrap: wrap;
     justify-content: flex-start;
-    overflow-x: auto;
     border-top: 1px solid #e5eaf2;
+  }
+
+  .adm-user {
+    margin-left: auto;
   }
 
   .adm-stats {
@@ -1016,10 +1009,6 @@
     flex-direction: column;
     gap: 7px;
     padding: 12px 14px;
-  }
-
-  .adm-footer-links {
-    gap: 8px 14px;
   }
 
   .adm-modal-actions {

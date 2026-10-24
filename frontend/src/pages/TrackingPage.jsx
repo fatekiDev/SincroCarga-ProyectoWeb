@@ -235,7 +235,7 @@ export default function TrackingPage({ session, onLogout }) {
               <Card className="map-card tracking-map-card">
                 <div className="tracking-section-heading">
                   <h2 className="section-title">Mapa del recorrido</h2>
-                  <span className="tracking-map-note">Posición aproximada</span>
+                  <span className="tracking-map-note">Ruta y posición simuladas; no es GPS en vivo.</span>
                 </div>
                 <Suspense fallback={<div className="tracking-map-fallback" role="status">Cargando mapa…</div>}>
                   <TrackingMap viaje={journey} progress={tracking.progreso} />
