@@ -184,6 +184,23 @@
   background: #fff;
 }
 
+.adm-stat-link {
+  display: block;
+  color: inherit;
+  text-decoration: none;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.adm-stat-link:hover {
+  border-color: #b9c7da;
+  box-shadow: 0 2px 8px rgb(23 35 60 / 8%);
+}
+
+.adm-stat-link:focus-visible {
+  outline: 2px solid #3975d5;
+  outline-offset: 2px;
+}
+
 .adm-card-title {
   margin: 0 0 9px;
   color: #17233c;

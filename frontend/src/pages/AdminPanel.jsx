@@ -30,26 +30,26 @@ function AdminPanel({ onLogout, session }) {
       {data && (
         <>
           <section className="adm-stats" aria-label="Resumen">
-            <article className="adm-card">
+            <Link to="/admin/solicitudes" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Solicitudes de camionero</h2>
               <p className="adm-card-value">{data.solicitudesPendientes} <span>pendientes</span></p>
-              <Link to="/admin/solicitudes" className="adm-btn adm-btn-primary">Revisar</Link>
-            </article>
-            <article className="adm-card">
+              <span className="adm-btn adm-btn-primary">Revisar</span>
+            </Link>
+            <Link to="/admin/transportistas" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Camioneros verificados</h2>
               <p className="adm-card-value">{data.camionerosVerificados}</p>
-              <Link to="/admin/transportistas" className="adm-btn adm-btn-primary">Ver listado</Link>
-            </article>
-            <article className="adm-card">
+              <span className="adm-btn adm-btn-primary">Ver listado</span>
+            </Link>
+            <Link to="/admin/reportes" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Fletes activos</h2>
               <p className="adm-card-value">{data.fletesActivos}</p>
-              <Link to="/admin/reportes" className="adm-btn adm-btn-primary">Ver fletes</Link>
-            </article>
-            <article className="adm-card">
+              <span className="adm-btn adm-btn-primary">Ver fletes</span>
+            </Link>
+            <Link to="/admin/reportes" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Pagos retenidos</h2>
               <p className="adm-card-value">{clp(data.pagosRetenidos)} <span>CLP</span></p>
-              <Link to="/admin/reportes" className="adm-btn adm-btn-primary">Ver pagos</Link>
-            </article>
+              <span className="adm-btn adm-btn-primary">Ver pagos</span>
+            </Link>
           </section>
 
           <section className="adm-two-col">
@@ -74,11 +74,15 @@ function AdminPanel({ onLogout, session }) {
 
             <article className="adm-card">
               <h2 className="adm-card-title">Actividad reciente</h2>
-              <ul className="adm-list">
-                {data.actividadReciente.map((a, i) => (
-                  <li key={i}><span>{a.texto}</span><span className="adm-muted">{a.hace}</span></li>
-                ))}
-              </ul>
+              {data.actividadReciente.length === 0 ? (
+                <p className="adm-muted">Todavía no hay actividad reciente.</p>
+              ) : (
+                <ul className="adm-list">
+                  {data.actividadReciente.map((a, i) => (
+                    <li key={i}><span>{a.texto}</span><span className="adm-muted">{a.hace}</span></li>
+                  ))}
+                </ul>
+              )}
             </article>
           </section>
         </>
