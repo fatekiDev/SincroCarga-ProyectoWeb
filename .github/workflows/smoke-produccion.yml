@@ -1,0 +1,32 @@
+name: Smoke test de producción
+
+# Se ejecuta a mano (Actions > Smoke test de producción > Run workflow)
+# o programado. Las URLs se leen de variables del repositorio:
+#   Settings > Secrets and variables > Actions > Variables
+#   PROD_API_URL       p. ej. https://tu-api.onrender.com   (sin "/" final)
+#   PROD_FRONTEND_URL  p. ej. https://tu-sitio.vercel.app    (sin "/" final)
+on:
+  workflow_dispatch:
+    inputs:
+      api_url:
+        description: URL del backend (si se omite, usa la variable PROD_API_URL)
+        required: false
+      frontend_url:
+        description: URL del frontend (si se omite, usa la variable PROD_FRONTEND_URL)
+        required: false
+  schedule:
+    - cron: '0 12 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Ejecutar smoke test
+        env:
+          API_URL: ${{ inputs.api_url || vars.PROD_API_URL }}
+          FRONTEND_URL: ${{ inputs.frontend_url || vars.PROD_FRONTEND_URL }}
+        run: bash scripts/smoke-prod.sh

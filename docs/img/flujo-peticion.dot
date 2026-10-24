@@ -1,0 +1,46 @@
+digraph FLOW {
+rankdir=TB; splines=true; nodesep=0.7; ranksep=0.5; newrank=true; pad=0.4; bgcolor="white";
+fontname="Helvetica";
+node [shape=box, style="rounded,filled", fontname="Helvetica", fontsize=11, margin="0.14,0.09"];
+edge [fontname="Helvetica", fontsize=10];
+labelloc=t; fontsize=22;
+label=<<B>SincroCarga — Ciclo de una petición: «Publicar carga» (POST /api/publicaciones)</B><BR/><FONT POINT-SIZE="12">React → fetch → Express (middleware → ruta → controlador → servicio → modelo) → SQL → PostgreSQL → JSON → React</FONT>>;
+
+subgraph cluster_front { label=<<B>NAVEGADOR · React + Vite (Vercel)</B>>; style="rounded,filled"; fillcolor="#EAF2FF"; color="#5B8DEF"; fontsize=13;
+  p1 [fillcolor="white", label=<<B>① PublishCargoPage.jsx</B><BR ALIGN="LEFT"/>handleSubmit() → valida que haya cotización<BR ALIGN="LEFT"/>y llama createPublication(publication)<BR ALIGN="LEFT"/>(antes: getPublicationQuote → POST /cotizacion)<BR ALIGN="LEFT"/>>];
+  p2 [fillcolor="white", label=<<B>② publicaciones/api.js</B><BR ALIGN="LEFT"/>publicationRequest('/', {method:'POST', body})<BR ALIGN="LEFT"/>fetch(VITE_API_URL + '/api/publicaciones')<BR ALIGN="LEFT"/>credentials:'include' (cookie de sesión) · JSON<BR ALIGN="LEFT"/>dev: el proxy de Vite reenvía /api → :3000<BR ALIGN="LEFT"/>>];
+  p11 [fillcolor="white", label=<<B>⑪ api.js → PublishCargoPage</B><BR ALIGN="LEFT"/>response.json(); si !ok → throw Error(result.error)<BR ALIGN="LEFT"/>si ok → return result.data → setPublications(...)<BR ALIGN="LEFT"/>error → setSubmitError(error.message)<BR ALIGN="LEFT"/>>];
+}
+subgraph cluster_api { label=<<B>SERVIDOR · Node.js + Express 5 (Render) — arquitectura N-capas</B>>; style="rounded,filled"; fillcolor="#FFF4E5"; color="#E08A1E"; fontsize=13;
+  s3 [fillcolor="white", label=<<B>③ server.js · middleware global</B><BR ALIGN="LEFT"/>control de Origin (403 si no está en FRONTEND_ORIGINS)<BR ALIGN="LEFT"/>cors({credentials}) · express.json(32kb) · cookieParser()<BR ALIGN="LEFT"/>app.use('/api/publicaciones', router)<BR ALIGN="LEFT"/>>];
+  s4 [fillcolor="white", label=<<B>④ publicaciones.routes.js</B><BR ALIGN="LEFT"/>router.post('/', requireAuth, requireRole('cliente'),<BR ALIGN="LEFT"/>createPublication)<BR ALIGN="LEFT"/>>];
+  s4a [fillcolor="#FFF9EF", label=<<B>④a require-auth.js</B><BR ALIGN="LEFT"/>cookie sincrocarga_session → getUserFromSession()<BR ALIGN="LEFT"/>auth.service → auth.model (consulta de sesión)<BR ALIGN="LEFT"/>sin sesión: 401 · rol distinto: 403 · si ok: req.user<BR ALIGN="LEFT"/>>];
+  s5 [fillcolor="white", label=<<B>⑤ publicaciones.controller.js</B><BR ALIGN="LEFT"/>validateNewPublication(req.body) → 400 si hay errores<BR ALIGN="LEFT"/>getPublicationQuote(...) → 404 si no hay tarifa vigente<BR ALIGN="LEFT"/>el servidor recalcula tarifaOfrecida (no confía en el cliente)<BR ALIGN="LEFT"/>createPublicationRecord(body, req.user.cliente_id)<BR ALIGN="LEFT"/>>];
+  s6 [fillcolor="white", label=<<B>⑥ publicaciones.service.js</B><BR ALIGN="LEFT"/>createPublication() → insertPublication()<BR ALIGN="LEFT"/>(delegación; punto de extensión de reglas de negocio)<BR ALIGN="LEFT"/>>];
+  s7 [fillcolor="white", label=<<B>⑦ publicacion.model.js</B><BR ALIGN="LEFT"/>withTransaction: BEGIN<BR ALIGN="LEFT"/>INSERT INTO carga … RETURNING id_carga<BR ALIGN="LEFT"/>INSERT INTO publicacion_carga … RETURNING id_publicacion<BR ALIGN="LEFT"/>findPublicationById (JOIN carga, ruta, tipo_carga) · COMMIT<BR ALIGN="LEFT"/>mapPublication(): snake_case → camelCase · (error: ROLLBACK)<BR ALIGN="LEFT"/>>];
+  s10 [fillcolor="white", label=<<B>⑩ Respuesta HTTP</B><BR ALIGN="LEFT"/>201 Created + Location: /api/publicaciones/{id}<BR ALIGN="LEFT"/>cuerpo: { "data": { id, tipoCarga, rutaId, origen,<BR ALIGN="LEFT"/>destino, tarifaOfrecida, estado:"Disponible", … } }<BR ALIGN="LEFT"/>>];
+  se [fillcolor="#FDECEC", color="#D1344A", label=<<B>⑩′ Manejador de errores (server.js)</B><BR ALIGN="LEFT"/>SQLSTATE → HTTP: 23505→409 · 23514/23502/22xxx→400<BR ALIGN="LEFT"/>23503→404 · otro→500 «Error interno del servidor»<BR ALIGN="LEFT"/>cuerpo: { "error": "…", "details": […] }<BR ALIGN="LEFT"/>>];
+}
+subgraph cluster_db { label=<<B>BASE DE DATOS · PostgreSQL 16 (Neon)</B>>; style="rounded,filled"; fillcolor="#EAF8F1"; color="#2FA37A"; fontsize=13;
+  d8 [fillcolor="white", label=<<B>⑧ Ejecución SQL</B><BR ALIGN="LEFT"/>carga: FK cliente/tipo_carga · CHECK peso_kg&gt;0,<BR ALIGN="LEFT"/>volumen_m3&gt;0 · publicacion_carga: UNIQUE(carga_id),<BR ALIGN="LEFT"/>CHECK estado, tarifa&gt;0, fecha_limite ≥ publicación<BR ALIGN="LEFT"/>>];
+  d9 [fillcolor="white", label=<<B>⑨ Resultado</B><BR ALIGN="LEFT"/>filas insertadas (id_carga, id_publicacion)<BR ALIGN="LEFT"/>o violación 23xxx → excepción en el modelo<BR ALIGN="LEFT"/>>];
+  dq [fillcolor="#FFFFFF", style="rounded,filled,dashed", label=<<B>(cotización previa)</B><BR ALIGN="LEFT"/>SELECT ruta ⟕ cruce_maritimo ⟕ tarifa_referencial<BR ALIGN="LEFT"/>vigente hoy → calculatePublicationQuote()<BR ALIGN="LEFT"/>>];
+}
+p1 -> p2 [label="createPublication()"];
+p2 -> s3 [label="HTTPS · POST\nJSON + cookie", penwidth=2, color="#1E5FD8", fontcolor="#1E5FD8"];
+s3 -> s4 [label="Express router"];
+s4 -> s4a [label="requireAuth\nrequireRole"];
+s4a -> s5 [label="next()"];
+s5 -> dq [style=dashed, label="cotiza"];
+s5 -> s6 [label="datos validados"];
+s6 -> s7 [label="insertPublication()"];
+s7 -> d8 [label="pool.connect()\nclient.query(sql, $params)\n(consultas parametrizadas)", penwidth=2, color="#1E5FD8", fontcolor="#1E5FD8"];
+d8 -> d9;
+d9 -> s7 [label="rows", constraint=false, style=dashed];
+s7 -> s10 [label="publication (objeto)"];
+s10 -> p11 [label="HTTP 201 + JSON", penwidth=2, color="#1E5FD8", fontcolor="#1E5FD8", constraint=false];
+{rank=same; s10; d8;}
+{rank=same; se; d9;}
+d9 -> se [label="error 23xxx", color="#D1344A", fontcolor="#D1344A", style=dashed, constraint=false];
+se -> p11 [label="4xx / 5xx + JSON de error", color="#D1344A", fontcolor="#D1344A", style=dashed, constraint=false];
+}

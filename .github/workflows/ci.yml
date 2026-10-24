@@ -1,0 +1,87 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master, develop]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  backend:
+    name: Backend (build + pruebas con PostgreSQL 16)
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: bd_grupo2_sincrochiloe
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      PGHOST: localhost
+      PGPORT: 5432
+      PGUSER: postgres
+      PGPASSWORD: postgres
+      PGDATABASE: bd_grupo2_sincrochiloe
+    defaults:
+      run:
+        working-directory: backend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: backend/package-lock.json
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Cargar esquema base (DDL)
+        working-directory: .
+        run: psql -v ON_ERROR_STOP=1 -q -f databases/bd_grupo2_sincrochiloe.sql
+      - name: Aplicar migraciones
+        run: npm run db:migrate
+      - name: Comprobar que las migraciones son idempotentes
+        run: npm run db:migrate
+      - name: Pruebas (unitarias + integración de esquema)
+        run: npm test
+      - name: Arranque de la API y health checks
+        run: |
+          PORT=3000 node src/server.js &
+          for i in $(seq 1 15); do curl -fs http://localhost:3000/api/health && break || sleep 1; done
+          curl -fs http://localhost:3000/api/health | grep '"status":"ok"'
+          curl -fs http://localhost:3000/api/health/db | grep '"database":"connected"'
+
+  frontend:
+    name: Frontend (lint + build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - run: npm ci
+      - run: npm run lint
+      - run: npm run build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: frontend-dist
+          path: frontend/dist
+          retention-days: 7
