@@ -4,11 +4,12 @@
   --sc-card-bg: #ffffff;
   --sc-title: #14213d;
   --sc-text-secondary: #475467;
-  --sc-text-muted: #94a3b8;
+  --sc-text-muted: #64748b;
+  --sc-text-muted-on-dark: #94a3b8;
   --sc-text-on-dark: #ffffff;
-  --sc-primary: #2f6feb;
+  --sc-primary: #1e54c2;
   --sc-primary-text: #ffffff;
-  --sc-primary-hover: #2558c4;
+  --sc-primary-hover: #1948a8;
   --sc-primary-soft: #e6f1fb;
   --sc-success-hover: #16a34a;
   --sc-success-text: #15803d;
@@ -127,5 +128,5 @@ body {
 .status-banner__meta {
   margin: 0;
   font-size: 12px;
-  color: var(--sc-text-muted);
+  color: var(--sc-text-muted-on-dark);
 }

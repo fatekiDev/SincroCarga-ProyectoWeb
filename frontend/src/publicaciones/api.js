@@ -1,31 +1,19 @@
+import { apiRequest } from '../api/request'
+
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
-async function publicationRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/publicaciones${path}`, {
-    credentials: 'include',
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+async function publicationRequest(path, options = {}, feedback = {}) {
+  return apiRequest(`${API_BASE_URL}/api/publicaciones${path}`, options, {
+    ...feedback,
+    errorFallback: 'No se pudo completar la solicitud',
   })
+}
 
-  let result
-  try {
-    result = await response.json()
-  } catch {
-    throw new Error('El servidor devolvió una respuesta no válida')
-  }
-
-  if (!response.ok) {
-    const error = new Error(result.error || 'No se pudo completar la solicitud')
-    error.details = Array.isArray(result.details) ? result.details : []
-    error.status = response.status
-    throw error
-  }
-
-  return result.data
+export function getAvailablePublications(options = {}) {
+  return apiRequest(`${API_BASE_URL}/api/publicaciones`, {
+    ...options,
+    credentials: 'omit',
+  }, { errorFallback: 'No se pudieron cargar las publicaciones disponibles.' })
 }
 
 export function getPublicationCatalogs(options = {}) {
@@ -45,13 +33,13 @@ export function getMyPublications(options = {}) {
 }
 
 export function createPublication(publication) {
-  return publicationRequest('/', { method: 'POST', body: publication })
+  return publicationRequest('/', { method: 'POST', body: publication }, { successMessage: 'Carga publicada correctamente.' })
 }
 
 export function updatePublication(id, publication) {
-  return publicationRequest(`/${id}`, { method: 'PUT', body: publication })
+  return publicationRequest(`/${id}`, { method: 'PUT', body: publication }, { successMessage: 'Publicación actualizada correctamente.' })
 }
 
 export function cancelPublication(id) {
-  return publicationRequest(`/${id}/cancelar`, { method: 'POST' })
+  return publicationRequest(`/${id}/cancelar`, { method: 'POST' }, { successMessage: 'Publicación cancelada correctamente.' })
 }

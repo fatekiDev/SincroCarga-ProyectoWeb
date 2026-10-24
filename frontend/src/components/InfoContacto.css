@@ -36,7 +36,7 @@
 }
 
 .site-footer__tagline {
-  color: var(--sc-text-muted);
+  color: var(--sc-text-muted-on-dark);
   font-size: 0.75rem;
   margin: 0;
   line-height: 1.5;
@@ -69,12 +69,12 @@
 
 .site-footer address a,
 .site-footer__list a {
-  color: var(--sc-primary);
+  color: #82aaff;
 }
 
 .site-footer__copyright {
   text-align: center;
-  color: var(--sc-text-secondary);
+  color: var(--sc-border-strong);
   font-size: 0.7rem;
   border-top: 1px solid var(--sc-white-translucent);
   margin: 24px auto 0;

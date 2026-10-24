@@ -21,6 +21,7 @@ import AdminPanel from './pages/AdminPanel'
 import AdminSolicitudes from './pages/AdminSolicitudes'
 import AdminTransportistas from './pages/AdminTransportistas'
 import AdminReportes from './pages/AdminReportes'
+import RequestFeedback from './components/RequestFeedback'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -80,6 +81,7 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
 
   return (
     <>
+    <RequestFeedback />
     {authStatus === 'error' && (
       <p className="auth-session-error" role="alert">
         No se pudo comprobar tu sesión. Verifica que el backend esté funcionando y recarga la página.

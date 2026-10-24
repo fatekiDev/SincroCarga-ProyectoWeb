@@ -1,31 +1,13 @@
+import { apiRequest } from '../api/request'
+
 const API_BASE_URL = (import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')
 
-async function carrierRequest(path, options = {}) {
-  const response = await fetch(`${API_BASE_URL}/api/transportista${path}`, {
-    credentials: 'include',
-    ...options,
-    headers: {
-      ...(options.body ? { 'Content-Type': 'application/json' } : {}),
-      ...options.headers,
-    },
-    body: options.body ? JSON.stringify(options.body) : undefined,
+async function carrierRequest(path, options = {}, feedback = {}) {
+  return apiRequest(`${API_BASE_URL}/api/transportista${path}`, options, {
+    ...feedback,
+    errorFallback: 'No se pudo completar la solicitud',
+    includeDetailsInMessage: true,
   })
-
-  let result
-  try {
-    result = await response.json()
-  } catch {
-    throw new Error('El servidor devolvió una respuesta no válida')
-  }
-
-  if (!response.ok) {
-    const details = Array.isArray(result.details) ? ` ${result.details.join('. ')}` : ''
-    const error = new Error(`${result.error || 'No se pudo completar la solicitud'}${details}`)
-    error.status = response.status
-    throw error
-  }
-
-  return result.data
 }
 
 export function getCarrierCatalogs(options = {}) {
@@ -44,11 +26,11 @@ export function applyToLoad(publicationId, application) {
   return carrierRequest(`/cargas/${publicationId}/postular`, {
     method: 'POST',
     body: application,
-  })
+  }, { successMessage: 'Postulación enviada correctamente.' })
 }
 
 export function withdrawApplication(applicationId) {
-  return carrierRequest(`/postulaciones/${applicationId}/retirar`, { method: 'POST' })
+  return carrierRequest(`/postulaciones/${applicationId}/retirar`, { method: 'POST' }, { successMessage: 'Postulación retirada correctamente.' })
 }
 
 export function getCarrierTransportPublications(options = {}) {
@@ -56,11 +38,11 @@ export function getCarrierTransportPublications(options = {}) {
 }
 
 export function createCarrierTransportPublication(publication) {
-  return carrierRequest('/espacios', { method: 'POST', body: publication })
+  return carrierRequest('/espacios', { method: 'POST', body: publication }, { successMessage: 'Espacio de transporte publicado correctamente.' })
 }
 
 export function cancelCarrierTransportPublication(publicationId) {
-  return carrierRequest(`/espacios/${publicationId}/cancelar`, { method: 'POST' })
+  return carrierRequest(`/espacios/${publicationId}/cancelar`, { method: 'POST' }, { successMessage: 'Espacio cancelado correctamente.' })
 }
 
 export function getCarrierJourneys(options = {}) {

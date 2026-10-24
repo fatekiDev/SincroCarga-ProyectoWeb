@@ -35,7 +35,7 @@
   height: 24px;
   flex: 0 0 auto;
   border-radius: 6px;
-  background: #2f6feb;
+  background: var(--sc-primary);
 }
 
 .adm-brand-text {
@@ -50,7 +50,7 @@
 }
 
 .adm-brand-text small {
-  color: #8190a7;
+  color: var(--sc-text-secondary);
   font-size: 7px;
   letter-spacing: 0.02em;
 }
@@ -77,11 +77,11 @@
 }
 
 .adm-nav-link:hover {
-  color: #2f6feb;
+  color: var(--sc-primary);
 }
 
 .adm-nav-link.active {
-  color: #2f6feb;
+  color: var(--sc-primary);
   font-weight: 600;
 }
 
@@ -164,7 +164,7 @@
 
 .adm-subtitle {
   margin: 8px 0 18px;
-  color: #79869a;
+  color: var(--sc-text-secondary);
   font-size: 11px;
   line-height: 1.6;
 }
@@ -277,12 +277,12 @@
 }
 
 .adm-btn-primary {
-  background: #2f6feb;
+  background: var(--sc-primary);
   color: #fff;
 }
 
 .adm-btn-primary:hover:not(:disabled) {
-  background: #2558c4;
+  background: var(--sc-primary-hover);
 }
 
 .adm-btn-success {
@@ -442,8 +442,8 @@
 }
 
 .adm-doc .adm-btn-outline {
-  border-color: #2f6feb;
-  color: #2f6feb;
+  border-color: var(--sc-primary);
+  color: var(--sc-primary);
 }
 
 .adm-empty {
@@ -551,7 +551,7 @@
 }
 
 .adm-modal textarea:focus {
-  border-color: #2f6feb;
+  border-color: var(--sc-primary);
   outline: 3px solid rgb(47 111 235 / 14%);
 }
 
@@ -681,7 +681,7 @@
 .adm-field select:focus,
 .adm-form-field input:focus,
 .adm-form-field select:focus {
-  border-color: #2f6feb;
+  border-color: var(--sc-primary);
   outline: 3px solid rgb(47 111 235 / 12%);
 }
 
@@ -704,8 +704,8 @@
 }
 
 .adm-export {
-  border-color: #2f6feb;
-  color: #2f6feb;
+  border-color: var(--sc-primary);
+  color: var(--sc-primary);
 }
 
 .adm-export:hover:not(:disabled) {
@@ -777,7 +777,7 @@
   width: 100%;
   min-height: 4px;
   border-radius: 4px 4px 0 0;
-  background: #2f6feb;
+  background: var(--sc-primary);
   transition: height 200ms ease;
 }
 
@@ -825,7 +825,7 @@
   display: block;
   height: 100%;
   border-radius: inherit;
-  background: #2f6feb;
+  background: var(--sc-primary);
 }
 
 .adm-pagination {

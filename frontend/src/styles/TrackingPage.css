@@ -637,7 +637,7 @@
   display: inline-flex;
   align-items: center;
   gap: 7px;
-  color: var(--sc-text-muted);
+  color: var(--sc-text-muted-on-dark);
   font-size: 11px;
 }
 

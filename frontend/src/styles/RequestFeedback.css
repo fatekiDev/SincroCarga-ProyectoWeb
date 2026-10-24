@@ -1,0 +1,75 @@
+.request-progress {
+  position: fixed;
+  z-index: 1100;
+  inset: 0 0 auto;
+  height: 3px;
+  background: linear-gradient(90deg, var(--sc-primary), #77a7ff, var(--sc-primary));
+  background-size: 200% 100%;
+  animation: request-progress 1.2s linear infinite;
+}
+
+.request-toast {
+  position: fixed;
+  z-index: 1101;
+  top: 16px;
+  right: 16px;
+  display: flex;
+  width: min(420px, calc(100vw - 32px));
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  border: 1px solid var(--sc-border);
+  border-left: 4px solid var(--sc-success-text);
+  border-radius: var(--sc-radius-md);
+  background: var(--sc-card-bg);
+  padding: 14px;
+  color: var(--sc-title);
+  box-shadow: 0 8px 24px var(--sc-shadow-strong);
+  font-size: var(--sc-fs-small);
+  line-height: 1.5;
+}
+
+.request-toast--error {
+  border-left-color: #b42318;
+}
+
+.request-toast button {
+  display: grid;
+  flex: 0 0 32px;
+  width: 32px;
+  height: 32px;
+  place-items: center;
+  border: 0;
+  border-radius: var(--sc-radius-sm);
+  background: transparent;
+  color: var(--sc-text-secondary);
+}
+
+.request-toast button:hover {
+  background: var(--sc-surface-muted);
+}
+
+.request-toast button:focus-visible {
+  outline: 3px solid var(--sc-primary);
+  outline-offset: 1px;
+}
+
+@keyframes request-progress {
+  from { background-position: 100% 0; }
+  to { background-position: -100% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .request-progress {
+    animation: none;
+    background: var(--sc-primary);
+  }
+}
+
+@media (max-width: 480px) {
+  .request-toast {
+    top: 8px;
+    right: 8px;
+    width: calc(100vw - 16px);
+  }
+}
