@@ -1,5 +1,6 @@
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 import LogoutButton from './LogoutButton';
+import logo from '../assets/logoprincipal.svg';
 import '../pages/Admin.css';
 
 // Header + footer compartidos por las pantallas del administrador.
@@ -19,7 +20,7 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
     <div className="adm-page">
       <header className="adm-header">
         <Link to="/admin" className="adm-brand" aria-label="SincroCarga, ir al panel administrativo">
-          <span className="adm-brand-mark" aria-hidden="true" />
+          <img className="adm-brand-logo" src={logo} alt="" aria-hidden="true" />
           <span className="adm-brand-text">
             <strong>SincroCarga</strong>
             <small>MATCHING OPERATIVO</small>
@@ -44,7 +45,10 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
       <main className="adm-main">{children}</main>
 
       <footer className="adm-footer">
-        <span>SincroCarga · Matching de carga y transporte en Chiloé</span>
+        <Link to="/admin" className="adm-footer-brand" aria-label="SincroCarga, volver al panel administrativo">
+          <img src={logo} alt="" aria-hidden="true" />
+          <span>SincroCarga · Matching de carga y transporte en Chiloé</span>
+        </Link>
         <span>Cómo funciona · Pagos seguros · Soporte</span>
       </footer>
     </div>

@@ -29,13 +29,12 @@
   text-decoration: none;
 }
 
-.adm-brand-mark {
+.adm-brand-logo {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   flex: 0 0 auto;
-  border-radius: 6px;
-  background: var(--sc-primary);
+  object-fit: contain;
 }
 
 .adm-brand-text {
@@ -110,9 +109,13 @@
 }
 
 .adm-user-name {
+  max-width: 160px;
+  overflow: hidden;
   color: #17233c;
   font-size: 12px;
   font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .adm-user-logout {
@@ -883,6 +886,22 @@
   font-size: 10px;
 }
 
+.adm-footer-brand {
+  display: inline-flex;
+  min-width: 0;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.adm-footer-brand img {
+  width: 24px;
+  height: 24px;
+  flex: 0 0 auto;
+  object-fit: contain;
+}
+
 .adm-footer span:last-child {
   color: #aab8ca;
 }
@@ -896,9 +915,13 @@
   .adm-nav {
     order: 3;
     flex-basis: 100%;
+    flex-wrap: wrap;
     justify-content: flex-start;
-    overflow-x: auto;
     border-top: 1px solid #e5eaf2;
+  }
+
+  .adm-user {
+    margin-left: auto;
   }
 
   .adm-stats {
