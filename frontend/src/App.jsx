@@ -21,6 +21,7 @@ import AdminPanel from './pages/AdminPanel'
 import AdminSolicitudes from './pages/AdminSolicitudes'
 import AdminTransportistas from './pages/AdminTransportistas'
 import AdminReportes from './pages/AdminReportes'
+import AdminFletes from './pages/AdminFletes'
 
 function App() {
   const [session, setSession] = useState(null)
@@ -203,6 +204,14 @@ function AppRoutes({ session, authStatus, onAuthenticated, onLogout }) {
         element={
           <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
             <AdminTransportistas session={session} onLogout={handleLogoutAndNavigate} />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/fletes"
+        element={
+          <ProtectedRoute session={session} authStatus={authStatus} role="admin" redirectPath="/admin/login">
+            <AdminFletes session={session} onLogout={handleLogoutAndNavigate} />
           </ProtectedRoute>
         }
       />

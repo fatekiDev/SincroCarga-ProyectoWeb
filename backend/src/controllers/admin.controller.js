@@ -1,6 +1,7 @@
 import {
   getAdminReport,
   getAdminSummary,
+  getActiveAdminJourneys,
   getVerificationDetails,
   getVerificationRequests,
   listAdminCarriers,
@@ -19,6 +20,10 @@ function parseId(value) {
 
 export async function summary(_req, res) {
   res.json({ data: await getAdminSummary() })
+}
+
+export async function activeJourneys(_req, res) {
+  res.json({ data: await getActiveAdminJourneys() })
 }
 
 export async function listVerificationRequests(_req, res) {

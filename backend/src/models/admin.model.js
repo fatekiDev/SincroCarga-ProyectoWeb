@@ -140,6 +140,42 @@ export async function getAdminSummary() {
   }
 }
 
+export async function getActiveAdminJourneys() {
+  const { rows } = await pool.query(`
+    SELECT
+      v.id_viaje,
+      v.fecha_inicio,
+      r.origen,
+      r.destino,
+      c.descripcion AS carga,
+      ch.nombre_completo AS chofer,
+      t.razon_social AS transportista,
+      ca.patente
+    FROM viaje AS v
+    INNER JOIN match AS m ON m.id_match = v.match_id
+    INNER JOIN postulacion AS po ON po.id_postulacion = m.postulacion_id
+    INNER JOIN publicacion_carga AS pc ON pc.id_publicacion = po.publicacion_id
+    INNER JOIN carga AS c ON c.id_carga = pc.carga_id
+    INNER JOIN ruta AS r ON r.id_ruta = pc.ruta_id
+    INNER JOIN chofer AS ch ON ch.id_chofer = m.chofer_id
+    INNER JOIN camion AS ca ON ca.id_camion = m.camion_id
+    INNER JOIN transportista AS t ON t.id_transportista = ca.transportista_id
+    WHERE v.estado = 'En Progreso'
+    ORDER BY v.fecha_inicio DESC, v.id_viaje DESC
+  `)
+
+  return rows.map((row) => ({
+    id: row.id_viaje,
+    fechaInicio: row.fecha_inicio,
+    origen: row.origen,
+    destino: row.destino,
+    carga: row.carga,
+    chofer: row.chofer,
+    transportista: row.transportista,
+    patente: row.patente,
+  }))
+}
+
 export async function getVerificationRequests() {
   const rows = await findCarriers(`
     WHERE t.estado_verificacion = 'Pendiente'

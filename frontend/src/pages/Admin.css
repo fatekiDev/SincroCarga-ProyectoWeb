@@ -29,13 +29,12 @@
   text-decoration: none;
 }
 
-.adm-brand-mark {
+.adm-brand-logo {
   display: block;
-  width: 24px;
-  height: 24px;
+  width: 34px;
+  height: 40px;
   flex: 0 0 auto;
-  border-radius: 6px;
-  background: #2f6feb;
+  object-fit: contain;
 }
 
 .adm-brand-text {
@@ -900,8 +899,22 @@
   font-size: 10px;
 }
 
-.adm-footer span:last-child {
+.adm-footer-links {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+}
+
+.adm-footer-links a {
   color: #aab8ca;
+  text-decoration: none;
+}
+
+.adm-footer-links a:hover,
+.adm-footer-links a:focus-visible {
+  color: #fff;
+  text-decoration: underline;
 }
 
 @media (max-width: 900px) {
@@ -1003,6 +1016,10 @@
     flex-direction: column;
     gap: 7px;
     padding: 12px 14px;
+  }
+
+  .adm-footer-links {
+    gap: 8px 14px;
   }
 
   .adm-modal-actions {

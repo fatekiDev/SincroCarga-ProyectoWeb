@@ -40,10 +40,10 @@ function AdminPanel({ onLogout, session }) {
               <p className="adm-card-value">{data.camionerosVerificados}</p>
               <span className="adm-btn adm-btn-primary">Ver listado</span>
             </Link>
-            <Link to="/admin/reportes" className="adm-card adm-stat-link">
+            <Link to="/admin/fletes" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Fletes activos</h2>
               <p className="adm-card-value">{data.fletesActivos}</p>
-              <span className="adm-btn adm-btn-primary">Ver fletes</span>
+              <span className="adm-btn adm-btn-primary">Ver fletes activos</span>
             </Link>
             <Link to="/admin/reportes" className="adm-card adm-stat-link">
               <h2 className="adm-card-title">Pagos retenidos</h2>
@@ -69,7 +69,9 @@ function AdminPanel({ onLogout, session }) {
                   ))}
                 </ul>
               )}
-              <Link to="/admin/solicitudes" className="adm-btn adm-btn-primary adm-btn-block">Revisar solicitudes</Link>
+              <Link to="/admin/solicitudes" className="adm-btn adm-btn-primary adm-btn-block">
+                Revisar solicitudes ({data.solicitudesPendientes})
+              </Link>
             </article>
 
             <article className="adm-card">

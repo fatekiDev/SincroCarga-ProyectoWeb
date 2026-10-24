@@ -1,6 +1,7 @@
 import { Router } from 'express'
 import {
   approveVerification,
+  activeJourneys,
   carriers,
   listVerificationRequests,
   rejectVerification,
@@ -21,6 +22,7 @@ router.put('/solicitudes/:id/aprobar', approveVerification)
 router.put('/solicitudes/:id/rechazar', rejectVerification)
 router.get('/transportistas', carriers)
 router.patch('/transportistas/:id', updateCarrier)
+router.get('/fletes-activos', activeJourneys)
 router.get('/reportes', reports)
 
 export default router

@@ -65,3 +65,7 @@ export function updateTransportista(id, changes) {
 export function getReportes(period = '30d') {
   return adminRequest(`/reportes?periodo=${encodeURIComponent(period)}`)
 }
+
+export function getFletesActivos() {
+  return adminRequest('/fletes-activos')
+}
