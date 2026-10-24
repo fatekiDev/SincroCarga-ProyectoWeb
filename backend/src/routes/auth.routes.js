@@ -20,5 +20,7 @@ router.post('/register', register)
 router.post('/login', loginLimiter, login)
 router.get('/me', currentSession)
 router.post('/logout', logout)
+// DELETE equivalente a POST /logout: elimina la sesión (fila de usuario_sesion) y la cookie
+router.delete('/session', logout)
 
 export default router

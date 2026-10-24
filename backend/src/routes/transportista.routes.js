@@ -20,9 +20,13 @@ router.get('/cargas', getAvailableLoads)
 router.get('/postulaciones', getCarrierApplications)
 router.post('/cargas/:publicacionId/postular', createCarrierApplication)
 router.post('/postulaciones/:postulacionId/retirar', withdrawCarrierApplication)
+// DELETE equivalente a POST .../retirar: borrado lógico de la postulación
+router.delete('/postulaciones/:postulacionId', withdrawCarrierApplication)
 router.get('/espacios', getCarrierTransportPublications)
 router.post('/espacios', createCarrierTransportPublication)
 router.post('/espacios/:publicacionId/cancelar', cancelCarrierTransportPublication)
+// DELETE equivalente a POST .../cancelar: borrado lógico (estado = 'Cancelada')
+router.delete('/espacios/:publicacionId', cancelCarrierTransportPublication)
 router.get('/viajes', getCarrierJourneys)
 
 export default router

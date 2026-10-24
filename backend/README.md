@@ -167,6 +167,30 @@ permitido y cookies para los dominios de frontend/backend; añade verificación
 de correo y recuperación de contraseña, y confirma las medidas de privacidad
 para RUT, teléfonos y licencias.
 
+### Verbos `DELETE` (borrado lógico)
+
+Equivalen a los `POST` de cancelar/retirar/cerrar sesión, que se conservan. No borran filas de negocio: cambian el estado del registro.
+
+| Método y ruta | Equivale a | Acceso |
+|---|---|---|
+| `DELETE /api/publicaciones/:id` | `POST /api/publicaciones/:id/cancelar` | Cliente |
+| `DELETE /api/transportista/postulaciones/:postulacionId` | `POST …/postulaciones/:postulacionId/retirar` | Camionero verificado |
+| `DELETE /api/transportista/espacios/:publicacionId` | `POST …/espacios/:publicacionId/cancelar` | Camionero verificado |
+| `DELETE /api/auth/session` | `POST /api/auth/logout` | Sesión |
+
+### Administración (`/api/admin/*`, rol `admin`)
+
+| Método y ruta | Descripción |
+|---|---|
+| `GET /resumen` | Solicitudes pendientes, camioneros verificados, fletes activos y pagos retenidos |
+| `GET /fletes-activos` | Viajes En Progreso |
+| `GET /solicitudes` · `GET /solicitudes/:id` | Solicitudes de verificación de transportistas y su detalle |
+| `PUT /solicitudes/:id/aprobar` | Marca la solicitud como Verificado (409 si ya fue revisada) |
+| `PUT /solicitudes/:id/rechazar` | Body `{ "motivo": "5 a 500 caracteres" }` (409 si ya fue revisada) |
+| `GET /transportistas` | Lista paginada: `search`, `estado`, `page`, `pageSize` (máx. 50) |
+| `PATCH /transportistas/:id` | `estado` (Verificado, Pendiente o Suspendido) y/o `telefono` |
+| `GET /reportes` | Informe del período: `7d`, `30d` (por defecto), `90d`, `365d` o `all` |
+
 ## Despliegue del backend en Render
 
 Crear un Web Service conectado al repositorio con:

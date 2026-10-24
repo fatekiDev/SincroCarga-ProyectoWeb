@@ -1,421 +1,193 @@
-# SincroCarga-ProyectoWeb
+# SincroCarga
 
-# 🚛 SincroCarga
+**Plataforma web de matching logístico para Chiloé.** Conecta camiones con espacio disponible y empresas con carga por transportar, para reducir los viajes de retorno vacíos, los costos de combustible y peajes (Pargua–Chacao) y la coordinación manual por WhatsApp.
 
-### Plataforma de Matching Logístico para Chiloé
-
-> Conectamos camiones disponibles con cargas disponibles para reducir viajes vacíos, optimizar costos y mejorar la eficiencia del transporte en Chiloé.
+Proyecto Web Integrador · Tecnologías Web y Móviles (6° semestre) · Ingeniería Civil en Informática · Universidad de Los Lagos, Campus Chiloé.
 
 ---
 
-## 🛠️ Instalación
+## 1. Enlaces y estado
 
-### 1) Preparar la base de datos
+| Elemento | Enlace |
+|---|---|
+| Repositorio | https://github.com/fatekiDev/SincroCarga-ProyectoWeb |
+| Frontend (Vercel) | `[COMPLETAR: URL pública HTTPS]` |
+| Backend (Render) | `https://sincrocarga-api.onrender.com` `[CONFIRMAR]` |
+| Verificación de la API | `<URL del backend>/api/health/db` → `{ "status": "ok", "database": "connected" }` |
+| Base de datos | PostgreSQL 16 gestionado en Neon (la cadena de conexión vive solo en la variable `DATABASE_URL` de Render) |
+| Dossier técnico | `docs/` y el PDF de la entrega |
 
-1. Crea la base PostgreSQL llamada `bd_grupo2_sincrochiloe`.
-2. Carga el esquema base del proyecto desde `databases/bd_grupo2_sincrochiloe.sql`.
-3. Copia `backend/.env.example` a `backend/.env` y ajusta las variables de conexión PostgreSQL (`PGHOST`, `PGPORT`, `PGUSER`, `PGPASSWORD`, `PGDATABASE`).
+> El backend corre en el plan gratuito de Render: la primera petición tras un período de inactividad puede tardar hasta ~60 s en "despertar" la instancia.
 
-### 2) Instalar dependencias y migraciones
+### Equipo
 
-Desde `backend` ejecuta:
+| Integrante | Rol declarado |
+|---|---|
+| Benjamin Concha Monsalves | Backend y despliegue |
+| Francisco Kroff Inzunza | Base de datos y DevOps |
+| José Guanel Vera | Frontend |
+| Vicente Garin Pereda | QA y documentación |
 
-```bash
-npm install
-npm run db:migrate
+---
+
+## 2. Alcance real y modo demostración
+
+| Funcionalidad | Estado | Detalle |
+|---|---|---|
+| Registro, inicio de sesión y roles (cliente, camionero, admin) | Real | Cuentas, sesiones y contraseñas (hash bcrypt) en PostgreSQL |
+| Publicar carga, cotizar y postular | Real | Todo persiste en PostgreSQL; la tarifa se calcula en el servidor |
+| Panel de administración | Real | Los 9 endpoints `/api/admin/*` consultan y actualizan PostgreSQL |
+| Pago | **Demostración** | Pago simulado, sin pasarela: se registra en la tabla `pago` (comisión e IVA) pero no mueve dinero. Está rotulado en la interfaz |
+| Seguimiento con mapa | **Demostración** | Sin GPS: la posición del marcador avanza en memoria; los estados del viaje sí vienen de la base de datos |
+| Verificación de documentos del conductor | Parcial | Los archivos se eligen en el navegador y no se almacenan; el estado (Pendiente, Verificado, Rechazado) sí se persiste y lo gestiona el administrador |
+| Creación de `match` y `viaje` | Parcial | La API los lee y actualiza, pero no los crea; para la demostración se cargan por SQL |
+| Tablas `comunicacion` y `notificacion` | Sin uso | Existen en el modelo; el backend aún no las utiliza |
+
+---
+
+## 3. Stack tecnológico
+
+| Capa | Tecnología |
+|---|---|
+| Frontend | React 19, Vite, React Router 7, Leaflet / react-leaflet, jsPDF, lucide-react, oxlint |
+| Backend | Node.js (ES Modules), Express 5, cookie-parser, cors, express-rate-limit, bcryptjs, dotenv, `pg` (pool) |
+| Base de datos | PostgreSQL 16, esquema `bd_grupo2_sincrochiloe`, migraciones 001 a 005 |
+| Despliegue | Vercel (frontend), Render (backend), Neon (PostgreSQL) |
+| Calidad | `node:test` (15 pruebas), GitHub Actions (integración continua y verificación de producción) |
+
+---
+
+## 4. Arquitectura N-capas
+
+El backend es un servidor Express con una responsabilidad por carpeta. El frontend consume la API con `fetch` (`credentials: "include"`) y la sesión viaja en una cookie `HttpOnly`.
+
+```
+React (frontend/src)  →  fetch + cookie
+   └─ Middleware global (server.js: origen, CORS, JSON 32 kb, cookie-parser, errores)
+       └─ Rutas        backend/src/routes        método + ruta + middlewares de sesión y rol
+           └─ Controladores  backend/src/controllers  validan la petición y definen el código HTTP
+               └─ Servicios      backend/src/services     reglas de negocio (validación, tarifa, hash, comisión/IVA)
+                   └─ Modelos        backend/src/models       SQL parametrizado y transacciones
+                       └─ PostgreSQL (pool en backend/src/db)  →  JSON { data } / { error }
 ```
 
-`npm run db:migrate` aplica las migraciones definidas en `backend/src/db` y deja la base lista para la aplicación.
+Diagrama completo del ciclo de una petición (`POST /api/publicaciones`): [`docs/flujo-peticion.md`](docs/flujo-peticion.md) y [`docs/img/flujo-peticion.png`](docs/img/flujo-peticion.png).
 
-### 3) Levantar la aplicación
+![Ciclo de una petición](docs/img/flujo-peticion.png)
 
-En dos terminales separadas:
+> El módulo de administración no tiene capa de servicios propia: su controlador valida los parámetros y llama directamente al modelo.
 
-```bash
-# backend
-cd backend
-npm run dev
+### Decisiones de seguridad
 
-# frontend
-cd frontend
-npm install
-npm run dev
-```
-
-La API queda disponible en `http://localhost:3000` y el frontend en `http://localhost:5173` (o el puerto configurado por Vite).
-
-### 4) Crear administrador (opcional)
-
-Para habilitar acceso administrativo en una instalación nueva:
-
-```bash
-cd backend
-ADMIN_EMAIL="admin@ejemplo.com" ADMIN_PASSWORD="TuPasswordSegura123" npm run admin:create
-```
-
-También puedes definir `ADMIN_NAME` si quieres personalizar el nombre del administrador. Nunca compartas ni subas estos valores al repositorio.
+- **Sesión:** cookie `sincrocarga_session` HttpOnly de 7 días (`Secure` y `SameSite=None` en producción). En la base solo se guarda el hash del token (`usuario_sesion.token_hash`).
+- **Contraseñas:** bcrypt con 12 rondas; mínimo 12 caracteres y máximo 72 bytes.
+- **Autorización por rol en el servidor** (`requireRole`); el propietario del recurso sale de la sesión, nunca del cuerpo. Las operaciones del camionero exigen cuenta verificada y activa.
+- **Límite de intentos:** 10 logins cada 15 minutos (responde 429).
+- **CORS:** lista blanca en `FRONTEND_ORIGINS`; en producción un origen no listado recibe 403.
+- **Entrada:** cuerpo JSON limitado a 32 kb, validación en servidor y consultas SQL parametrizadas.
+- **Errores:** el manejador global traduce errores de PostgreSQL (23505 → 409; 23502/22001/22003/22007/22P02/23514 → 400; 23503 → 404) y responde 500 con mensaje genérico, sin filtrar trazas.
+- **Tarifa:** se recalcula siempre en el servidor (peso facturable = máx(peso real, volumen × 250 kg/m³); primer tramo de 1.000 kg; +15 % por tramo adicional; recargo de cruce marítimo aparte). Los parámetros son orientativos y deben calibrarse con costos reales.
 
 ---
 
-## Administración
+## 5. Modelo de datos
 
-El acceso administrativo usa el mismo formulario de inicio de sesión y está disponible desde el enlace **Acceso administrador** en `/login`. Las cuentas admin no se pueden crear desde el registro público.
+24 tablas (21 del DDL base + `usuario`, `usuario_sesion` y `rut_registrado`), 31 claves foráneas sin `NO ACTION`. Los registros financieros y de historial usan `ON DELETE RESTRICT`; los hijos puramente dependientes usan `CASCADE`. Hay `CHECK` de estados, positividad y coherencia de fechas, y restricciones `EXCLUDE` que impiden solapar períodos.
 
-Para habilitarlo en una instalación nueva:
+![Diagrama ER](docs/img/diagrama-er.png)
 
-1. Configura la conexión de PostgreSQL en `backend/.env` y ejecuta `npm run db:migrate` desde `backend`.
-2. Define `ADMIN_EMAIL`, `ADMIN_NAME` (opcional) y `ADMIN_PASSWORD` solo en el entorno seguro de la terminal o del gestor de secretos; no publiques ni compartas la contraseña.
-3. Ejecuta `npm run admin:create` desde `backend`. El comando crea una sola cuenta y no sobrescribe cuentas existentes.
-4. Inicia sesión en `/admin/login`. Las rutas y la API administrativa requieren rol `admin`; las verificaciones, transportistas e informes consultan PostgreSQL.
+- Diagrama completo: [`docs/diagrama-er.md`](docs/diagrama-er.md) y [`docs/img/diagrama-er.svg`](docs/img/diagrama-er.svg) (vectorial).
+- Revisión de restricciones y hallazgos abiertos: [`docs/revision-restricciones.md`](docs/revision-restricciones.md).
 
-Las solicitudes de camionero comienzan como **Pendiente**. La revisión administrativa utiliza los datos de empresa, conductor, licencia y vehículo registrados en la cuenta. La plataforma aún no almacena archivos adjuntos de documentos, por lo que el panel no debe interpretarse como una revisión de archivos. Las operaciones de transportista permanecen bloqueadas hasta la aprobación; al rechazar la solicitud se guarda el motivo y se desactiva el transportista.
+| Dominio | Tablas |
+|---|---|
+| Catálogos y tarifas | `tipo_cliente`, `tipo_carga`, `cruce_maritimo`, `ruta`, `tarifa_referencial` |
+| Actores y flota | `cliente`, `transportista`, `camion`, `chofer`, `camion_tipo_carga` |
+| Flujo operativo | `carga`, `publicacion_carga`, `publicacion_transporte`, `postulacion`, `match`, `viaje`, `pago` |
+| Interacción e historial | `calificacion`, `comunicacion`, `historial_cumplimiento`, `notificacion` |
+| Autenticación | `usuario`, `usuario_sesion`, `rut_registrado` |
 
----
+### Migraciones (`databases/migrations`, orden fijado en `backend/src/db/migrate.js`)
 
-## 📌 Descripción
-
-**SincroCarga** es una plataforma web orientada a optimizar el transporte de carga en Chiloé mediante un sistema de **matching entre transportistas y empresas que necesitan transportar mercancías**.
-
-La problemática principal que buscamos resolver son los **viajes de retorno vacíos**. Muchos camiones realizan una entrega y regresan sin carga, generando pérdidas económicas asociadas al combustible, tiempo y peajes.
-
-Actualmente, gran parte de la coordinación de estos servicios se realiza mediante **WhatsApp, llamadas telefónicas y contactos directos**, lo que dificulta encontrar rápidamente una carga compatible y reduce la eficiencia operativa.
-
-SincroCarga busca centralizar y automatizar este proceso.
-
----
-
-## 🎯 Problema
-
-Actualmente existen tres problemas principales:
-
-* 🚚 **Camiones que regresan vacíos** después de realizar una entrega.
-* 💰 **Pérdidas económicas** por combustible, tiempo y peajes.
-* 📱 **Coordinación manual** mediante WhatsApp y llamadas telefónicas.
-
-Esto genera una oportunidad para conectar la **capacidad disponible de los transportistas** con la **demanda de transporte existente**.
+| Archivo | Contenido |
+|---|---|
+| `001_authentication.sql` | `usuario` y `usuario_sesion` |
+| `002_unique_trip_rating.sql` | Una calificación por viaje y emisor |
+| `003_simulated_payments.sql` | Tabla `pago` (tarifa, comisión, IVA, total) |
+| `004_unique_rut.sql` | `rut_registrado`: unicidad del RUT normalizado |
+| `004_admin_verification.sql` | Rol admin y estado de verificación del transportista |
+| `005_hardening_constraints.sql` | `ON DELETE RESTRICT` explícito, 14 `NOT NULL` y 8 `CHECK` |
 
 ---
 
-## 💡 Solución
+## 6. API REST
 
-SincroCarga permitirá que transportistas y empresas publiquen sus necesidades de transporte y encuentren coincidencias de manera rápida.
+Convenciones: cuerpo `application/json`; éxito `{ "data": … }`; error `{ "error": "mensaje", "details": [ … ] }` (`details` solo en validaciones). Códigos usados: 200, 201, 400, 401, 403, 404, 409, 429, 500 y 503. La API **no borra filas de negocio**: cancelar y retirar son borrado lógico (cambio de estado), expuestos tanto con `POST` como con su `DELETE` equivalente.
 
-El sistema buscará realizar un **matching automático** considerando principalmente:
+| Grupo | Método y ruta | Acceso |
+|---|---|---|
+| Salud | `GET /api/health` · `GET /api/health/db` | Público |
+| Auth | `POST /api/auth/register` · `POST /api/auth/login` (10 / 15 min) | Público |
+| Auth | `GET /api/auth/me` · `POST /api/auth/logout` · `DELETE /api/auth/session` | Sesión |
+| Publicaciones | `GET /api/publicaciones` · `GET /api/publicaciones/catalogos` · `POST /api/publicaciones/cotizacion` · `GET /api/publicaciones/:id` | Público |
+| Publicaciones | `GET /mine` · `POST /` · `PUT /:id` · `POST /:id/cancelar` · `DELETE /:id` (bajo `/api/publicaciones`) | Cliente |
+| Seguimiento | `GET /api/seguimiento/activo` · `GET /revision` · `POST /:viajeId/incidencias` · `POST /:viajeId/confirmar-recepcion` · `POST /:viajeId/calificacion` | Cliente |
+| Pagos (demo) | `GET /api/pagos/actual` · `POST /api/pagos/:viajeId/simular` | Cliente |
+| Transportista | `GET /catalogos` · `GET /cargas` · `GET /postulaciones` · `GET /espacios` · `GET /viajes` (bajo `/api/transportista`) | Camionero verificado |
+| Transportista | `POST /cargas/:publicacionId/postular` · `POST /postulaciones/:id/retirar` · `DELETE /postulaciones/:id` · `POST /espacios` · `POST /espacios/:id/cancelar` · `DELETE /espacios/:id` | Camionero verificado |
+| Administración | `GET /resumen` · `GET /fletes-activos` · `GET /solicitudes` · `GET /solicitudes/:id` · `PUT /solicitudes/:id/aprobar` · `PUT /solicitudes/:id/rechazar` · `GET /transportistas` · `PATCH /transportistas/:id` · `GET /reportes` (bajo `/api/admin`) | Administrador |
 
-* 📍 Ruta
-* 📅 Fecha
-* 🚛 Tipo de vehículo
-* ⚖️ Tonelaje / capacidad disponible
-
-Una vez encontrado un match, los usuarios podrán establecer contacto directamente mediante **WhatsApp o llamada telefónica**.
-
-### Elevator Pitch
-
-> Para transportistas y empresas de carga en Chiloé que sufren por los altos costos de retornos vacíos y peajes en Pargua–Chacao, **SincroCarga** es una plataforma de matching operativo que conecta capacidad con demanda en tiempo real.
->
-> A diferencia de grupos de WhatsApp informales o llamadas manuales, nuestro producto busca automatizar el emparejamiento, generar confianza entre los participantes y optimizar el margen obtenido por todos.
-
----
-
-## 👥 Usuarios
-
-### 🚛 Transportistas
-
-**Luis Barría — 48 años**
-
-Dueño de una empresa con 6 camiones.
-
-**Problema:**
-
-> "Estoy perdiendo dinero."
-
-**Objetivo:**
-
-> "Gané más dinero."
+El contrato detallado (parámetros, cuerpos y códigos por endpoint) está en el **Dossier Técnico** y en [`backend/README.md`](backend/README.md). Equivalencias de los `DELETE`: [`docs/api-delete.md`](docs/api-delete.md).
 
 ---
 
-### 📦 Empresas de carga
+## 7. Puesta en marcha local
 
-**Camila Soto — 35 años**
+Requisitos: Node.js 20 o superior y PostgreSQL.
 
-Encargada de logística en una empresa salmonera.
+1. Crear la base `bd_grupo2_sincrochiloe` y cargar `databases/bd_grupo2_sincrochiloe.sql` (pgAdmin o `psql`).
+2. Backend: `cd backend`, copiar `.env.example` a `.env`, completar `PGUSER` y `PGPASSWORD` locales y ejecutar `npm install`.
+3. Aplicar migraciones: `npm run db:migrate` (001 a 005, idempotentes).
+4. Crear el administrador (opcional): definir `ADMIN_EMAIL`, `ADMIN_NAME` y `ADMIN_PASSWORD` solo en el entorno de la terminal y ejecutar `npm run admin:create`. Ingreso en `/admin/login`.
+5. Levantar la API: `npm run dev` (puerto 3000) y comprobar `http://localhost:3000/api/health/db`.
+6. Frontend, en otra terminal: `cd frontend`, `npm install`, `npm run dev` (puerto 5173; Vite reenvía `/api` al backend).
+7. Pruebas del backend: `cd backend && npm test`.
 
-**Problema:**
+### Variables de entorno
 
-> "Tengo que encontrar transporte rápido."
-
-**Objetivo:**
-
-> "Funcionó bien."
-
----
-
-### 🚚 Choferes independientes
-
-**Rodrigo Cárdenas — 41 años**
-
-Transportista independiente que busca evitar regresar sin carga.
-
-**Problema:**
-
-> "No quiero volver vacío."
-
-**Objetivo:**
-
-> "No perdí plata esta vez."
+Documentadas en [`backend/.env.example`](backend/.env.example): `PGHOST`, `PGPORT`, `PGDATABASE`, `PGUSER`, `PGPASSWORD`, `FRONTEND_ORIGINS`, `PORT`, `SINCROCARGA_COMMISSION_PERCENT` y `ADMIN_*`. En producción se usa `DATABASE_URL` y `NODE_ENV=production`. El frontend usa `VITE_API_URL` (URL pública del backend, sin `/` final). Los archivos `.env` están en `.gitignore`; nunca se suben credenciales reales.
 
 ---
 
-### 🛠️ Administrador
+## 8. Despliegue
 
-**José Guanel — 22 años**
-
-Responsable de administrar y monitorear la plataforma.
-
-Sus principales responsabilidades serán:
-
-* Gestionar usuarios.
-* Monitorear publicaciones.
-* Detectar errores.
-* Supervisar matches.
-* Mantener el correcto funcionamiento de la plataforma.
+| Servicio | Configuración |
+|---|---|
+| Neon (PostgreSQL) | Cadena *pooled* en `DATABASE_URL`. Render **no** ejecuta `db:migrate`: las migraciones se aplican en el editor SQL de Neon (con una branch de respaldo antes) |
+| Render (backend) | `NODE_ENV=production`, `DATABASE_URL`, `FRONTEND_ORIGINS` = origen exacto de Vercel sin `/` final |
+| Vercel (frontend) | `VITE_API_URL` = URL pública del backend; `frontend/vercel.json` reescribe las rutas a `index.html` (SPA con `BrowserRouter`) |
 
 ---
 
-## ⭐ Propuesta de Valor
+## 9. Calidad e integración continua
 
-### MVP — Must Have
-
-El producto mínimo viable contempla:
-
-* [ ] Publicación de cargas.
-* [ ] Publicación de espacio/capacidad disponible.
-* [ ] Matching básico por ruta.
-* [ ] Matching por fecha.
-* [ ] Matching por tonelaje.
-* [ ] Contacto directo mediante WhatsApp o llamada.
-* [ ] Notificaciones en tiempo real.
-* [ ] Sistema de ratings y reputación.
-
-### 🚀 Futuras funcionalidades
-
-Estas funcionalidades podrán incorporarse posteriormente:
-
-* [ ] Multicarga para optimizar la capacidad de un camión.
-* [ ] Precios referenciales.
-* [ ] Seguimiento de envíos.
-* [ ] Mejoras en el algoritmo de matching.
-* [ ] Geolocalización.
-* [ ] Funcionalidad offline con sincronización.
+- `.github/workflows/ci.yml`: en cada push y pull request levanta PostgreSQL 16, instala dependencias (`npm ci`), carga el esquema base, aplica las migraciones dos veces (idempotencia), corre las pruebas, verifica los health checks y hace lint y build del frontend.
+- `.github/workflows/smoke-produccion.yml` y `scripts/smoke-prod.sh`: comprueban las URLs desplegadas (`PROD_API_URL`, `PROD_FRONTEND_URL`).
+- Pruebas (15): validación de registro y RUT, cálculo de tarifa, verbos HTTP de las rutas y 5 pruebas de integración de esquema (se omiten si no hay PostgreSQL configurado; en CI sí se ejecutan).
 
 ---
 
-## 💰 Modelo de Negocio
-
-El modelo inicial considera:
-
-**Fuente principal de ingresos**
-
-* Comisión por cada viaje realizado mediante la plataforma.
-
-**Futuras fuentes de ingresos**
-
-* Servicios premium.
-* Funcionalidades avanzadas para empresas.
-* Herramientas adicionales para transportistas.
-
-### Canales
-
-* 🌐 Plataforma web.
-* 📱 Aplicación móvil.
-* 📲 Redes sociales.
-* 🤝 Sindicatos y organizaciones de transportistas.
-
-### Competencia actual
-
-La principal alternativa actualmente son:
-
-* Grupos de WhatsApp.
-* Llamadas telefónicas.
-* Contactos personales.
-* Coordinación directa entre empresas y transportistas.
-
-### Diferenciación
-
-SincroCarga busca diferenciarse mediante:
-
-**Automatización + seguridad + eficiencia + reputación**
-
----
-
-## 🗺️ Roadmap
-
-### Mes 1 — Diseño y fundamentos
-
-* Diseño UX/UI.
-* Validación del modelo de datos.
-* Diseño y validación de la base de datos.
-* Definición de arquitectura.
-* Preparación del proyecto web.
-
-### Mes 2 — Desarrollo del MVP
-
-* Sistema de publicaciones.
-* Panel de usuarios.
-* Algoritmo inicial de matching.
-* Gestión de cargas y vehículos.
-* Sistema de contacto.
-
-### Mes 3 — Piloto
-
-Realizar un piloto enfocado inicialmente en las rutas:
-
-**Quellón → Castro → Ancud → Pargua**
-
-Objetivo:
-
-> Validar el funcionamiento del sistema con usuarios reales y obtener retroalimentación para futuras iteraciones.
-
----
-
-## ⚠️ Riesgos
-
-| Riesgo                      | Estrategia de mitigación                          |
-| --------------------------- | ------------------------------------------------- |
-| Baja adopción               | Realizar pilotos con sindicatos y transportistas  |
-| Desintermediación           | Sistema de ratings y generación de valor continuo |
-| Desconfianza entre usuarios | Validación de usuarios y sistema de reputación    |
-| Problemas de conectividad   | Diseñar soporte offline y sincronización          |
-
----
-
-## 🏗️ Arquitectura del Proyecto
-
-Este repositorio corresponde al **desarrollo de la plataforma web de SincroCarga**.
-
-La arquitectura y tecnologías definitivas serán definidas durante la etapa de desarrollo.
-
-### Estado actual
-
-> 🟡 **Etapa de planificación y diseño**
-
-Actualmente el proyecto cuenta con:
-
-* ✅ Visión del producto.
-* ✅ Definición del problema.
-* ✅ Propuesta de valor.
-* ✅ Historias de usuario.
-* ✅ Modelo relacional.
-* ✅ Base de datos inicial.
-* 🚧 Desarrollo de la plataforma web.
-* ⏳ Algoritmo de matching.
-* ⏳ Pruebas con usuarios.
-
-### Estructura de desarrollo
-
-* `frontend/`: aplicación frontend hecha con React y Vite.
-* `backend/`: API REST hecha con Node.js y Express.
-
----
-
-## 📂 Repositorios
-
-El proyecto será dividido por plataforma para mantener una arquitectura y ciclo de desarrollo independientes.
-
-### 🌐 SincroCarga Web
-
-**Este repositorio**
-
-Contendrá el desarrollo de la plataforma web.
-
-### 📱 SincroCarga Mobile
-
-**Repositorio futuro**
-
-Contendrá el desarrollo de la aplicación móvil.
-
----
-
-## 🚀 Instalación
-
-El frontend y el backend se ejecutan de forma independiente, cada uno en su propia terminal.
-
-1. Clonar el repositorio:
-
-```bash
-git clone https://github.com/fatekiDev/SincroCarga-ProyectoWeb.git
-```
-
-2. Desde la carpeta raíz del repositorio, iniciar el backend en una terminal:
-
-```bash
-cd backend
-npm install
-npm run dev
-```
-
-La terminal mostrará `API escuchando en http://localhost:3000` y debe permanecer abierta. Puedes probar la API desde Thunder Client enviando una solicitud `GET` a `http://localhost:3000/api/health`; la respuesta será `{"status":"ok"}`.
-
-3. Desde la carpeta raíz del repositorio, abrir otra terminal e iniciar el frontend:
-
-```bash
-cd frontend
-npm install
-npm run dev
-```
-
-Abre en el navegador la URL indicada por Vite en la terminal del frontend.
-
----
-
-## 👨‍💻 Equipo
-
-| Rol                    | Integrante       |
-| ---------------------- | ---------------- |
-| Product Owner          | Empresa Digitala |
-| Fullstack / Desarrollo | José             |
-| Fullstack / Desarrollo | Benjamín         |
-| UX/UI                  | Vicente          |
-| UX/UI                  | Francisco        |
-
----
-
-## 📚 Metodologías y herramientas
-
-El desarrollo del proyecto está basado en principios de:
-
-* **Agile Inception**
-* **Product Vision Board**
-* **Customer Journey Maps**
-* **SCAMPER**
-* **Historias de Usuario**
-* **Modelo Relacional**
-
-Estas herramientas permiten definir y validar progresivamente el producto antes y durante su implementación.
-
----
-
-## 🎯 Visión
-
-> **Reducir los viajes vacíos en Chiloé, aumentar la eficiencia del transporte y generar nuevas oportunidades de ingresos mediante un sistema de matching logístico en tiempo real.**
-
----
-
-## 🔗 Enlaces del Proyecto
-
-* 📊 [Tablero de Miro](https://miro.com/welcomeonboard/eUUzSWhWTHAyMmJTY1oyMDYxcHFUZUhYdjRmOWFKc1FHalV4TnIxNUhrRHgvS0U3MW41MkdkMHBTRDNqSWFZMFZ6dnBGTlhadVpsRmJsTnpqRzlwbWFPOVo3UmExcS9qTmIrWkRXdDBDODd...)
-
----
-
-## 🚧 Estado del proyecto
-
-**SincroCarga se encuentra actualmente en etapa de planificación y desarrollo inicial.**
-
-Este repositorio evolucionará progresivamente desde la arquitectura y configuración inicial hasta convertirse en la plataforma web funcional del proyecto.
-
----
-
-### SincroCarga
-
-**Conectando rutas. Optimizando viajes. Sincronizando Chiloé.** 🚛🌊
+## 10. Uso de IA generativa
+
+El equipo declara y audita el uso de GitHub Copilot, Claude y Gemini en el **Dossier Técnico** (sección 5): qué se pidió, qué falló, de qué tipo fue el problema, cómo se corrigió y la evidencia en el repositorio.
+
+## 11. Documentación técnica adicional
+
+| Documento | Contenido |
+|---|---|
+| [`docs/diagrama-er.md`](docs/diagrama-er.md) | ER del esquema físico |
+| [`docs/revision-restricciones.md`](docs/revision-restricciones.md) | `ON DELETE`, `CHECK`, `NOT NULL` y hallazgos abiertos |
+| [`docs/flujo-peticion.md`](docs/flujo-peticion.md) | React → ruta → servicio → modelo → SQL → JSON |
+| [`docs/api-delete.md`](docs/api-delete.md) | Verbos `DELETE` y borrado lógico |
+| [`docs/devops-ci.md`](docs/devops-ci.md) | Workflows y verificación de producción |
+| [`backend/README.md`](backend/README.md) · [`frontend/README.md`](frontend/README.md) | Guías por módulo |

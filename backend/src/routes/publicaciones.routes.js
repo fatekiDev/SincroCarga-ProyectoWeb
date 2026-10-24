@@ -20,6 +20,8 @@ router.post('/cotizacion', getPublicationQuote)
 router.get('/:id', getPublication)
 router.post('/', requireAuth, requireRole('cliente'), createPublication)
 router.post('/:id/cancelar', requireAuth, requireRole('cliente'), cancelMyPublication)
+// DELETE equivalente a POST /:id/cancelar: borrado lógico (estado = 'Cancelada')
+router.delete('/:id', requireAuth, requireRole('cliente'), cancelMyPublication)
 router.put('/:id', requireAuth, requireRole('cliente'), updatePublication)
 
 export default router
