@@ -52,7 +52,6 @@ function AdminLayout({ children, userName = 'Admin', onLogout }) {
           <Link to="/admin/transportistas">Transportistas</Link>
           <Link to="/admin/fletes">Fletes activos</Link>
           <Link to="/admin/reportes">Reportes</Link>
-          <a href="mailto:contacto@sincrocarga.cl">Soporte</a>
         </nav>
       </footer>
     </div>
