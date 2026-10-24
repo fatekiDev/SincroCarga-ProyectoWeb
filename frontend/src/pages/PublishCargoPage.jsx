@@ -297,6 +297,7 @@ export default function PublishCargoPage({ session, onLogout }) {
 
   const handleSubmit = async (event) => {
     event.preventDefault()
+    if (step !== 3) return
     setSubmitError('')
     setServerDetails([])
     setNotice('')
@@ -673,11 +674,11 @@ export default function PublishCargoPage({ session, onLogout }) {
                 </Button>
               ) : <span />}
               {step < 3 ? (
-                <Button type="button" onClick={handleNext} disabled={step === 2 && quoteStatus === 'loading'}>
+                <Button key="next" type="button" onClick={handleNext} disabled={step === 2 && quoteStatus === 'loading'}>
                   Siguiente <ArrowRight size={16} />
                 </Button>
               ) : (
-                <Button type="submit" disabled={isSubmitting || quoteStatus !== 'success'}>
+                <Button key="submit" type="submit" disabled={isSubmitting || quoteStatus !== 'success'}>
                   {isSubmitting ? <LoaderCircle size={16} /> : <Check size={16} />}
                   {isSubmitting ? 'Publicando…' : editingId ? 'Guardar cambios' : 'Publicar solicitud de flete'}
                 </Button>
