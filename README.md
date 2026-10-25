@@ -122,22 +122,96 @@ Diagrama completo del ciclo de una petición (`POST /api/publicaciones`): [`docs
 
 ## 6. API REST
 
-Convenciones: cuerpo `application/json`; éxito `{ "data": … }`; error `{ "error": "mensaje", "details": [ … ] }` (`details` solo en validaciones). Códigos usados: 200, 201, 400, 401, 403, 404, 409, 429, 500 y 503. La API **no borra filas de negocio**: cancelar y retirar son borrado lógico (cambio de estado), expuestos tanto con `POST` como con su `DELETE` equivalente.
+La API usa JSON. Las respuestas exitosas tienen la forma `{ "data": … }` (salvo el cierre de sesión, que también puede devolver `{ "message": … }`); los errores usan `{ "error": "mensaje" }` y pueden incluir `details` cuando hay errores de validación. Códigos principales: 200, 201, 400, 401, 403, 404, 409, 429, 500 y 503. Las rutas protegidas reciben la cookie de sesión `sincrocarga_session`. Los `DELETE` de negocio son borrados lógicos: cambian estados y preservan el historial.
 
-| Grupo | Método y ruta | Acceso |
+En las tablas, `:id`, `:viajeId`, `:publicacionId` y `:postulacionId` son parámetros de ruta. Las rutas bajo los prefijos indicados se muestran con la ruta completa para que el contrato sea directamente consultable.
+
+### Salud y autenticación
+
+| Método y ruta | Acceso | Especificación |
 |---|---|---|
-| Salud | `GET /api/health` · `GET /api/health/db` | Público |
-| Auth | `POST /api/auth/register` · `POST /api/auth/login` (10 / 15 min) | Público |
-| Auth | `GET /api/auth/me` · `POST /api/auth/logout` · `DELETE /api/auth/session` | Sesión |
-| Publicaciones | `GET /api/publicaciones` · `GET /api/publicaciones/catalogos` · `POST /api/publicaciones/cotizacion` · `GET /api/publicaciones/:id` | Público |
-| Publicaciones | `GET /mine` · `POST /` · `PUT /:id` · `POST /:id/cancelar` · `DELETE /:id` (bajo `/api/publicaciones`) | Cliente |
-| Seguimiento | `GET /api/seguimiento/activo` · `GET /revision` · `POST /:viajeId/incidencias` · `POST /:viajeId/confirmar-recepcion` · `POST /:viajeId/calificacion` | Cliente |
-| Pagos (demo) | `GET /api/pagos/actual` · `POST /api/pagos/:viajeId/simular` | Cliente |
-| Transportista | `GET /catalogos` · `GET /cargas` · `GET /postulaciones` · `GET /espacios` · `GET /viajes` (bajo `/api/transportista`) | Camionero verificado |
-| Transportista | `POST /cargas/:publicacionId/postular` · `POST /postulaciones/:id/retirar` · `DELETE /postulaciones/:id` · `POST /espacios` · `POST /espacios/:id/cancelar` · `DELETE /espacios/:id` | Camionero verificado |
-| Administración | `GET /resumen` · `GET /fletes-activos` · `GET /solicitudes` · `GET /solicitudes/:id` · `PUT /solicitudes/:id/aprobar` · `PUT /solicitudes/:id/rechazar` · `GET /transportistas` · `PATCH /transportistas/:id` · `GET /reportes` (bajo `/api/admin`) | Administrador |
+| `GET /api/health` | Público | Confirma que la API está activa. |
+| `GET /api/health/db` | Público | Comprueba conexión con PostgreSQL. |
+| `POST /api/auth/register` | Público | Registra un perfil de cliente o camionero; almacena el hash de contraseña y crea sesión. |
+| `POST /api/auth/login` | Público; máximo 10 intentos cada 15 min | Recibe correo y contraseña; valida credenciales y crea sesión. |
+| `GET /api/auth/me` | Sesión | Devuelve la cuenta asociada a la cookie de sesión. |
+| `POST /api/auth/logout` | Sesión | Invalida la sesión y elimina la cookie. |
+| `DELETE /api/auth/session` | Sesión | Equivalente a `POST /api/auth/logout`. |
 
-El contrato detallado (parámetros, cuerpos y códigos por endpoint) está en el **Dossier Técnico** y en [`backend/README.md`](backend/README.md). Equivalencias de los `DELETE`: [`docs/api-delete.md`](docs/api-delete.md).
+### Publicaciones y cotización
+
+| Método y ruta | Acceso | Especificación |
+|---|---|---|
+| `GET /api/publicaciones` | Público | Lista publicaciones con estado `Disponible`. |
+| `GET /api/publicaciones/catalogos` | Público | Devuelve tipos de carga y rutas disponibles. |
+| `POST /api/publicaciones/cotizacion` | Público | Cotiza según `tipoCargaId`, `rutaId`, `pesoKg` y `volumenM3`; la tarifa se calcula en el servidor. |
+| `GET /api/publicaciones/:id` | Público | Obtiene una publicación por identificador. |
+| `GET /api/publicaciones/mine` | Cliente | Lista las publicaciones propias. |
+| `POST /api/publicaciones` | Cliente | Crea carga y publicación en una transacción. Recibe `tipoCargaId`, `descripcion`, `pesoKg`, `volumenM3`, `valorDeclarado`, `rutaId` y `fechaLimitePostulacion`; el servidor recalcula la tarifa. |
+| `PUT /api/publicaciones/:id` | Cliente | Reemplaza los campos editables de una publicación propia que siga `Disponible`; usa los mismos campos de creación. |
+| `POST /api/publicaciones/:id/cancelar` | Cliente | Cancela una publicación propia que siga `Disponible`, sin borrar el registro. |
+| `DELETE /api/publicaciones/:id` | Cliente | Equivalente de borrado lógico a `POST …/:id/cancelar`. |
+
+El peso facturable es el mayor entre el peso real y el volumen multiplicado por 250 kg/m³. La tarifa referencial cubre el primer tramo de 1.000 kg; cada tramo adicional iniciado suma 15% de esa tarifa y se agrega el cruce marítimo cuando corresponde. El cuerpo de creación/edición, fechas válidas, validaciones y respuestas se detallan en [`backend/README.md`](backend/README.md).
+
+### Seguimiento y calificaciones
+
+| Método y ruta | Acceso | Especificación |
+|---|---|---|
+| `GET /api/seguimiento/activo` | Cliente | Obtiene el viaje activo, su ruta y el historial de cumplimiento. |
+| `GET /api/seguimiento/revision` | Cliente | Obtiene el viaje más reciente y la calificación registrada, si existe. |
+| `POST /api/seguimiento/:viajeId/incidencias` | Cliente | Registra una incidencia del viaje en el historial de cumplimiento. |
+| `POST /api/seguimiento/:viajeId/confirmar-recepcion` | Cliente | Confirma la recepción, completa el viaje y registra el evento en el historial. |
+| `POST /api/seguimiento/:viajeId/calificacion` | Cliente | Registra una calificación de 1 a 5 estrellas; es idempotente por viaje y cliente. |
+
+El estado del viaje y el historial provienen de PostgreSQL. La posición del marcador del mapa es solo demostrativa; no hay seguimiento GPS.
+
+### Pagos de demostración
+
+| Método y ruta | Acceso | Especificación |
+|---|---|---|
+| `GET /api/pagos/actual` | Cliente | Devuelve el viaje aceptado, la tarifa, la factura y el estado del pago simulado. |
+| `POST /api/pagos/:viajeId/simular` | Cliente | Registra la simulación de pago si el cliente acepta los términos. |
+
+No se conecta con una pasarela ni se mueve dinero real. La comisión demo es 10% por defecto (configurable con `SINCROCARGA_COMMISSION_PERCENT`) y el IVA demo es 19% sobre la comisión.
+
+### Operaciones del transportista
+
+Todas las rutas requieren sesión con rol `camionero`; para operar, el transportista debe estar verificado y activo.
+
+| Método y ruta | Especificación |
+|---|---|
+| `GET /api/transportista/catalogos` | Devuelve rutas y camiones activos propios. |
+| `GET /api/transportista/cargas` | Lista cargas disponibles para la flota y omite aquellas con postulación propia. |
+| `POST /api/transportista/cargas/:publicacionId/postular` | Registra o reenvía una postulación con tarifa propuesta y comentario. |
+| `GET /api/transportista/postulaciones` | Lista postulaciones propias y el viaje asociado, si existe. |
+| `POST /api/transportista/postulaciones/:postulacionId/retirar` | Retira una postulación propia pendiente. |
+| `DELETE /api/transportista/postulaciones/:postulacionId` | Equivalente de borrado lógico a retirar la postulación. |
+| `GET /api/transportista/espacios` | Lista publicaciones propias de capacidad disponible. |
+| `POST /api/transportista/espacios` | Publica capacidad asociada a un camión activo, una ruta y un rango de fechas. |
+| `POST /api/transportista/espacios/:publicacionId/cancelar` | Cancela una publicación propia de capacidad disponible. |
+| `DELETE /api/transportista/espacios/:publicacionId` | Equivalente de borrado lógico a cancelar la publicación de capacidad. |
+| `GET /api/transportista/viajes` | Lista viajes asociados a postulaciones propias, con estado y recorrido. |
+
+La API comprueba capacidad del camión y vigencia de la licencia antes de aceptar postulaciones. Los recorridos son referenciales; la base no almacena coordenadas GPS. Los campos y reglas de validación de cada cuerpo se especifican en [`backend/README.md`](backend/README.md).
+
+### Administración
+
+Todas las rutas requieren sesión con rol `admin`.
+
+| Método y ruta | Especificación |
+|---|---|
+| `GET /api/admin/resumen` | Devuelve métricas de solicitudes, transportistas, fletes y pagos. |
+| `GET /api/admin/fletes-activos` | Lista viajes en progreso. |
+| `GET /api/admin/solicitudes` | Lista solicitudes de verificación de transportistas. |
+| `GET /api/admin/solicitudes/:id` | Obtiene el detalle de una solicitud. |
+| `PUT /api/admin/solicitudes/:id/aprobar` | Aprueba una solicitud de verificación. |
+| `PUT /api/admin/solicitudes/:id/rechazar` | Rechaza una solicitud; recibe `{ "motivo": "…" }`. |
+| `GET /api/admin/transportistas` | Lista transportistas; admite búsqueda, estado, página y tamaño de página. |
+| `PATCH /api/admin/transportistas/:id` | Actualiza el estado de verificación y/o teléfono. |
+| `GET /api/admin/reportes` | Devuelve reportes por período (`7d`, `30d`, `90d`, `365d` o `all`). |
+
+La especificación complementaria de cuerpos, parámetros, validaciones y códigos HTTP está en [`backend/README.md`](backend/README.md). Las equivalencias de `DELETE` y el comportamiento de borrado lógico están en [`docs/api-delete.md`](docs/api-delete.md).
 
 ---
 
@@ -177,11 +251,7 @@ Documentadas en [`backend/.env.example`](backend/.env.example): `PGHOST`, `PGPOR
 
 ---
 
-## 10. Uso de IA generativa
-
-El equipo declara y audita el uso de GitHub Copilot, Claude y Gemini en el **Dossier Técnico** (sección 5): qué se pidió, qué falló, de qué tipo fue el problema, cómo se corrigió y la evidencia en el repositorio.
-
-## 11. Documentación técnica adicional
+## 10. Documentación técnica adicional
 
 | Documento | Contenido |
 |---|---|
