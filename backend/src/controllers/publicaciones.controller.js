@@ -1,4 +1,5 @@
 import {
+  acceptPublicationApplication as acceptApplicationRecord,
   cancelPublication as cancelPublicationRecord,
   createPublication as createPublicationRecord,
   getPublicationCatalogs as getPublicationCatalogsRecord,
@@ -6,6 +7,7 @@ import {
   getPublication as getPublicationRecord,
   listClientPublications,
   listAvailablePublications,
+  listPublicationApplications,
   updatePublication as updatePublicationRecord,
 } from '../services/publicaciones.service.js'
 import {
@@ -142,4 +144,47 @@ export async function cancelMyPublication(req, res) {
   }
 
   res.status(200).json({ data: publication })
+}
+
+function parseId(value) {
+  const id = Number(value)
+  return Number.isSafeInteger(id) && id >= 1 ? id : null
+}
+
+export async function getPublicationApplications(req, res) {
+  const publicacionId = parseId(req.params.id)
+  if (!publicacionId) {
+    return res.status(400).json({ error: 'El id debe ser un entero positivo' })
+  }
+
+  const applications = await listPublicationApplications(req.user.cliente_id, publicacionId)
+  if (!applications) {
+    return res.status(404).json({ error: 'Publicación no encontrada' })
+  }
+
+  res.status(200).json({ data: applications })
+}
+
+export async function acceptApplication(req, res) {
+  const publicacionId = parseId(req.params.id)
+  const postulacionId = parseId(req.params.postulacionId)
+  if (!publicacionId || !postulacionId) {
+    return res.status(400).json({ error: 'Los ids deben ser enteros positivos' })
+  }
+
+  const result = await acceptApplicationRecord(req.user.cliente_id, publicacionId, postulacionId)
+
+  if (result.notFound) {
+    return res.status(404).json({ error: 'Publicación o postulación no encontrada' })
+  }
+  if (result.unavailable) {
+    return res.status(409).json({ error: 'Esta publicación ya no está disponible' })
+  }
+  if (result.noResources) {
+    return res.status(409).json({
+      error: 'El transportista no tiene un camión y un chofer disponibles para este viaje',
+    })
+  }
+
+  res.status(200).json({ data: { viajeId: result.viajeId } })
 }

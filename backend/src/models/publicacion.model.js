@@ -312,3 +312,136 @@ export async function cancelClientPublication(id, clienteId) {
     return findPublicationById(client, id)
   })
 }
+
+export async function findPublicationApplications(clienteId, publicacionId) {
+  const owner = await pool.query(`
+    SELECT 1
+    FROM publicacion_carga AS pc
+    INNER JOIN carga AS c ON c.id_carga = pc.carga_id
+    WHERE pc.id_publicacion = $1
+      AND c.cliente_id = $2
+  `, [publicacionId, clienteId])
+
+  if (owner.rowCount === 0) return null
+
+  const { rows } = await pool.query(`
+    SELECT p.id_postulacion, p.fecha_postulacion, p.tarifa_propuesta,
+      p.comentario, p.estado, t.razon_social AS transportista
+    FROM postulacion AS p
+    INNER JOIN transportista AS t ON t.id_transportista = p.transportista_id
+    WHERE p.publicacion_id = $1
+      AND p.estado <> 'Retirada'
+    ORDER BY p.fecha_postulacion DESC, p.id_postulacion DESC
+  `, [publicacionId])
+
+  return rows.map((row) => ({
+    id: row.id_postulacion,
+    fecha: row.fecha_postulacion,
+    tarifaPropuesta: Number(row.tarifa_propuesta),
+    comentario: row.comentario,
+    estado: row.estado,
+    transportista: row.transportista,
+  }))
+}
+
+export async function acceptApplication(clienteId, publicacionId, postulacionId) {
+  try {
+    return await withTransaction(async (client) => {
+      const publication = await client.query(`
+        SELECT pc.estado, c.peso_kg, c.volumen_m3
+        FROM publicacion_carga AS pc
+        INNER JOIN carga AS c ON c.id_carga = pc.carga_id
+        WHERE pc.id_publicacion = $1
+          AND c.cliente_id = $2
+        FOR UPDATE OF pc
+      `, [publicacionId, clienteId])
+
+      if (!publication.rows[0]) return { notFound: true }
+      if (publication.rows[0].estado !== 'Disponible') return { unavailable: true }
+
+      const application = await client.query(`
+        SELECT transportista_id, tarifa_propuesta
+        FROM postulacion
+        WHERE id_postulacion = $1
+          AND publicacion_id = $2
+          AND estado = 'Pendiente'
+        FOR UPDATE
+      `, [postulacionId, publicacionId])
+
+      if (!application.rows[0]) return { notFound: true }
+
+      const { transportista_id: transportistaId, tarifa_propuesta: tarifa } = application.rows[0]
+
+      const truck = await client.query(`
+        SELECT ca.id_camion
+        FROM camion AS ca
+        WHERE ca.transportista_id = $1
+          AND ca.activo = TRUE
+          AND ca.capacidad_kg >= $2
+          AND ca.capacidad_m3 >= $3
+          AND NOT EXISTS (
+            SELECT 1 FROM viaje AS v
+            WHERE v.camion_id_actual = ca.id_camion
+              AND v.estado <> 'Cancelado'
+              AND COALESCE(v.fecha_fin, 'infinity'::timestamp) > NOW()
+          )
+        ORDER BY ca.capacidad_kg ASC, ca.id_camion ASC
+        LIMIT 1
+      `, [transportistaId, publication.rows[0].peso_kg, publication.rows[0].volumen_m3])
+
+      const driver = await client.query(`
+        SELECT ch.id_chofer
+        FROM chofer AS ch
+        WHERE ch.transportista_id = $1
+          AND ch.activo = TRUE
+          AND ch.fecha_vencimiento_licencia >= CURRENT_DATE
+          AND NOT EXISTS (
+            SELECT 1 FROM viaje AS v
+            WHERE v.chofer_id_actual = ch.id_chofer
+              AND v.estado <> 'Cancelado'
+              AND COALESCE(v.fecha_fin, 'infinity'::timestamp) > NOW()
+          )
+        ORDER BY ch.id_chofer ASC
+        LIMIT 1
+      `, [transportistaId])
+
+      if (!truck.rows[0] || !driver.rows[0]) return { noResources: true }
+
+      await client.query(
+        `UPDATE postulacion SET estado = 'Aceptada' WHERE id_postulacion = $1`,
+        [postulacionId],
+      )
+
+      await client.query(`
+        UPDATE postulacion
+        SET estado = 'Rechazada'
+        WHERE publicacion_id = $1
+          AND id_postulacion <> $2
+          AND estado = 'Pendiente'
+      `, [publicacionId, postulacionId])
+
+      const match = await client.query(`
+        INSERT INTO match (postulacion_id, camion_id, chofer_id)
+        VALUES ($1, $2, $3)
+        RETURNING id_match
+      `, [postulacionId, truck.rows[0].id_camion, driver.rows[0].id_chofer])
+
+      const journey = await client.query(`
+        INSERT INTO viaje (match_id, fecha_inicio, tarifa_final)
+        VALUES ($1, NOW(), $2)
+        RETURNING id_viaje
+      `, [match.rows[0].id_match, tarifa])
+
+      await client.query(
+        `UPDATE publicacion_carga SET estado = 'Asignada' WHERE id_publicacion = $1`,
+        [publicacionId],
+      )
+
+      return { viajeId: journey.rows[0].id_viaje }
+    })
+  } catch (error) {
+    if (error.code === '23P01') return { noResources: true }
+    throw error
+  }
+}
+

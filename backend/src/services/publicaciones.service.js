@@ -1,7 +1,9 @@
 import {
+  acceptApplication,
   cancelClientPublication as cancelPublicationRecord,
   findClientPublications,
   createPublication as insertPublication,
+  findPublicationApplications,
   findPublicationCatalogs,
   findPublicationQuote,
   findAvailablePublications,
@@ -39,4 +41,12 @@ export function updatePublication(id, publication, clienteId) {
 
 export function cancelPublication(id, clienteId) {
   return cancelPublicationRecord(id, clienteId)
+}
+
+export function listPublicationApplications(clienteId, publicacionId) {
+  return findPublicationApplications(clienteId, publicacionId)
+}
+
+export function acceptPublicationApplication(clienteId, publicacionId, postulacionId) {
+  return acceptApplication(clienteId, publicacionId, postulacionId)
 }
